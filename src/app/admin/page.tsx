@@ -177,6 +177,21 @@ export default function AdminPage() {
       client.from("profiles").select("id,email,full_name,phone,city,state,bio,role"),
     ]);
 
+    let profilesData = profilesResult.data ?? [];
+    let profilesError = profilesResult.error;
+
+    if (profilesError && profilesError.message.includes("profiles.email")) {
+      const fallbackProfilesResult = await client
+        .from("profiles")
+        .select("id,full_name,phone,city,state,bio,role");
+
+      profilesData = (fallbackProfilesResult.data ?? []).map((profile) => ({
+        ...profile,
+        email: null,
+      }));
+      profilesError = fallbackProfilesResult.error;
+    }
+
     if (conditionsResult.error) {
       setError(conditionsResult.error.message);
       setLoading(false);
@@ -189,8 +204,8 @@ export default function AdminPage() {
       return;
     }
 
-    if (profilesResult.error) {
-      setError(profilesResult.error.message);
+    if (profilesError) {
+      setError(profilesError.message);
       setLoading(false);
       return;
     }
@@ -226,7 +241,7 @@ export default function AdminPage() {
       photosByLodging.set(photo.lodging_id, current);
     }
 
-    const profileRows = (profilesResult.data ?? []) as ProfileSummary[];
+    const profileRows = profilesData as ProfileSummary[];
     const profilesById = new Map(profileRows.map((profile) => [profile.id, profile]));
 
     setLodgings(
