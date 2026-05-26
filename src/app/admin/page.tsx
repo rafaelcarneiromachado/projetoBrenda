@@ -354,10 +354,21 @@ export default function AdminPage() {
       return;
     }
 
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({ role: "admin" })
-      .eq("id", user.id);
+    const { error: rpcError } = await supabase.rpc("admin_promote_user", {
+      target_user_id: user.id,
+    });
+
+    const updateError =
+      rpcError &&
+      (rpcError.message.includes("admin_promote_user") ||
+        rpcError.message.includes("Could not find the function"))
+        ? (
+            await supabase
+              .from("profiles")
+              .update({ role: "admin" })
+              .eq("id", user.id)
+          ).error
+        : rpcError;
 
     if (updateError) {
       setError(updateError.message);
@@ -385,10 +396,22 @@ export default function AdminPage() {
       return;
     }
 
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({ account_status: accountStatus })
-      .eq("id", user.id);
+    const { error: rpcError } = await supabase.rpc("admin_set_account_status", {
+      target_user_id: user.id,
+      next_status: accountStatus,
+    });
+
+    const updateError =
+      rpcError &&
+      (rpcError.message.includes("admin_set_account_status") ||
+        rpcError.message.includes("Could not find the function"))
+        ? (
+            await supabase
+              .from("profiles")
+              .update({ account_status: accountStatus })
+              .eq("id", user.id)
+          ).error
+        : rpcError;
 
     if (updateError) {
       setError(updateError.message);
