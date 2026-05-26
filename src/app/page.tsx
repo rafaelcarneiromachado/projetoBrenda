@@ -11,6 +11,7 @@ import {
   Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { LodgingPhotoCarousel } from "./components/LodgingPhotoCarousel";
 import { SiteHeader } from "./components/SiteHeader";
 import { Stay } from "./data/stays";
 import { loadApprovedStays } from "./lib/publicLodgings";
@@ -21,6 +22,7 @@ type FeaturedStay = {
   meta: string;
   detail: string;
   image: string;
+  images?: string[];
 };
 
 const fallbackFeaturedStays: FeaturedStay[] = [
@@ -29,12 +31,14 @@ const fallbackFeaturedStays: FeaturedStay[] = [
     meta: "0,8 km do hospital",
     detail: "1 cama, banho compartilhado",
     image: "/brand/stay-room.svg",
+    images: ["/brand/stay-room.svg"],
   },
   {
     title: "Edícula reservada",
     meta: "Banheiro exclusivo",
     detail: "Entrada independente",
     image: "/brand/stay-suite.svg",
+    images: ["/brand/stay-suite.svg"],
   },
 ];
 
@@ -44,6 +48,7 @@ function toFeaturedStays(stays: Stay[]): FeaturedStay[] {
     meta: `${stay.distanceKm.toFixed(1).replace(".", ",")} km do hospital`,
     detail: `${stay.capacity} pessoa${stay.capacity > 1 ? "s" : ""}, banheiro ${stay.bathroom.toLowerCase()}`,
     image: stay.image,
+    images: stay.images ?? [stay.image],
   }));
 }
 
@@ -210,11 +215,10 @@ export default function Home() {
                     href="/buscar"
                     key={stay.title}
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      alt=""
+                    <LodgingPhotoCarousel
                       className="aspect-[4/3] w-full bg-[var(--surface-soft)] object-cover"
-                      src={stay.image}
+                      images={stay.images ?? [stay.image]}
+                      title={stay.title}
                     />
                     <div className="p-4">
                       <div className="flex items-start justify-between gap-3">

@@ -29,6 +29,8 @@ type LodgingRow = {
   available_now: boolean | null;
   description: string | null;
   nearest_hospital: string | null;
+  latitude: number | string | null;
+  longitude: number | string | null;
 };
 
 type LodgingPhotoRow = {
@@ -36,8 +38,22 @@ type LodgingPhotoRow = {
   storage_path: string;
 };
 
-function mapLodgingToStay(lodging: LodgingRow, index: number, image?: string): Stay {
+function toNumber(value: number | string | null) {
+  if (typeof value === "number") {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  return null;
+}
+
+function mapLodgingToStay(lodging: LodgingRow, index: number, images: string[]): Stay {
   const type = lodgingTypeLabels[lodging.type] ?? "Quarto";
+  const fallbackImage = lodgingImages[type];
 
   return {
     id: lodging.id,
@@ -50,7 +66,10 @@ function mapLodgingToStay(lodging: LodgingRow, index: number, image?: string): S
     bathroom: lodging.bathroom === "Exclusivo" ? "Exclusivo" : "Compartilhado",
     accessibility: Boolean(lodging.accessibility),
     availableTonight: Boolean(lodging.available_now),
-    image: image || lodgingImages[type],
+    image: images[0] || fallbackImage,
+    images: images.length > 0 ? images : [fallbackImage],
+    latitude: toNumber(lodging.latitude),
+    longitude: toNumber(lodging.longitude),
     host: "Anfitrião verificado",
     notes:
       lodging.description ||
@@ -62,7 +81,7 @@ export async function loadApprovedStays(client: SupabaseClient): Promise<Stay[]>
   const { data, error } = await client
     .from("lodgings")
     .select(
-      "id,title,type,neighborhood,city,capacity,bathroom,accessibility,available_now,description,nearest_hospital",
+      "id,title,type,neighborhood,city,capacity,bathroom,accessibility,available_now,description,nearest_hospital,latitude,longitude",
     )
     .eq("status", "approved")
     .order("created_at", { ascending: false });
@@ -79,31 +98,37 @@ export async function loadApprovedStays(client: SupabaseClient): Promise<Stay[]>
     .in("lodging_id", lodgingIds)
     .order("created_at", { ascending: true });
 
-  const firstPhotoByLodging = new Map<string, string>();
+  const photosByLodging = new Map<string, string[]>();
   for (const photo of (photos ?? []) as LodgingPhotoRow[]) {
-    if (!firstPhotoByLodging.has(photo.lodging_id)) {
-      firstPhotoByLodging.set(photo.lodging_id, photo.storage_path);
-    }
+    const current = photosByLodging.get(photo.lodging_id) ?? [];
+    current.push(photo.storage_path);
+    photosByLodging.set(photo.lodging_id, current);
   }
 
   const signedPhotos = await Promise.all(
     lodgings.map(async (lodging) => {
-      const storagePath = firstPhotoByLodging.get(lodging.id);
+      const storagePaths = photosByLodging.get(lodging.id) ?? [];
 
-      if (!storagePath) {
-        return [lodging.id, ""] as const;
+      if (storagePaths.length === 0) {
+        return [lodging.id, [] as string[]] as const;
       }
 
-      const { data: signed } = await client.storage
-        .from("lodging-photos")
-        .createSignedUrl(storagePath, 60 * 20);
+      const urls = await Promise.all(
+        storagePaths.map(async (storagePath) => {
+          const { data: signed } = await client.storage
+            .from("lodging-photos")
+            .createSignedUrl(storagePath, 60 * 20);
 
-      return [lodging.id, signed?.signedUrl ?? ""] as const;
+          return signed?.signedUrl ?? "";
+        }),
+      );
+
+      return [lodging.id, urls.filter(Boolean)] as const;
     }),
   );
-  const photoUrlByLodging = new Map(signedPhotos);
+  const photoUrlsByLodging = new Map(signedPhotos);
 
   return lodgings.map((lodging, index) =>
-    mapLodgingToStay(lodging, index, photoUrlByLodging.get(lodging.id)),
+    mapLodgingToStay(lodging, index, photoUrlsByLodging.get(lodging.id) ?? []),
   );
 }

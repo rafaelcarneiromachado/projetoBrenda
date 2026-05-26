@@ -12,6 +12,7 @@ type SiteHeaderProps = {
     | "buscar"
     | "familias"
     | "anfitrioes"
+    | "missao"
     | "admin"
     | "entrar"
     | "perfil";
@@ -27,6 +28,7 @@ const links = [
     key: "familias",
   },
   { href: "/anfitrioes", label: "Quero acolher", shortLabel: "Acolher", key: "anfitrioes" },
+  { href: "/missao", label: "Missão", shortLabel: "Missão", key: "missao" },
 ];
 
 function getMetadataAvatar(metadata: Record<string, unknown> | undefined) {

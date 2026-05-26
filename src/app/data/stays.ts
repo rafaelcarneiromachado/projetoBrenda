@@ -12,6 +12,9 @@ export type Stay = {
   accessibility: boolean;
   availableTonight: boolean;
   image: string;
+  images?: string[];
+  latitude?: number | null;
+  longitude?: number | null;
   host: string;
   notes: string;
 };

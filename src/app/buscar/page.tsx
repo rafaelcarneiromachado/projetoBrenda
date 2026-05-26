@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { Filter, List, LocateFixed, Map, SlidersHorizontal } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { LodgingPhotoCarousel } from "../components/LodgingPhotoCarousel";
+import { ProximityMap } from "../components/ProximityMap";
 import { SiteHeader } from "../components/SiteHeader";
 import { Stay, stays, StayType } from "../data/stays";
 import { loadApprovedStays } from "../lib/publicLodgings";
@@ -21,7 +23,7 @@ export default function BuscarPage() {
   const [type, setType] = useState<StayType | "Todos">("Todos");
   const [capacity, setCapacity] = useState("1");
   const [onlyTonight, setOnlyTonight] = useState(false);
-  const [mapView, setMapView] = useState(false);
+  const [viewMode, setViewMode] = useState<"list" | "map">("list");
   const [availableStays, setAvailableStays] = useState<Stay[]>(stays);
   const [source, setSource] = useState<"example" | "supabase">("example");
 
@@ -144,17 +146,27 @@ export default function BuscarPage() {
             </label>
             <button
               className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-black text-[var(--brand-dark)] shadow-sm"
-              onClick={() => setMapView((current) => !current)}
+              onClick={() =>
+                setViewMode((current) => (current === "list" ? "map" : "list"))
+              }
               type="button"
             >
-              {mapView ? <List aria-hidden size={18} /> : <Map aria-hidden size={18} />}
-              {mapView ? "Ver lista" : "Ver mapa"}
+              {viewMode === "map" ? (
+                <List aria-hidden size={18} />
+              ) : (
+                <Map aria-hidden size={18} />
+              )}
+              {viewMode === "map" ? "Ver lista" : "Ver mapa"}
             </button>
           </div>
         </div>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_0.82fr]">
-          <section className="grid gap-4">
+        <div
+          className={`mt-8 grid gap-6 ${
+            viewMode === "map" ? "lg:grid-cols-[0.78fr_1.22fr]" : "lg:grid-cols-[1fr_0.82fr]"
+          }`}
+        >
+          <section className={`grid gap-4 ${viewMode === "map" ? "lg:order-2" : ""}`}>
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-black">{filtered.length} hospedagens encontradas</p>
@@ -172,14 +184,17 @@ export default function BuscarPage() {
 
             {filtered.map((stay) => (
               <article
-                className="grid overflow-hidden rounded-[2rem] border border-[var(--line)] bg-white shadow-sm md:grid-cols-[220px_1fr]"
+                className={`grid overflow-hidden rounded-[2rem] border border-[var(--line)] bg-white shadow-sm ${
+                  viewMode === "map" ? "" : "md:grid-cols-[220px_1fr]"
+                }`}
                 key={stay.id}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  alt=""
-                  className="h-56 w-full object-cover md:h-full"
-                  src={stay.image}
+                <LodgingPhotoCarousel
+                  className={`h-56 w-full ${
+                    viewMode === "map" ? "" : "md:h-full"
+                  }`}
+                  images={stay.images ?? [stay.image]}
+                  title={stay.title}
                 />
                 <div className="p-5">
                   <div className="flex flex-wrap items-start justify-between gap-3">
@@ -214,32 +229,8 @@ export default function BuscarPage() {
             ))}
           </section>
 
-          <aside className={`${mapView ? "block" : "hidden lg:block"}`}>
-            <div className="sticky top-28 min-h-[560px] overflow-hidden rounded-[2rem] border border-[var(--line)] bg-[#ffe6ee] shadow-sm">
-              <div className="absolute inset-0 opacity-60">
-                <div className="h-full w-full bg-[linear-gradient(90deg,rgba(18,9,13,0.08)_1px,transparent_1px),linear-gradient(rgba(18,9,13,0.08)_1px,transparent_1px)] bg-[size:56px_56px]" />
-              </div>
-              <div className="relative p-5">
-                <p className="text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
-                  mapa de proximidade
-                </p>
-                <h2 className="mt-2 text-2xl font-black">
-                  Hospedagens perto da sua localização
-                </h2>
-              </div>
-              {filtered.map((stay, index) => (
-                <div
-                  className="absolute rounded-full bg-[var(--brand-dark)] px-3 py-2 text-sm font-black text-white shadow-lg"
-                  key={stay.id}
-                  style={{
-                    left: `${22 + index * 21}%`,
-                    top: `${42 + (index % 2) * 18}%`,
-                  }}
-                >
-                  {stay.distanceKm.toFixed(1)} km
-                </div>
-              ))}
-            </div>
+          <aside className={`${viewMode === "map" ? "block lg:order-1" : "hidden lg:block"}`}>
+            <ProximityMap stays={filtered} />
           </aside>
         </div>
       </section>
