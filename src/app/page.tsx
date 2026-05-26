@@ -208,7 +208,7 @@ export default function Home() {
 
       <section className="bg-white px-6 py-8 md:px-10 lg:px-12">
         <div className="mx-auto max-w-6xl">
-          <div className="max-w-2xl">
+          <div className="max-w-5xl">
             <p className="text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
               Como funciona
             </p>
