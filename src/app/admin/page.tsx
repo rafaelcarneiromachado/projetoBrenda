@@ -127,10 +127,10 @@ const moderationFilters: Array<{ label: string; value: ModerationFilter }> = [
 ];
 
 function filterButtonClass(isActive: boolean) {
-  return `inline-flex h-8 items-center justify-center gap-1.5 rounded-full px-2.5 text-xs font-black leading-none transition ${
+  return `${compactButton} ${
     isActive
       ? "bg-[var(--brand-dark)] text-white shadow-sm"
-      : "bg-white text-[var(--brand-dark)] hover:bg-[var(--surface-soft)]"
+      : "border border-transparent bg-white text-[var(--brand-dark)] shadow-sm hover:bg-[var(--surface-soft)]"
   }`;
 }
 
