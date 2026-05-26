@@ -132,7 +132,7 @@ export default function Home() {
             <p className="mb-4 inline-flex rounded-full border border-[var(--line)] bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[var(--rose-dark)] shadow-sm">
               Acolhimento Solidário Familiar
             </p>
-            <h1 className="max-w-2xl text-4xl font-black leading-[1.03] text-[var(--foreground)] md:text-5xl">
+            <h1 className="max-w-2xl text-3xl font-black leading-tight text-[var(--foreground)] md:text-4xl">
               Um lugar seguro para descansar perto do hospital.
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-8 text-[var(--muted)]">
@@ -193,7 +193,7 @@ export default function Home() {
             <p className="text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
               Como Funciona
             </p>
-            <h2 className="mt-3 text-3xl font-black md:text-5xl">
+            <h2 className="mt-3 text-3xl font-black md:text-4xl">
               Uma rede simples, humana e moderada.
             </h2>
           </div>
@@ -227,7 +227,7 @@ export default function Home() {
             <p className="text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
               Cuidado Operacional
             </p>
-            <h2 className="mt-3 text-3xl font-black md:text-5xl">
+            <h2 className="mt-3 text-3xl font-black md:text-4xl">
               A rede precisa ser simples, segura e acolhedora.
             </h2>
             <p className="mt-5 leading-8 text-[var(--muted)]">

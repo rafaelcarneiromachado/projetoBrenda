@@ -31,7 +31,7 @@ export default function MissaoPage() {
             <p className="inline-flex rounded-full bg-white px-4 py-2 text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)] shadow-sm">
               Nossa Missão
             </p>
-            <h1 className="mt-5 text-4xl font-black leading-tight md:text-6xl">
+            <h1 className="mt-5 text-3xl font-black leading-tight md:text-4xl">
               Transformar proximidade em acolhimento.
             </h1>
           </div>

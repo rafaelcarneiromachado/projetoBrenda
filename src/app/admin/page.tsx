@@ -489,7 +489,7 @@ export default function AdminPage() {
             <p className="inline-flex rounded-full bg-white px-4 py-2 text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)] shadow-sm">
               Moderação
             </p>
-            <h1 className="mt-5 text-3xl font-black md:text-5xl">
+            <h1 className="mt-5 text-3xl font-black md:text-4xl">
               Revisar pedidos e ofertas.
             </h1>
             <p className="mt-5 leading-8 text-[var(--muted)]">

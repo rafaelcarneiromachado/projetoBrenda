@@ -306,9 +306,9 @@ export default function PerfilPage() {
       <section className="mx-auto grid max-w-6xl gap-8 px-6 py-10 md:px-10 lg:grid-cols-[0.8fr_1.2fr] lg:px-12">
         <aside className="lg:pt-8">
           <p className="inline-flex rounded-full bg-white px-4 py-2 text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)] shadow-sm">
-            minha conta
+            Minha Conta
           </p>
-          <h1 className="mt-5 text-3xl font-black leading-tight md:text-5xl">
+          <h1 className="mt-5 text-3xl font-black leading-tight md:text-4xl">
             Seus dados de contato e acolhimento.
           </h1>
           <p className="mt-5 leading-8 text-[var(--muted)]">

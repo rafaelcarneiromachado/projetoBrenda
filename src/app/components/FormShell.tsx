@@ -26,7 +26,7 @@ export function FormShell({
           <p className="inline-flex rounded-full bg-white px-4 py-2 text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)] shadow-sm">
             {eyebrow}
           </p>
-          <h1 className="mt-5 max-w-3xl text-3xl font-black leading-tight md:text-5xl">
+          <h1 className="mt-5 max-w-3xl text-3xl font-black leading-tight md:text-4xl">
             {title}
           </h1>
           <p className="mt-5 max-w-3xl text-base leading-8 text-[var(--muted)]">
@@ -54,7 +54,7 @@ export function FormShell({
           <p className="inline-flex rounded-full bg-white px-4 py-2 text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)] shadow-sm">
             {eyebrow}
           </p>
-          <h1 className="mt-5 text-3xl font-black leading-tight md:text-5xl">
+          <h1 className="mt-5 text-3xl font-black leading-tight md:text-4xl">
             {title}
           </h1>
           <p className="mt-5 max-w-xl text-base leading-8 text-[var(--muted)]">

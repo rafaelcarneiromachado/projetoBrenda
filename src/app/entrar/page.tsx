@@ -40,9 +40,9 @@ export default function EntrarPage() {
       <section className="mx-auto grid max-w-6xl gap-8 px-6 py-10 md:px-10 lg:grid-cols-[0.9fr_1.1fr] lg:px-12">
         <div className="max-w-2xl lg:pt-8">
           <p className="inline-flex rounded-full bg-white px-4 py-2 text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)] shadow-sm">
-            acesso protegido
+            Acesso Protegido
           </p>
-          <h1 className="mt-5 text-4xl font-black leading-tight md:text-6xl">
+          <h1 className="mt-5 text-3xl font-black leading-tight md:text-4xl">
             Entre com uma conta verificada.
           </h1>
           <p className="mt-5 leading-8 text-[var(--muted)]">
