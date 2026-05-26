@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Apple, LogIn, UserPlus } from "lucide-react";
+import { Apple, LogIn, RefreshCw, UserPlus } from "lucide-react";
 import { SiteHeader } from "../components/SiteHeader";
 import { TextField } from "../components/Field";
 import { supabase } from "../lib/supabase";
@@ -15,6 +15,8 @@ export default function EntrarPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [confirmationEmail, setConfirmationEmail] = useState("");
+  const [resending, setResending] = useState(false);
 
   async function ensureProfile(
     userId: string,
@@ -68,6 +70,7 @@ export default function EntrarPage() {
               email,
               password,
               options: {
+                emailRedirectTo: `${window.location.origin}/entrar`,
                 data: {
                   full_name: fullName,
                   phone,
@@ -98,6 +101,7 @@ export default function EntrarPage() {
         setMessage("Conta criada e login realizado. Redirecionando...");
         window.setTimeout(() => router.push("/buscar"), 1200);
       } else {
+        setConfirmationEmail(email);
         setMessage(
           "Conta criada. Verifique seu e-mail para confirmar o cadastro e depois entre com sua senha.",
         );
@@ -111,6 +115,40 @@ export default function EntrarPage() {
     setMessage("Login confirmado. Redirecionando...");
     window.setTimeout(() => router.push("/buscar"), 900);
     setLoading(false);
+  }
+
+  async function handleResendConfirmation() {
+    setError("");
+    setMessage("");
+
+    if (!supabase) {
+      setError("Supabase não está configurado neste ambiente.");
+      return;
+    }
+
+    if (!confirmationEmail) {
+      setError("Informe novamente o e-mail usado no cadastro.");
+      return;
+    }
+
+    setResending(true);
+
+    const { error: resendError } = await supabase.auth.resend({
+      type: "signup",
+      email: confirmationEmail,
+      options: {
+        emailRedirectTo: `${window.location.origin}/entrar`,
+      },
+    });
+
+    if (resendError) {
+      setError(resendError.message);
+      setResending(false);
+      return;
+    }
+
+    setMessage("E-mail de confirmação reenviado. Verifique a caixa de entrada e o spam.");
+    setResending(false);
   }
 
   async function handleOAuth(provider: "google" | "apple") {
@@ -183,6 +221,23 @@ export default function EntrarPage() {
             {error ? (
               <div className="rounded-2xl border border-[#fecaca] bg-[#fff1f2] px-4 py-3 text-sm font-bold text-[#be123c]">
                 {error}
+              </div>
+            ) : null}
+            {confirmationEmail ? (
+              <div className="rounded-2xl border border-[var(--line)] bg-white p-4 text-sm leading-6 text-[var(--muted)]">
+                <p>
+                  Aguardando confirmação de{" "}
+                  <strong className="text-[var(--foreground)]">{confirmationEmail}</strong>.
+                </p>
+                <button
+                  className="mt-3 inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[var(--brand-dark)] px-4 font-black text-[var(--brand-dark)] disabled:opacity-60"
+                  disabled={resending}
+                  onClick={handleResendConfirmation}
+                  type="button"
+                >
+                  <RefreshCw aria-hidden size={16} />
+                  {resending ? "Reenviando..." : "Reenviar confirmação"}
+                </button>
               </div>
             ) : null}
 
