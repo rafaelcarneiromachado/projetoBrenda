@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { HeartHandshake, HomeIcon, ShieldCheck } from "lucide-react";
+import { HeartHandshake, HomeIcon, Mail, MessageCircle, ShieldCheck, UserRound } from "lucide-react";
 import { SiteHeader } from "../components/SiteHeader";
 
 const principles = [
@@ -26,6 +26,26 @@ const missionParagraphs = [
   "Hoje, o SUS e as ONGs tradicionais, como as Casas Ronald McDonald, fazem um trabalho incrível, mas elas têm um limite físico. Elas sofrem com falta de vagas e, por isso, a prioridade máxima é sempre o paciente e apenas um acompanhante. O segundo pilar da família, que geralmente é o pai ou um irmão, fica completamente desamparado pela infraestrutura atual. Construir novos prédios de acolhimento custa milhões e leva anos.",
   "Para resolver isso, nós criamos o Projeto Brenda: o primeiro aplicativo de economia solidária Peer-to-Peer focado em acolhimento oncológico familiar. Nós somos o Airbnb da solidariedade.",
   "Conectamos pessoas que moram nos arredores dos grandes hospitais de câncer e possuem um quarto vago, um sofá ou uma edícula, com esses pais que não têm onde dormir. Em vez de construir prédios, nós descentralizamos o acolhimento utilizando a estrutura que a sociedade civil já possui e quer doar.",
+];
+
+const contactItems = [
+  {
+    icon: UserRound,
+    label: "Administrador E Autor",
+    value: "Rafael Machado",
+  },
+  {
+    icon: Mail,
+    label: "E-Mail",
+    value: "contato@projetobrenda.com.br",
+    href: "mailto:contato@projetobrenda.com.br",
+  },
+  {
+    icon: MessageCircle,
+    label: "WhatsApp",
+    value: "+55 41 98852 7539",
+    href: "https://wa.me/5541988527539",
+  },
 ];
 
 export default function MissaoPage() {
@@ -110,6 +130,46 @@ export default function MissaoPage() {
             Oferecer Hospedagem
           </Link>
         </div>
+
+        <section className="mt-10 rounded-[2rem] border border-[var(--line)] bg-[var(--brand-dark)] p-6 text-white shadow-xl shadow-[#19101418] md:p-8">
+          <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.14em] text-[#f7a7bd]">
+                Fale Com O Projeto
+              </p>
+              <h2 className="mt-3 text-2xl font-black md:text-3xl">
+                Um canal direto para dúvidas, parcerias e acolhimento.
+              </h2>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-3">
+              {contactItems.map((item) => {
+                const Icon = item.icon;
+                const content = (
+                  <div className="h-full rounded-[1.25rem] bg-white/10 p-4 ring-1 ring-white/15 transition hover:bg-white/15">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[var(--brand-dark)]">
+                      <Icon aria-hidden size={18} />
+                    </div>
+                    <p className="mt-4 text-[0.7rem] font-black uppercase tracking-[0.12em] text-[#f7a7bd]">
+                      {item.label}
+                    </p>
+                    <p className="mt-1 break-words text-sm font-black text-white">
+                      {item.value}
+                    </p>
+                  </div>
+                );
+
+                return item.href ? (
+                  <Link href={item.href} key={item.label}>
+                    {content}
+                  </Link>
+                ) : (
+                  <div key={item.label}>{content}</div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
       </section>
     </main>
   );
