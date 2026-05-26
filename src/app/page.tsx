@@ -4,15 +4,24 @@ import {
   CheckCircle2,
   HeartHandshake,
   HomeIcon,
+  MapPin,
   Search,
   ShieldCheck,
+  Users,
 } from "lucide-react";
 import { SiteHeader } from "./components/SiteHeader";
 
-const stats = [
-  { value: "24h", label: "pedidos revisados com cuidado" },
-  { value: "3", label: "tipos de espaco para acolher" },
-  { value: "0", label: "custo para familias atendidas" },
+const featuredStays = [
+  {
+    title: "Quarto tranquilo",
+    meta: "0.8 km do hospital",
+    image: "/brand/stay-room.svg",
+  },
+  {
+    title: "Edicula reservada",
+    meta: "Banheiro exclusivo",
+    image: "/brand/stay-suite.svg",
+  },
 ];
 
 const steps = [
@@ -37,7 +46,7 @@ const safeguards = [
   "Cadastro revisado antes de qualquer contato.",
   "Endereco completo protegido ate a verificacao.",
   "Dados medicos reduzidos ao minimo necessario.",
-  "Piloto pensado para parceria com hospitais e ONGs.",
+  "Rede pensada para parceria com hospitais e ONGs.",
 ];
 
 export default function Home() {
@@ -45,106 +54,140 @@ export default function Home() {
     <main className="min-h-screen quiet-pattern">
       <SiteHeader current="home" />
 
-      <section className="px-6 pb-16 pt-10 md:px-10 lg:px-12">
-        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
-          <div className="max-w-3xl">
-            <p className="mb-5 inline-flex rounded-full bg-white px-4 py-2 text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)] shadow-sm">
+      <section className="px-6 pb-14 pt-8 md:px-10 lg:px-12">
+        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1fr_0.86fr] lg:items-center">
+          <div>
+            <p className="mb-4 text-sm font-black uppercase tracking-[0.14em] text-[var(--rose-dark)]">
               hospedagem solidaria oncologica
             </p>
-            <h1 className="max-w-4xl text-4xl font-black leading-[1.04] text-[var(--foreground)] md:text-6xl">
-              Um lugar seguro para descansar enquanto o amor permanece perto.
+            <h1 className="max-w-3xl text-4xl font-black leading-[1.02] text-[var(--foreground)] md:text-6xl">
+              Fique perto de quem mais precisa de voce.
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--muted)]">
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--muted)]">
               O Projeto Brenda conecta familiares de criancas e adolescentes em
               tratamento contra o cancer a anfitrioes solidarios proximos aos
               hospitais.
             </p>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--brand-dark)] px-6 font-black text-white shadow-lg shadow-[#19101435] transition hover:bg-[var(--brand)]"
-                href="/buscar"
-              >
-                Buscar hospedagem
-                <Search aria-hidden size={18} />
-              </Link>
-              <Link
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border-2 border-[var(--brand-dark)] bg-white px-6 font-black text-[var(--brand-dark)] shadow-sm transition hover:bg-[var(--surface-soft)]"
-                href="/anfitrioes"
-              >
-                Quero acolher
-                <HeartHandshake aria-hidden size={18} />
-              </Link>
-            </div>
-
-            <div className="soft-shell mt-8 grid gap-3 rounded-[2rem] p-4 md:grid-cols-[1fr_auto]">
-              <div className="grid gap-2 md:grid-cols-3">
-                <div className="rounded-2xl bg-white px-4 py-3">
-                  <p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
-                    Onde
-                  </p>
-                  <p className="mt-1 font-bold text-[var(--muted)]">
-                    Cidade ou hospital
-                  </p>
-                </div>
-                <div className="rounded-2xl bg-white px-4 py-3">
-                  <p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
-                    Quem
-                  </p>
-                  <p className="mt-1 font-bold text-[var(--muted)]">
-                    1 ou 2 acompanhantes
-                  </p>
-                </div>
-                <div className="rounded-2xl bg-white px-4 py-3">
-                  <p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
-                    Espaco
-                  </p>
-                  <p className="mt-1 font-bold text-[var(--muted)]">
-                    Quarto, sofa ou edicula
-                  </p>
-                </div>
+            <div className="mt-8 rounded-[2rem] border border-[var(--line)] bg-white p-3 shadow-xl shadow-[#19101412]">
+              <div className="grid gap-2 lg:grid-cols-[1fr_0.8fr_0.7fr_auto]">
+                <Link
+                  className="flex min-h-16 items-center gap-3 rounded-3xl px-4 transition hover:bg-[var(--surface-soft)]"
+                  href="/buscar"
+                >
+                  <MapPin aria-hidden className="shrink-0 text-[var(--rose-dark)]" />
+                  <span>
+                    <span className="block text-xs font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
+                      Onde
+                    </span>
+                    <span className="font-bold text-[var(--foreground)]">
+                      Cidade ou hospital
+                    </span>
+                  </span>
+                </Link>
+                <Link
+                  className="flex min-h-16 items-center gap-3 rounded-3xl px-4 transition hover:bg-[var(--surface-soft)]"
+                  href="/buscar"
+                >
+                  <Users aria-hidden className="shrink-0 text-[var(--rose-dark)]" />
+                  <span>
+                    <span className="block text-xs font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
+                      Quem
+                    </span>
+                    <span className="font-bold text-[var(--foreground)]">
+                      Acompanhantes
+                    </span>
+                  </span>
+                </Link>
+                <Link
+                  className="flex min-h-16 items-center gap-3 rounded-3xl px-4 transition hover:bg-[var(--surface-soft)]"
+                  href="/buscar"
+                >
+                  <HomeIcon aria-hidden className="shrink-0 text-[var(--rose-dark)]" />
+                  <span>
+                    <span className="block text-xs font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
+                      Espaco
+                    </span>
+                    <span className="font-bold text-[var(--foreground)]">
+                      Quarto ou sofa
+                    </span>
+                  </span>
+                </Link>
+                <Link
+                  className="inline-flex min-h-16 items-center justify-center gap-2 rounded-3xl bg-[var(--brand-dark)] px-6 font-black text-white transition hover:bg-[var(--brand)]"
+                  href="/buscar"
+                >
+                  <Search aria-hidden size={18} />
+                  Buscar
+                </Link>
               </div>
-              <Link
-                className="inline-flex min-h-14 items-center justify-center gap-2 rounded-full bg-[var(--rose-dark)] px-6 font-black text-white transition hover:bg-[var(--brand)]"
-                href="/buscar"
-              >
-                <Search aria-hidden size={18} />
-                Pesquisar
-              </Link>
             </div>
 
-            <div className="mt-10 grid gap-3 sm:grid-cols-3">
-              {stats.map((item) => (
-                <div className="rounded-2xl bg-white/76 p-4 shadow-sm" key={item.label}>
-                  <div className="text-3xl font-black text-[var(--rose-dark)]">
-                    {item.value}
-                  </div>
-                  <p className="mt-1 text-sm leading-5 text-[var(--muted)]">
-                    {item.label}
-                  </p>
-                </div>
-              ))}
+            <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3 text-sm font-bold text-[var(--muted)]">
+              <span>
+                <strong className="text-xl text-[var(--rose-dark)]">24h</strong>{" "}
+                revisao cuidadosa
+              </span>
+              <span>
+                <strong className="text-xl text-[var(--rose-dark)]">0</strong>{" "}
+                custo para familias
+              </span>
+              <span>
+                <strong className="text-xl text-[var(--rose-dark)]">100%</strong>{" "}
+                moderado
+              </span>
             </div>
           </div>
 
-          <div className="soft-shell relative overflow-hidden rounded-[2rem] p-4">
-            <Image
-              alt="Ilustracao de uma casa acolhedora perto de um hospital"
-              className="h-auto w-full rounded-[1.5rem]"
-              height={900}
-              priority
-              src="/brand/hero-acolhimento.svg"
-              width={1200}
-            />
-            <div className="absolute bottom-6 left-6 right-6 rounded-3xl bg-white/92 p-5 shadow-lg backdrop-blur">
-              <p className="text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
-                primeiro principio
+          <aside className="rounded-[2rem] border border-[var(--line)] bg-white p-4 shadow-xl shadow-[#19101412]">
+            <div className="flex items-center justify-between px-2 pb-4">
+              <div>
+                <p className="text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
+                  proximas ao hospital
+                </p>
+                <h2 className="mt-1 text-2xl font-black">Hospedagens solidarias</h2>
+              </div>
+              <Link className="text-sm font-black text-[var(--rose-dark)]" href="/buscar">
+                Ver mapa
+              </Link>
+            </div>
+
+            <div className="grid gap-3">
+              {featuredStays.map((stay) => (
+                <Link
+                  className="grid grid-cols-[130px_1fr] overflow-hidden rounded-[1.5rem] border border-[var(--line)] bg-[#fff8fa] transition hover:-translate-y-0.5 hover:shadow-lg"
+                  href="/buscar"
+                  key={stay.title}
+                >
+                  <Image
+                    alt=""
+                    className="h-full min-h-32 w-full object-cover"
+                    height={620}
+                    src={stay.image}
+                    width={900}
+                  />
+                  <div className="p-4">
+                    <p className="text-lg font-black">{stay.title}</p>
+                    <p className="mt-2 text-sm font-bold text-[var(--muted)]">
+                      {stay.meta}
+                    </p>
+                    <span className="mt-4 inline-flex rounded-full bg-white px-3 py-1 text-xs font-black text-[var(--rose-dark)]">
+                      Ver disponibilidade
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            <div className="mt-4 rounded-[1.5rem] bg-[var(--brand-dark)] p-5 text-white">
+              <p className="text-sm font-black uppercase tracking-[0.12em] text-[#f7a7bd]">
+                principio central
               </p>
-              <p className="mt-2 text-lg font-black leading-6">
+              <p className="mt-2 text-xl font-black leading-7">
                 Seguranca antes de escala. Acolhimento antes de automacao.
               </p>
             </div>
-          </div>
+          </aside>
         </div>
       </section>
 
@@ -198,13 +241,10 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="soft-shell rounded-[2rem] p-6">
+          <div className="rounded-[2rem] border border-[var(--line)] bg-white p-6 shadow-xl shadow-[#19101412]">
             <div className="grid gap-3">
               {safeguards.map((item) => (
-                <div
-                  className="flex gap-3 rounded-2xl bg-white px-4 py-4"
-                  key={item}
-                >
+                <div className="flex gap-3 rounded-2xl bg-[#fff8fa] px-4 py-4" key={item}>
                   <CheckCircle2
                     aria-hidden
                     className="mt-0.5 shrink-0 text-[var(--rose-dark)]"
