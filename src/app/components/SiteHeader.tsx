@@ -29,6 +29,11 @@ const links = [
   { href: "/anfitrioes", label: "Quero acolher", shortLabel: "Acolher", key: "anfitrioes" },
 ];
 
+function getMetadataAvatar(metadata: Record<string, unknown> | undefined) {
+  const avatar = metadata?.avatar_url ?? metadata?.picture ?? metadata?.photo;
+  return typeof avatar === "string" ? avatar : "";
+}
+
 export function SiteHeader({ current = "home" }: SiteHeaderProps) {
   const [email, setEmail] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
@@ -42,31 +47,44 @@ export function SiteHeader({ current = "home" }: SiteHeaderProps) {
     let mounted = true;
     const client = supabase;
 
+    async function loadUserAvatar(
+      user: {
+        id: string;
+        email?: string | null;
+        user_metadata?: Record<string, unknown>;
+      } | null,
+    ) {
+      if (!mounted) {
+        return;
+      }
+
+      setEmail(user?.email ?? "");
+
+      if (!user) {
+        setAvatarUrl("");
+        return;
+      }
+
+      const metadataAvatar = getMetadataAvatar(user.user_metadata);
+      const { data: profile } = await client
+        .from("profiles")
+        .select("avatar_url")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (mounted) {
+        setAvatarUrl(profile?.avatar_url ?? metadataAvatar);
+      }
+    }
+
     window.setTimeout(() => {
       client.auth.getUser().then(({ data }) => {
-        if (mounted) {
-          setEmail(data.user?.email ?? "");
-          if (data.user) {
-            client
-              .from("profiles")
-              .select("avatar_url")
-              .eq("id", data.user.id)
-              .maybeSingle()
-              .then(({ data: profile }) => {
-                if (mounted) {
-                  setAvatarUrl(profile?.avatar_url ?? "");
-                }
-              });
-          }
-        }
+        void loadUserAvatar(data.user);
       });
     }, 0);
 
     const { data } = client.auth.onAuthStateChange((_event, session) => {
-      setEmail(session?.user.email ?? "");
-      if (!session) {
-        setAvatarUrl("");
-      }
+      void loadUserAvatar(session?.user ?? null);
     });
 
     return () => {
@@ -132,12 +150,11 @@ export function SiteHeader({ current = "home" }: SiteHeaderProps) {
                 type="button"
               >
                 {avatarUrl ? (
-                  <Image
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
                     alt=""
                     className="h-7 w-7 rounded-full object-cover"
-                    height={28}
                     src={avatarUrl}
-                    width={28}
                   />
                 ) : (
                   <UserCircle aria-hidden size={18} />

@@ -43,6 +43,18 @@ type ViaCepResponse = {
   uf?: string;
 };
 
+function getMetadataString(metadata: Record<string, unknown>, keys: string[]) {
+  for (const key of keys) {
+    const value = metadata[key];
+
+    if (typeof value === "string" && value.trim()) {
+      return value;
+    }
+  }
+
+  return "";
+}
+
 export default function PerfilPage() {
   const [email, setEmail] = useState("");
   const [profile, setProfile] = useState<Profile>(emptyProfile);
@@ -89,10 +101,21 @@ export default function PerfilPage() {
       if (profileError) {
         setError(profileError.message);
       } else {
-        const metadata = user.user_metadata;
+        const metadata = user.user_metadata ?? {};
+        const metadataName = getMetadataString(metadata, [
+          "full_name",
+          "name",
+          "display_name",
+        ]);
+        const metadataPhone = getMetadataString(metadata, ["phone", "phone_number"]);
+        const metadataAvatar = getMetadataString(metadata, [
+          "avatar_url",
+          "picture",
+          "photo",
+        ]);
         const nextProfile = {
-          full_name: data?.full_name ?? metadata.full_name ?? metadata.name ?? "",
-          phone: data?.phone ?? metadata.phone ?? "",
+          full_name: data?.full_name ?? metadataName,
+          phone: data?.phone ?? metadataPhone,
           cep: data?.cep ?? "",
           address: data?.address ?? "",
           address_number: data?.address_number ?? "",
@@ -101,7 +124,7 @@ export default function PerfilPage() {
           state: data?.state ?? "",
           family_info: data?.family_info ?? "",
           bio: data?.bio ?? "",
-          avatar_url: data?.avatar_url ?? metadata.avatar_url ?? "",
+          avatar_url: data?.avatar_url ?? metadataAvatar,
         };
         setProfile(nextProfile);
         setAvatarPreview(nextProfile.avatar_url);
@@ -113,6 +136,7 @@ export default function PerfilPage() {
             email: user.email ?? null,
             full_name: nextProfile.full_name || null,
             phone: nextProfile.phone || null,
+            avatar_url: nextProfile.avatar_url || null,
           })
           .then(() => undefined);
       }
@@ -146,7 +170,7 @@ export default function PerfilPage() {
     const cep = profile.cep.replace(/\D/g, "");
 
     if (cep.length !== 8) {
-      setError("Informe um CEP com 8 digitos.");
+      setError("Informe um CEP com 8 dígitos.");
       return;
     }
 
@@ -158,7 +182,7 @@ export default function PerfilPage() {
       const data = (await response.json()) as ViaCepResponse;
 
       if (data.erro) {
-        setError("CEP nao encontrado.");
+        setError("CEP não encontrado.");
         setCepLoading(false);
         return;
       }
