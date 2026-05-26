@@ -91,7 +91,7 @@ export default function PerfilPage() {
       } else {
         const metadata = user.user_metadata;
         const nextProfile = {
-          full_name: data?.full_name ?? metadata.full_name ?? "",
+          full_name: data?.full_name ?? metadata.full_name ?? metadata.name ?? "",
           phone: data?.phone ?? metadata.phone ?? "",
           cep: data?.cep ?? "",
           address: data?.address ?? "",
@@ -105,6 +105,16 @@ export default function PerfilPage() {
         };
         setProfile(nextProfile);
         setAvatarPreview(nextProfile.avatar_url);
+
+        await supabase
+          .from("profiles")
+          .upsert({
+            id: user.id,
+            email: user.email ?? null,
+            full_name: nextProfile.full_name || null,
+            phone: nextProfile.phone || null,
+          })
+          .then(() => undefined);
       }
 
       setLoading(false);

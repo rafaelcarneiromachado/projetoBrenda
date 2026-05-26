@@ -122,6 +122,9 @@ export default function AdminPage() {
   const [users, setUsers] = useState<ProfileSummary[]>([]);
   const [userSearch, setUserSearch] = useState("");
   const [currentUserId, setCurrentUserId] = useState("");
+  const [accessStatus, setAccessStatus] = useState<"checking" | "allowed" | "denied">(
+    "checking",
+  );
   const [expandedLodgingId, setExpandedLodgingId] = useState("");
   const [expandedRequestId, setExpandedRequestId] = useState("");
   const [loading, setLoading] = useState(true);
@@ -139,8 +142,41 @@ export default function AdminPage() {
     }
 
     const client = supabase;
-    const [authResult, lodgingsResult, requestsResult] = await Promise.all([
-      client.auth.getUser(),
+    const authResult = await client.auth.getUser();
+    const currentUser = authResult.data.user;
+    setCurrentUserId(currentUser?.id ?? "");
+
+    if (!currentUser) {
+      setAccessStatus("denied");
+      setLoading(false);
+      return;
+    }
+
+    const { data: currentProfile, error: currentProfileError } = await client
+      .from("profiles")
+      .select("role,account_status")
+      .eq("id", currentUser.id)
+      .maybeSingle();
+
+    if (currentProfileError) {
+      setError(currentProfileError.message);
+      setAccessStatus("denied");
+      setLoading(false);
+      return;
+    }
+
+    if (
+      currentProfile?.role !== "admin" ||
+      currentProfile.account_status === "blocked"
+    ) {
+      setAccessStatus("denied");
+      setLoading(false);
+      return;
+    }
+
+    setAccessStatus("allowed");
+
+    const [lodgingsResult, requestsResult] = await Promise.all([
       client
         .from("lodgings")
         .select(
@@ -154,8 +190,6 @@ export default function AdminPage() {
         )
         .order("created_at", { ascending: false }),
     ]);
-
-    setCurrentUserId(authResult.data.user?.id ?? "");
 
     if (lodgingsResult.error) {
       setError(lodgingsResult.error.message);
@@ -417,6 +451,26 @@ export default function AdminPage() {
         </div>
 
         <AuthGate message="Entre com uma conta autorizada para acessar a área de moderação.">
+          {accessStatus === "checking" ? (
+            <div className="soft-shell mt-8 rounded-[2rem] p-7">
+              <p className="font-black">Verificando permissão de moderação...</p>
+            </div>
+          ) : null}
+
+          {accessStatus === "denied" ? (
+            <div className="soft-shell mt-8 rounded-[2rem] p-7">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--brand-dark)] text-white">
+                <ShieldAlert aria-hidden size={22} />
+              </div>
+              <h2 className="mt-5 text-2xl font-black">Acesso restrito</h2>
+              <p className="mt-3 leading-7 text-[var(--muted)]">
+                Esta área é exclusiva para moderadores do Projeto Brenda.
+              </p>
+            </div>
+          ) : null}
+
+          {accessStatus === "allowed" ? (
+            <>
           <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-[2rem] bg-white p-5 shadow-sm">
               <p className="text-3xl font-black text-[var(--rose-dark)]">
@@ -812,6 +866,8 @@ export default function AdminPage() {
               ))
             )}
           </section>
+            </>
+          ) : null}
         </AuthGate>
       </section>
     </main>
