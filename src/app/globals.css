@@ -1,17 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fbf4ea;
-  --foreground: #263d3a;
-  --muted: #61716d;
-  --brand: #177a72;
-  --brand-dark: #0f514d;
-  --warm: #f3b35b;
-  --rose: #d96c5f;
+  --background: #fff7ed;
+  --foreground: #173b34;
+  --muted: #52645f;
+  --brand: #0f6b5f;
+  --brand-dark: #093f39;
+  --warm: #f0ad3d;
+  --rose: #df5a49;
+  --rose-dark: #a9342a;
   --surface: #ffffff;
-  --surface-soft: #fffaf2;
-  --line: #eadfd1;
-  --shadow: 0 24px 60px rgba(38, 61, 58, 0.12);
+  --surface-soft: #fff3e3;
+  --line: #e7d4bf;
+  --shadow: 0 24px 60px rgba(23, 59, 52, 0.16);
 }
 
 * {
@@ -49,7 +50,8 @@ textarea {
 
 .quiet-pattern {
   background-image:
-    radial-gradient(circle at 18% 15%, rgba(243, 179, 91, 0.22), transparent 26%),
-    radial-gradient(circle at 86% 18%, rgba(23, 122, 114, 0.13), transparent 24%),
-    linear-gradient(180deg, #fff9ef 0%, #fbf4ea 64%, #eef7f1 100%);
+    radial-gradient(circle at 18% 15%, rgba(240, 173, 61, 0.28), transparent 26%),
+    radial-gradient(circle at 86% 18%, rgba(15, 107, 95, 0.2), transparent 24%),
+    radial-gradient(circle at 78% 82%, rgba(223, 90, 73, 0.12), transparent 24%),
+    linear-gradient(180deg, #fffaf2 0%, #fff0df 58%, #e8f3ea 100%);
 }

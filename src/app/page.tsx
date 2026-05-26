@@ -48,7 +48,7 @@ export default function Home() {
       <section className="px-6 pb-16 pt-10 md:px-10 lg:px-12">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
           <div className="max-w-3xl">
-            <p className="mb-5 inline-flex rounded-full bg-white px-4 py-2 text-sm font-black uppercase tracking-[0.12em] text-[var(--rose)] shadow-sm">
+            <p className="mb-5 inline-flex rounded-full bg-white px-4 py-2 text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)] shadow-sm">
               hospedagem solidaria oncologica
             </p>
             <h1 className="max-w-4xl text-4xl font-black leading-[1.04] text-[var(--foreground)] md:text-6xl">
@@ -62,14 +62,14 @@ export default function Home() {
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--brand)] px-6 font-black text-white shadow-lg shadow-[#177a7230] transition hover:bg-[var(--brand-dark)]"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--brand-dark)] px-6 font-black text-white shadow-lg shadow-[#093f3940] transition hover:bg-[var(--brand)]"
                 href="/familias"
               >
                 Preciso de hospedagem
                 <ArrowRight aria-hidden size={18} />
               </Link>
               <Link
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-6 font-black text-[var(--foreground)] shadow-sm transition hover:border-[var(--brand)]"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border-2 border-[var(--brand-dark)] bg-white px-6 font-black text-[var(--brand-dark)] shadow-sm transition hover:bg-[var(--surface-soft)]"
                 href="/anfitrioes"
               >
                 Quero acolher
@@ -80,7 +80,7 @@ export default function Home() {
             <div className="mt-10 grid gap-3 sm:grid-cols-3">
               {stats.map((item) => (
                 <div className="rounded-2xl bg-white/76 p-4 shadow-sm" key={item.label}>
-                  <div className="text-3xl font-black text-[var(--brand-dark)]">
+                  <div className="text-3xl font-black text-[var(--rose-dark)]">
                     {item.value}
                   </div>
                   <p className="mt-1 text-sm leading-5 text-[var(--muted)]">
@@ -101,7 +101,7 @@ export default function Home() {
               width={1200}
             />
             <div className="absolute bottom-6 left-6 right-6 rounded-3xl bg-white/92 p-5 shadow-lg backdrop-blur">
-              <p className="text-sm font-black uppercase tracking-[0.12em] text-[var(--brand)]">
+              <p className="text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
                 primeiro principio
               </p>
               <p className="mt-2 text-lg font-black leading-6">
@@ -115,7 +115,7 @@ export default function Home() {
       <section className="bg-white px-6 py-16 md:px-10 lg:px-12">
         <div className="mx-auto max-w-6xl">
           <div className="max-w-2xl">
-            <p className="text-sm font-black uppercase tracking-[0.12em] text-[var(--rose)]">
+            <p className="text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
               como funciona
             </p>
             <h2 className="mt-3 text-3xl font-black md:text-5xl">
@@ -132,7 +132,7 @@ export default function Home() {
                   className="rounded-3xl border border-[var(--line)] bg-[var(--surface-soft)] p-6 shadow-sm"
                   key={step.title}
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--brand)] text-white">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--brand-dark)] text-white shadow-md shadow-[#093f3930]">
                     <Icon aria-hidden size={24} />
                   </div>
                   <h3 className="mt-5 text-xl font-black">{step.title}</h3>
@@ -149,7 +149,7 @@ export default function Home() {
       <section className="px-6 py-16 md:px-10 lg:px-12">
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.12em] text-[var(--rose)]">
+            <p className="text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
               cuidado operacional
             </p>
             <h2 className="mt-3 text-3xl font-black md:text-5xl">
@@ -171,7 +171,7 @@ export default function Home() {
                 >
                   <CheckCircle2
                     aria-hidden
-                    className="mt-0.5 shrink-0 text-[var(--brand)]"
+                    className="mt-0.5 shrink-0 text-[var(--rose-dark)]"
                     size={20}
                   />
                   <p className="text-sm font-bold leading-6 text-[var(--foreground)]">

@@ -1,9 +1,9 @@
 <svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
   <title id="title">Logo Projeto Brenda</title>
   <desc id="desc">Casa em forma de coracao com janela iluminada.</desc>
-  <rect width="160" height="160" rx="40" fill="#F8EFE5"/>
-  <path d="M35 76L80 38L125 76V124C125 130.627 119.627 136 113 136H47C40.373 136 35 130.627 35 124V76Z" fill="#177A72"/>
-  <path d="M25 78L80 31L135 78" stroke="#263D3A" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M55 76C55 65.507 63.507 57 74 57C79.094 57 83.72 59.005 87.132 62.269C90.544 59.005 95.17 57 100.264 57C110.757 57 119.264 65.507 119.264 76C119.264 88.615 106.974 100.536 87.132 116C67.29 100.536 55 88.615 55 76Z" fill="#F8EFE5"/>
-  <rect x="69" y="82" width="22" height="22" rx="6" fill="#F3B35B"/>
+  <rect width="160" height="160" rx="40" fill="#FFF7ED"/>
+  <path d="M35 76L80 38L125 76V124C125 130.627 119.627 136 113 136H47C40.373 136 35 130.627 35 124V76Z" fill="#0F6B5F"/>
+  <path d="M25 78L80 31L135 78" stroke="#173B34" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M55 76C55 65.507 63.507 57 74 57C79.094 57 83.72 59.005 87.132 62.269C90.544 59.005 95.17 57 100.264 57C110.757 57 119.264 65.507 119.264 76C119.264 88.615 106.974 100.536 87.132 116C67.29 100.536 55 88.615 55 76Z" fill="#FFF7ED"/>
+  <rect x="69" y="82" width="22" height="22" rx="6" fill="#F0AD3D"/>
 </svg>

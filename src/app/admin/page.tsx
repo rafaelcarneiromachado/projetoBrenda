@@ -28,7 +28,7 @@ export default function AdminPage() {
       <SiteHeader current="admin" />
       <section className="mx-auto max-w-6xl px-6 py-10 md:px-10 lg:px-12">
         <div className="max-w-3xl">
-          <p className="inline-flex rounded-full bg-white px-4 py-2 text-sm font-black uppercase tracking-[0.12em] text-[var(--rose)] shadow-sm">
+          <p className="inline-flex rounded-full bg-white px-4 py-2 text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)] shadow-sm">
             Moderacao
           </p>
           <h1 className="mt-5 text-3xl font-black md:text-5xl">

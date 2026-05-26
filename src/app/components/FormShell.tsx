@@ -21,7 +21,7 @@ export function FormShell({
       <SiteHeader current={current} />
       <section className="mx-auto grid max-w-6xl gap-8 px-6 py-10 md:px-10 lg:grid-cols-[0.88fr_1.12fr] lg:px-12">
         <aside className="lg:pt-8">
-          <p className="inline-flex rounded-full bg-white px-4 py-2 text-sm font-black uppercase tracking-[0.12em] text-[var(--rose)] shadow-sm">
+          <p className="inline-flex rounded-full bg-white px-4 py-2 text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)] shadow-sm">
             {eyebrow}
           </p>
           <h1 className="mt-5 text-3xl font-black leading-tight md:text-5xl">
