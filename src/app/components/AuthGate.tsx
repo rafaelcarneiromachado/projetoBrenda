@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { LockKeyhole } from "lucide-react";
-import { useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabase";
 
 type AuthGateProps = {
   children: React.ReactNode;
@@ -10,14 +11,48 @@ type AuthGateProps = {
 };
 
 export function AuthGate({ children, message }: AuthGateProps) {
-  const authStatus = useSyncExternalStore(
-    (callback) => {
-      window.addEventListener("storage", callback);
-      return () => window.removeEventListener("storage", callback);
-    },
-    () => window.localStorage.getItem("pb-auth") ?? "signed-out",
-    () => "signed-out",
+  const [authStatus, setAuthStatus] = useState<"loading" | "signed-in" | "signed-out">(
+    "loading",
   );
+
+  useEffect(() => {
+    let mounted = true;
+
+    if (!supabase) {
+      window.setTimeout(() => {
+        if (mounted) {
+          setAuthStatus("signed-out");
+        }
+      }, 0);
+
+      return () => {
+        mounted = false;
+      };
+    }
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (mounted) {
+        setAuthStatus(data.session ? "signed-in" : "signed-out");
+      }
+    });
+
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      setAuthStatus(session ? "signed-in" : "signed-out");
+    });
+
+    return () => {
+      mounted = false;
+      data.subscription.unsubscribe();
+    };
+  }, []);
+
+  if (authStatus === "loading") {
+    return (
+      <div className="soft-shell rounded-[2rem] p-7">
+        <p className="font-black">Verificando acesso...</p>
+      </div>
+    );
+  }
 
   if (authStatus !== "signed-in") {
     return (
