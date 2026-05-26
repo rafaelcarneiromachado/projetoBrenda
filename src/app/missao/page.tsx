@@ -70,17 +70,17 @@ export default function MissaoPage() {
         </div>
 
         <div className="mt-10 rounded-[2rem] border border-[var(--line)] bg-white p-6 shadow-xl shadow-[#19101410] md:p-8">
-          <div className="grid gap-8 lg:grid-cols-[0.72fr_1.28fr] lg:items-start">
-            <div className="rounded-[1.5rem] bg-[var(--brand-dark)] p-6 text-white">
+          <div className="grid gap-8">
+            <div className="rounded-[1.5rem] bg-[var(--brand-dark)] p-6 text-white md:p-8">
               <p className="text-xs font-black uppercase tracking-[0.14em] text-[#f7a7bd]">
                 Legado De Amor
               </p>
-              <p className="mt-4 text-2xl font-black leading-8">
+              <p className="mt-4 max-w-3xl text-2xl font-black leading-8 md:text-3xl md:leading-10">
                 Nenhuma família deveria atravessar uma noite de hospital sem apoio.
               </p>
             </div>
 
-            <div className="grid gap-5 text-base leading-8 text-[var(--muted)]">
+            <div className="mx-auto grid max-w-4xl gap-5 text-base leading-8 text-[var(--muted)]">
               {missionParagraphs.map((paragraph, index) => (
                 <p
                   className={
