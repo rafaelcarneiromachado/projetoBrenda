@@ -127,11 +127,7 @@ const moderationFilters: Array<{ label: string; value: ModerationFilter }> = [
 ];
 
 function filterButtonClass(isActive: boolean) {
-  return `inline-flex h-7 items-center justify-center gap-1 rounded-full px-2 text-[10px] font-medium leading-none transition disabled:opacity-40 ${
-    isActive
-      ? "bg-[var(--brand-dark)] text-white shadow-sm"
-      : "border border-transparent bg-white text-[var(--brand-dark)] shadow-sm hover:bg-[var(--surface-soft)]"
-  }`;
+  return isActive ? primaryActionButton : secondaryActionButton;
 }
 
 export default function AdminPage() {
@@ -630,7 +626,6 @@ export default function AdminPage() {
                     className={filterButtonClass(lodgingFilter === filter.value)}
                     key={filter.value}
                     onClick={() => setLodgingFilter(filter.value)}
-                    style={{ fontSize: 12, fontWeight: 600 }}
                     type="button"
                   >
                     {filter.label}
@@ -837,7 +832,6 @@ export default function AdminPage() {
                     className={filterButtonClass(requestFilter === filter.value)}
                     key={filter.value}
                     onClick={() => setRequestFilter(filter.value)}
-                    style={{ fontSize: 12, fontWeight: 600 }}
                     type="button"
                   >
                     {filter.label}
