@@ -91,7 +91,7 @@ const statusLabels: Record<string, string> = {
 const lodgingTypeLabels: Record<string, string> = {
   room: "Quarto",
   sofa: "Sofá",
-  entire_home: "Casa inteira",
+  entire_home: "Casa Inteira",
   guest_house: "Edícula",
   mattress: "Colchão",
   other: "Outro espaço",

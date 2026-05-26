@@ -20,8 +20,13 @@ type SiteHeaderProps = {
 
 const links = [
   { href: "/", label: "Início", shortLabel: "Início", key: "home" },
-  { href: "/buscar", label: "Buscar hospedagem", shortLabel: "Buscar", key: "buscar" },
-  { href: "/anfitrioes", label: "Quero acolher", shortLabel: "Acolher", key: "anfitrioes" },
+  { href: "/buscar", label: "Buscar Hospedagem", shortLabel: "Buscar", key: "buscar" },
+  {
+    href: "/anfitrioes",
+    label: "Oferecer Hospedagem",
+    shortLabel: "Oferecer",
+    key: "anfitrioes",
+  },
   { href: "/missao", label: "Missão", shortLabel: "Missão", key: "missao" },
 ];
 
@@ -115,7 +120,7 @@ export function SiteHeader({ current = "home" }: SiteHeaderProps) {
               Projeto Brenda
             </span>
             <span className="block text-xs font-bold uppercase tracking-[0.12em] text-[var(--rose)]">
-              acolhimento solidário
+              Acolhimento Solidário
             </span>
           </span>
         </Link>
@@ -155,7 +160,7 @@ export function SiteHeader({ current = "home" }: SiteHeaderProps) {
                 ) : (
                   <UserCircle aria-hidden size={18} />
                 )}
-                Minha conta
+                Minha Conta
                 <ChevronDown aria-hidden size={16} />
               </button>
 
@@ -167,7 +172,7 @@ export function SiteHeader({ current = "home" }: SiteHeaderProps) {
                     onClick={() => setMenuOpen(false)}
                   >
                     <UserCircle aria-hidden size={18} />
-                    Editar perfil
+                    Editar Perfil
                   </Link>
                   <Link
                     className="flex items-center gap-2 rounded-2xl px-4 py-3 text-[var(--brand-dark)] hover:bg-[var(--surface-soft)]"

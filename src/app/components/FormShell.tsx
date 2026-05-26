@@ -33,7 +33,7 @@ export function FormShell({
             {description}
           </p>
           <div className="mt-7 rounded-[1.5rem] border border-[var(--line)] bg-white px-5 py-4">
-            <h2 className="text-base font-black">Segurança e moderação</h2>
+            <h2 className="text-base font-black">Segurança E Moderação</h2>
             <p className="mt-2 text-sm leading-7 text-[var(--muted)]">
               Nenhum pedido ou oferta é confirmado automaticamente. A moderação
               do Projeto Brenda revisa as informações antes de aproximar família
@@ -61,7 +61,7 @@ export function FormShell({
             {description}
           </p>
           <div className="soft-shell mt-8 rounded-[1.5rem] p-5">
-            <h2 className="text-base font-black">Segurança e moderação</h2>
+            <h2 className="text-base font-black">Segurança E Moderação</h2>
             <p className="mt-3 text-sm leading-7 text-[var(--muted)]">
               Nenhum pedido ou oferta é confirmado automaticamente. A moderação
               do Projeto Brenda revisa as informações antes de aproximar família

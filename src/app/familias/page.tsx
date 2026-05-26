@@ -150,7 +150,7 @@ export default function FamiliasPage() {
       description={
         selectedStay
           ? "Revise seus dados e informe as datas para solicitar esta hospedagem. A moderação verificará disponibilidade e segurança antes de conectar vocês."
-          : "Escolha uma hospedagem em Buscar hospedagem para iniciar um pedido vinculado a um anfitrião."
+          : "Escolha uma hospedagem em Buscar Hospedagem para iniciar um pedido vinculado a um anfitrião."
       }
       layout="single"
     >
@@ -179,7 +179,7 @@ export default function FamiliasPage() {
             </div>
             <div className="grid gap-2 rounded-2xl bg-[var(--surface-soft)] p-4 text-sm font-black text-[var(--brand-dark)]">
               <span>{selectedStay.distanceKm.toFixed(1)} km do hospital</span>
-              <span>{selectedStay.availableTonight ? "Disponível hoje" : "Sob consulta"}</span>
+              <span>{selectedStay.availableTonight ? "Disponível Hoje" : "Sob Consulta"}</span>
             </div>
           </div>
         </article>

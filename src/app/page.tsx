@@ -5,10 +5,8 @@ import {
   CheckCircle2,
   HeartHandshake,
   HomeIcon,
-  MapPin,
   Search,
   ShieldCheck,
-  Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { SiteHeader } from "./components/SiteHeader";
@@ -23,17 +21,17 @@ type ImpactCounts = {
 const steps = [
   {
     icon: HeartHandshake,
-    title: "Pedido acolhido",
+    title: "Pedido Acolhido",
     text: "A família informa hospital, período e quem precisa de um lugar para dormir.",
   },
   {
     icon: HomeIcon,
-    title: "Espaço oferecido",
+    title: "Espaço Oferecido",
     text: "O anfitrião cadastra um quarto, sofá ou edícula com disponibilidade e regras da casa.",
   },
   {
     icon: ShieldCheck,
-    title: "Conexão verificada",
+    title: "Conexão Verificada",
     text: "A moderação revisa os dois lados antes de aproximar as pessoas.",
   },
 ];
@@ -106,7 +104,7 @@ export default function Home() {
               {impactCounts.available_lodgings}
             </strong>
             <span className="text-sm font-black text-[var(--muted)]">
-              hospedagens disponíveis
+              Hospedagens Disponíveis
             </span>
           </div>
           <div className="rounded-2xl bg-[var(--surface-soft)] px-5 py-3">
@@ -114,7 +112,7 @@ export default function Home() {
               {impactCounts.lodging_requests}
             </strong>
             <span className="text-sm font-black text-[var(--muted)]">
-              pedidos de hospedagem
+              Pedidos De Hospedagem
             </span>
           </div>
           <div className="rounded-2xl bg-[var(--surface-soft)] px-5 py-3">
@@ -122,7 +120,7 @@ export default function Home() {
               {impactCounts.registered_users}
             </strong>
             <span className="text-sm font-black text-[var(--muted)]">
-              usuários cadastrados
+              Usuários Cadastrados
             </span>
           </div>
         </div>
@@ -132,7 +130,7 @@ export default function Home() {
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-stretch">
           <div className="lg:pr-6">
             <p className="mb-4 inline-flex rounded-full border border-[var(--line)] bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[var(--rose-dark)] shadow-sm">
-              acolhimento solidário familiar
+              Acolhimento Solidário Familiar
             </p>
             <h1 className="max-w-2xl text-4xl font-black leading-[1.03] text-[var(--foreground)] md:text-5xl">
               Um lugar seguro para descansar perto do hospital.
@@ -142,58 +140,21 @@ export default function Home() {
               acompanhamento hospitalar a anfitriões solidários verificados.
             </p>
 
-            <div className="mt-7 rounded-[1.75rem] border border-[var(--line)] bg-white p-2 shadow-xl shadow-[#19101410]">
-              <div className="grid gap-1 md:grid-cols-[1.2fr_0.95fr_0.95fr_auto]">
-                <Link
-                  className="flex min-h-16 items-center gap-3 rounded-[1.35rem] px-4 transition hover:bg-[var(--surface-soft)]"
-                  href="/buscar"
-                >
-                  <MapPin aria-hidden className="shrink-0 text-[var(--rose-dark)]" />
-                  <span>
-                    <span className="block text-xs font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
-                      Onde
-                    </span>
-                    <span className="font-bold text-[var(--foreground)] md:whitespace-nowrap">
-                      Cidade ou hospital
-                    </span>
-                  </span>
-                </Link>
-                <Link
-                  className="flex min-h-16 items-center gap-3 rounded-[1.35rem] px-4 transition hover:bg-[var(--surface-soft)]"
-                  href="/buscar"
-                >
-                  <Users aria-hidden className="shrink-0 text-[var(--rose-dark)]" />
-                  <span>
-                    <span className="block text-xs font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
-                      Quem
-                    </span>
-                    <span className="font-bold text-[var(--foreground)] md:whitespace-nowrap">
-                      Acompanhantes
-                    </span>
-                  </span>
-                </Link>
-                <Link
-                  className="flex min-h-16 items-center gap-3 rounded-[1.35rem] px-4 transition hover:bg-[var(--surface-soft)]"
-                  href="/buscar"
-                >
-                  <HomeIcon aria-hidden className="shrink-0 text-[var(--rose-dark)]" />
-                  <span>
-                    <span className="block text-xs font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
-                      Espaço
-                    </span>
-                    <span className="font-bold text-[var(--foreground)] md:whitespace-nowrap">
-                      Quarto ou sofá
-                    </span>
-                  </span>
-                </Link>
-                <Link
-                  className="mr-1 inline-flex min-h-14 self-center items-center justify-center gap-2 rounded-[1.15rem] bg-[var(--brand-dark)] px-5 font-black text-white transition hover:bg-[var(--brand)]"
-                  href="/buscar"
-                >
-                  <Search aria-hidden size={18} />
-                  Buscar
-                </Link>
-              </div>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link
+                className="inline-flex min-h-14 items-center justify-center gap-2 rounded-full bg-[var(--brand-dark)] px-6 font-black text-white shadow-xl shadow-[#19101418] transition hover:bg-[var(--brand)]"
+                href="/buscar"
+              >
+                <Search aria-hidden size={18} />
+                Buscar Hospedagem
+              </Link>
+              <Link
+                className="inline-flex min-h-14 items-center justify-center gap-2 rounded-full border-2 border-[var(--brand-dark)] bg-white px-6 font-black text-[var(--brand-dark)] shadow-sm transition hover:bg-[var(--surface-soft)]"
+                href="/anfitrioes"
+              >
+                <HomeIcon aria-hidden size={18} />
+                Oferecer Hospedagem
+              </Link>
             </div>
 
           </div>
@@ -202,7 +163,7 @@ export default function Home() {
             <div className="flex min-h-full w-full flex-col justify-between rounded-[1.75rem] bg-[var(--brand-dark)] p-7 text-white shadow-xl shadow-[#19101418]">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.14em] text-[#f7a7bd]">
-                  princípio central
+                  Princípio Central
                 </p>
                 <p className="mt-4 text-2xl font-black leading-8">
                   Segurança antes de escala. Acolhimento antes de automação.
@@ -217,7 +178,7 @@ export default function Home() {
                   className="inline-flex min-h-11 items-center justify-center rounded-full bg-white px-5 text-sm font-black text-[var(--brand-dark)] transition hover:bg-[#ffe8ef]"
                   href="/missao"
                 >
-                  Conhecer a missão
+                  Conhecer A Missão
                 </Link>
                 <ShieldCheck aria-hidden className="text-[#f7a7bd]" size={54} />
               </div>
@@ -230,7 +191,7 @@ export default function Home() {
         <div className="mx-auto max-w-6xl">
           <div className="max-w-5xl">
             <p className="text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
-              Como funciona
+              Como Funciona
             </p>
             <h2 className="mt-3 text-3xl font-black md:text-5xl">
               Uma rede simples, humana e moderada.
@@ -264,7 +225,7 @@ export default function Home() {
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div>
             <p className="text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
-              Cuidado operacional
+              Cuidado Operacional
             </p>
             <h2 className="mt-3 text-3xl font-black md:text-5xl">
               A rede precisa ser simples, segura e acolhedora.

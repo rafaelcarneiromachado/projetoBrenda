@@ -4,7 +4,7 @@ import { Stay, StayType } from "../data/stays";
 const lodgingTypeLabels: Record<string, StayType> = {
   room: "Quarto",
   sofa: "Sofá",
-  entire_home: "Casa inteira",
+  entire_home: "Casa Inteira",
   guest_house: "Edícula",
   mattress: "Sofá",
   other: "Quarto",
@@ -13,7 +13,7 @@ const lodgingTypeLabels: Record<string, StayType> = {
 const lodgingImages: Record<StayType, string> = {
   Quarto: "/brand/stay-room.svg",
   Sofá: "/brand/stay-sofa.svg",
-  "Casa inteira": "/brand/stay-suite.svg",
+  "Casa Inteira": "/brand/stay-suite.svg",
   Edícula: "/brand/stay-suite.svg",
 };
 

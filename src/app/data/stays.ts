@@ -1,4 +1,4 @@
-export type StayType = "Quarto" | "Sofá" | "Casa inteira" | "Edícula";
+export type StayType = "Quarto" | "Sofá" | "Casa Inteira" | "Edícula";
 
 export type Stay = {
   id: string;

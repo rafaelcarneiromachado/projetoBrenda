@@ -5,17 +5,17 @@ import { SiteHeader } from "../components/SiteHeader";
 const principles = [
   {
     icon: HeartHandshake,
-    title: "Acolhimento primeiro",
+    title: "Acolhimento Primeiro",
     text: "Ajudar familiares a encontrarem descanso e apoio enquanto acompanham alguém em tratamento hospitalar.",
   },
   {
     icon: HomeIcon,
-    title: "Rede descentralizada",
+    title: "Rede Descentralizada",
     text: "Usar quartos, sofás e espaços já existentes em casas próximas aos hospitais, com solidariedade e responsabilidade.",
   },
   {
     icon: ShieldCheck,
-    title: "Segurança com cuidado",
+    title: "Segurança Com Cuidado",
     text: "Manter moderação, revisão e proteção de dados antes de aproximar famílias e anfitriões.",
   },
 ];
@@ -29,7 +29,7 @@ export default function MissaoPage() {
         <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
           <div>
             <p className="inline-flex rounded-full bg-white px-4 py-2 text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)] shadow-sm">
-              nossa missão
+              Nossa Missão
             </p>
             <h1 className="mt-5 text-4xl font-black leading-tight md:text-6xl">
               Transformar proximidade em acolhimento.
@@ -72,13 +72,13 @@ export default function MissaoPage() {
             className="inline-flex min-h-12 items-center justify-center rounded-full bg-[var(--brand-dark)] px-6 font-black text-white shadow-lg shadow-[#19101435] transition hover:bg-[var(--brand)]"
             href="/buscar"
           >
-            Buscar hospedagem
+            Buscar Hospedagem
           </Link>
           <Link
             className="inline-flex min-h-12 items-center justify-center rounded-full border-2 border-[var(--brand-dark)] bg-white px-6 font-black text-[var(--brand-dark)] transition hover:bg-[var(--surface-soft)]"
             href="/anfitrioes"
           >
-            Quero acolher
+            Oferecer Hospedagem
           </Link>
         </div>
       </section>

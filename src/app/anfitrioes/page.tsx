@@ -10,7 +10,7 @@ import { supabase } from "../lib/supabase";
 const lodgingTypeMap: Record<string, string> = {
   Quarto: "room",
   Sofá: "sofa",
-  "Casa inteira": "entire_home",
+  "Casa Inteira": "entire_home",
   Edícula: "guest_house",
   Colchão: "mattress",
   "Outro espaço": "other",
@@ -19,7 +19,7 @@ const lodgingTypeMap: Record<string, string> = {
 const lodgingTypeLabels: Record<string, string> = {
   room: "Quarto",
   sofa: "Sofá",
-  entire_home: "Casa inteira",
+  entire_home: "Casa Inteira",
   guest_house: "Edícula",
   mattress: "Colchão",
   other: "Outro espaço",
@@ -421,7 +421,7 @@ export default function AnfitrioesPage() {
   return (
     <FormShell
       current="anfitrioes"
-      eyebrow="Oferta solidária"
+      eyebrow="Oferta Solidária"
       title="Ofereça um espaço seguro para uma família descansar."
       description="Este cadastro é para pessoas que moram perto de hospitais e podem oferecer hospedagem temporária, gratuita e verificada."
       layout="single"
@@ -434,9 +434,9 @@ export default function AnfitrioesPage() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
-                minhas hospedagens
+                Minhas Hospedagens
               </p>
-              <h2 className="mt-2 text-2xl font-black">Espaços cadastrados</h2>
+              <h2 className="mt-2 text-2xl font-black">Espaços Cadastrados</h2>
             </div>
           </div>
           {editMessage ? (
@@ -536,7 +536,7 @@ export default function AnfitrioesPage() {
                         >
                           <option>Quarto</option>
                           <option>Sofá</option>
-                          <option>Casa inteira</option>
+                          <option>Casa Inteira</option>
                           <option>Edícula</option>
                           <option>Colchão</option>
                           <option>Outro espaço</option>
@@ -691,7 +691,7 @@ export default function AnfitrioesPage() {
               <option value="">Selecione</option>
               <option>Quarto</option>
               <option>Sofá</option>
-              <option>Casa inteira</option>
+              <option>Casa Inteira</option>
               <option>Edícula</option>
               <option>Colchão</option>
               <option>Outro espaço</option>
