@@ -47,19 +47,29 @@ export default function EntrarPage() {
     const fullName = String(form.get("fullName") ?? "");
     const phone = String(form.get("phone") ?? "");
 
-    const result =
-      mode === "signup"
-        ? await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-              data: {
-                full_name: fullName,
-                phone,
+    let result;
+
+    try {
+      result =
+        mode === "signup"
+          ? await supabase.auth.signUp({
+              email,
+              password,
+              options: {
+                data: {
+                  full_name: fullName,
+                  phone,
+                },
               },
-            },
-          })
-        : await supabase.auth.signInWithPassword({ email, password });
+            })
+          : await supabase.auth.signInWithPassword({ email, password });
+    } catch {
+      setError(
+        "Nao foi possivel conectar ao Supabase. Verifique a Project URL e sua conexao.",
+      );
+      setLoading(false);
+      return;
+    }
 
     if (result.error) {
       setError(result.error.message);
