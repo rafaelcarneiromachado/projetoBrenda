@@ -20,6 +20,14 @@ const principles = [
   },
 ];
 
+const missionParagraphs = [
+  "Imagine que o seu filho foi diagnosticado com câncer. Vocês moram no interior e precisam viajar centenas de quilômetros para a capital onde fica o hospital oncológico. Chegando lá, a regra do hospital é clara: na enfermaria, apenas um acompanhante é permitido. Geralmente, a mãe fica lá dentro, sem sair do lado do filho. E o pai? O pai não tem dinheiro para hotel, não tem conhecidos na cidade e, por amor ao filho, acaba dormindo na calçada do hospital ou na rodoviária.",
+  "Eu conheço essa realidade de perto. Minha filha, a Brenda, enfrentou um câncer cerebral e, infelizmente, ela faleceu. Durante o tempo em que estivemos no hospital, eu não passei por essa situação específica de dormir na rua, mas eu vi, com meus próprios olhos, dezenas de pais desamparados na calçada, enquanto suas famílias desmoronavam lá dentro. A Brenda me deixou um legado de amor, e é por isso que a luta de milhares de famílias que vi de perto não pode continuar sendo invisível.",
+  "Hoje, o SUS e as ONGs tradicionais, como as Casas Ronald McDonald, fazem um trabalho incrível, mas elas têm um limite físico. Elas sofrem com falta de vagas e, por isso, a prioridade máxima é sempre o paciente e apenas um acompanhante. O segundo pilar da família, que geralmente é o pai ou um irmão, fica completamente desamparado pela infraestrutura atual. Construir novos prédios de acolhimento custa milhões e leva anos.",
+  "Para resolver isso, nós criamos o Projeto Brenda: o primeiro aplicativo de economia solidária Peer-to-Peer focado em acolhimento oncológico familiar. Nós somos o Airbnb da solidariedade.",
+  "Conectamos pessoas que moram nos arredores dos grandes hospitais de câncer e possuem um quarto vago, um sofá ou uma edícula, com esses pais que não têm onde dormir. Em vez de construir prédios, nós descentralizamos o acolhimento utilizando a estrutura que a sociedade civil já possui e quer doar.",
+];
+
 export default function MissaoPage() {
   return (
     <main className="min-h-screen quiet-pattern">
@@ -32,21 +40,42 @@ export default function MissaoPage() {
               Nossa Missão
             </p>
             <h1 className="mt-5 text-3xl font-black leading-tight md:text-4xl">
-              Transformar proximidade em acolhimento.
+              Transformar dor em rede de acolhimento.
             </h1>
           </div>
           <p className="text-lg leading-8 text-[var(--muted)]">
-            Esta página será o espaço para contar a história, o contexto e os objetivos do
-            Projeto Brenda. Por enquanto, deixamos uma base simples para organizar a
-            mensagem com calma e preservar o tom humano do projeto.
+            O Projeto Brenda nasce da memória da Brenda e da realidade de famílias que
+            precisam estar perto do hospital, mas nem sempre encontram onde descansar.
           </p>
         </div>
 
         <div className="mt-10 rounded-[2rem] border border-[var(--line)] bg-white p-6 shadow-xl shadow-[#19101410] md:p-8">
-          <p className="max-w-3xl text-xl font-black leading-9 md:text-2xl">
-            O Projeto Brenda nasce para que nenhuma família precise enfrentar o tratamento
-            hospitalar longe de casa sem um lugar digno para descansar.
-          </p>
+          <div className="grid gap-8 lg:grid-cols-[0.72fr_1.28fr] lg:items-start">
+            <div className="rounded-[1.5rem] bg-[var(--brand-dark)] p-6 text-white">
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-[#f7a7bd]">
+                Legado De Amor
+              </p>
+              <p className="mt-4 text-2xl font-black leading-8">
+                Nenhuma família deveria atravessar uma noite de hospital sem apoio.
+              </p>
+            </div>
+
+            <div className="grid gap-5 text-base leading-8 text-[var(--muted)]">
+              {missionParagraphs.map((paragraph, index) => (
+                <p
+                  className={
+                    index === 1
+                      ? "rounded-[1.5rem] bg-[var(--surface-soft)] p-5 font-bold text-[var(--brand-dark)]"
+                      : ""
+                  }
+                  key={paragraph}
+                >
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+          </div>
+
           <div className="mt-8 grid gap-4 md:grid-cols-3">
             {principles.map((principle) => {
               const Icon = principle.icon;
