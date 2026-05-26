@@ -60,6 +60,7 @@ export default function PerfilPage() {
   const [profile, setProfile] = useState<Profile>(emptyProfile);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState("");
+  const [accountAvatarUrl, setAccountAvatarUrl] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -113,6 +114,7 @@ export default function PerfilPage() {
           "picture",
           "photo",
         ]);
+        setAccountAvatarUrl(metadataAvatar);
         const nextProfile = {
           full_name: data?.full_name ?? metadataName,
           phone: data?.phone ?? metadataPhone,
@@ -164,6 +166,18 @@ export default function PerfilPage() {
 
     setAvatarFile(file);
     setAvatarPreview(URL.createObjectURL(file));
+  }
+
+  function useAccountAvatar() {
+    if (!accountAvatarUrl) {
+      return;
+    }
+
+    setAvatarFile(null);
+    setProfile((current) => ({ ...current, avatar_url: accountAvatarUrl }));
+    setAvatarPreview(accountAvatarUrl);
+    setMessage("Foto da conta selecionada. Salve o perfil para confirmar.");
+    setError("");
   }
 
   async function lookupCep() {
@@ -357,7 +371,7 @@ export default function PerfilPage() {
                   )}
                   <label className="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-full border-2 border-[var(--brand-dark)] bg-white px-5 text-sm font-black">
                     <Camera aria-hidden size={18} />
-                    Enviar foto
+                    {avatarPreview ? "Alterar foto" : "Enviar foto"}
                     <input
                       accept="image/*"
                       className="sr-only"
@@ -365,6 +379,15 @@ export default function PerfilPage() {
                       type="file"
                     />
                   </label>
+                  {accountAvatarUrl && avatarPreview !== accountAvatarUrl ? (
+                    <button
+                      className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--brand-dark)] transition hover:bg-[var(--surface-soft)]"
+                      onClick={useAccountAvatar}
+                      type="button"
+                    >
+                      Usar foto da conta
+                    </button>
+                  ) : null}
                 </div>
               </div>
 
