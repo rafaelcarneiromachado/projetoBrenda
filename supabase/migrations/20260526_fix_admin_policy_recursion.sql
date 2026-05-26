@@ -12,6 +12,12 @@ as $$
   );
 $$;
 
+drop policy if exists "Admins can read all profiles" on public.profiles;
+drop policy if exists "Admins can read all lodgings" on public.lodgings;
+drop policy if exists "Admins can update lodgings" on public.lodgings;
+drop policy if exists "Admins can read all stay requests" on public.stay_requests;
+drop policy if exists "Admins can update stay requests" on public.stay_requests;
+
 create policy "Admins can read all profiles"
   on public.profiles for select
   using (public.is_admin());

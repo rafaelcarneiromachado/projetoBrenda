@@ -104,6 +104,20 @@ alter table public.lodging_photos enable row level security;
 alter table public.stay_requests enable row level security;
 alter table public.internal_notes enable row level security;
 
+create or replace function public.is_admin()
+returns boolean
+language sql
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1
+    from public.profiles
+    where id = auth.uid()
+    and role = 'admin'
+  );
+$$;
+
 create policy "Profiles can read own profile"
   on public.profiles for select
   using (auth.uid() = id);
@@ -189,67 +203,25 @@ create policy "Hospitals are readable"
 
 create policy "Admins can read all profiles"
   on public.profiles for select
-  using (
-    exists (
-      select 1 from public.profiles admin_profile
-      where admin_profile.id = auth.uid()
-      and admin_profile.role = 'admin'
-    )
-  );
+  using (public.is_admin());
 
 create policy "Admins can read all lodgings"
   on public.lodgings for select
-  using (
-    exists (
-      select 1 from public.profiles admin_profile
-      where admin_profile.id = auth.uid()
-      and admin_profile.role = 'admin'
-    )
-  );
+  using (public.is_admin());
 
 create policy "Admins can update lodgings"
   on public.lodgings for update
-  using (
-    exists (
-      select 1 from public.profiles admin_profile
-      where admin_profile.id = auth.uid()
-      and admin_profile.role = 'admin'
-    )
-  )
-  with check (
-    exists (
-      select 1 from public.profiles admin_profile
-      where admin_profile.id = auth.uid()
-      and admin_profile.role = 'admin'
-    )
-  );
+  using (public.is_admin())
+  with check (public.is_admin());
 
 create policy "Admins can read all stay requests"
   on public.stay_requests for select
-  using (
-    exists (
-      select 1 from public.profiles admin_profile
-      where admin_profile.id = auth.uid()
-      and admin_profile.role = 'admin'
-    )
-  );
+  using (public.is_admin());
 
 create policy "Admins can update stay requests"
   on public.stay_requests for update
-  using (
-    exists (
-      select 1 from public.profiles admin_profile
-      where admin_profile.id = auth.uid()
-      and admin_profile.role = 'admin'
-    )
-  )
-  with check (
-    exists (
-      select 1 from public.profiles admin_profile
-      where admin_profile.id = auth.uid()
-      and admin_profile.role = 'admin'
-    )
-  );
+  using (public.is_admin())
+  with check (public.is_admin());
 
 insert into storage.buckets (id, name, public)
 values ('lodging-photos', 'lodging-photos', false)
