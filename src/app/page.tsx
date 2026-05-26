@@ -61,10 +61,30 @@ export default function Home() {
     const client = supabase;
 
     async function loadImpactCounts() {
-      const countsResult = await client.rpc("public_impact_counts").maybeSingle();
+      const [countsResult, approvedLodgingsResult] = await Promise.all([
+        client.rpc("public_impact_counts").maybeSingle(),
+        client
+          .from("lodgings")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "approved"),
+      ]);
 
       if (mounted && countsResult.data) {
-        setImpactCounts(countsResult.data as ImpactCounts);
+        const counts = countsResult.data as ImpactCounts;
+        setImpactCounts({
+          available_lodgings:
+            counts.available_lodgings ?? approvedLodgingsResult.count ?? 0,
+          lodging_requests: counts.lodging_requests ?? 0,
+          registered_users: counts.registered_users ?? 0,
+        });
+        return;
+      }
+
+      if (mounted && approvedLodgingsResult.count !== null) {
+        setImpactCounts((current) => ({
+          ...current,
+          available_lodgings: approvedLodgingsResult.count ?? 0,
+        }));
       }
     }
 
