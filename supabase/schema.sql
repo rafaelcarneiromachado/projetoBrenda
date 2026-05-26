@@ -11,6 +11,8 @@ create table public.profiles (
   phone text,
   cep text,
   address text,
+  address_number text,
+  address_complement text,
   city text,
   state text,
   family_info text,

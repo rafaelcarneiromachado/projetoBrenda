@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { Camera, Save, Search, UserCircle } from "lucide-react";
 import { AuthGate } from "../components/AuthGate";
@@ -13,6 +12,8 @@ type Profile = {
   phone: string;
   cep: string;
   address: string;
+  address_number: string;
+  address_complement: string;
   city: string;
   state: string;
   family_info: string;
@@ -25,6 +26,8 @@ const emptyProfile: Profile = {
   phone: "",
   cep: "",
   address: "",
+  address_number: "",
+  address_complement: "",
   city: "",
   state: "",
   family_info: "",
@@ -73,7 +76,9 @@ export default function PerfilPage() {
 
       const { data, error: profileError } = await supabase
         .from("profiles")
-        .select("full_name,phone,cep,address,city,state,family_info,bio,avatar_url")
+        .select(
+          "full_name,phone,cep,address,address_number,address_complement,city,state,family_info,bio,avatar_url",
+        )
         .eq("id", user.id)
         .maybeSingle();
 
@@ -90,6 +95,8 @@ export default function PerfilPage() {
           phone: data?.phone ?? metadata.phone ?? "",
           cep: data?.cep ?? "",
           address: data?.address ?? "",
+          address_number: data?.address_number ?? "",
+          address_complement: data?.address_complement ?? "",
           city: data?.city ?? "",
           state: data?.state ?? "",
           family_info: data?.family_info ?? "",
@@ -262,12 +269,11 @@ export default function PerfilPage() {
           <div className="soft-shell mt-8 rounded-[1.5rem] p-5">
             <div className="flex items-center gap-3">
               {avatarPreview ? (
-                <Image
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
                   alt=""
                   className="h-14 w-14 rounded-full object-cover"
-                  height={56}
                   src={avatarPreview}
-                  width={56}
                 />
               ) : (
                 <UserCircle aria-hidden size={48} />
@@ -303,12 +309,11 @@ export default function PerfilPage() {
                 <p className="text-sm font-black">Foto de perfil</p>
                 <div className="mt-4 flex flex-wrap items-center gap-4">
                   {avatarPreview ? (
-                    <Image
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
                       alt=""
                       className="h-20 w-20 rounded-full object-cover"
-                      height={80}
                       src={avatarPreview}
-                      width={80}
                     />
                   ) : (
                     <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[var(--surface-soft)]">
@@ -343,7 +348,7 @@ export default function PerfilPage() {
                 />
               </div>
 
-              <div className="grid gap-5 md:grid-cols-[0.7fr_auto]">
+              <div className="grid gap-3 md:grid-cols-[0.7fr_auto] md:items-start">
                 <TextField
                   hint="Digite o CEP e use a busca para preencher endereco, cidade e UF."
                   label="CEP"
@@ -353,23 +358,42 @@ export default function PerfilPage() {
                   value={profile.cep}
                 />
                 <button
-                  className="mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-full border-2 border-[var(--brand-dark)] bg-white px-5 font-black disabled:opacity-60"
+                  className="inline-flex min-h-10 items-center justify-center gap-2 self-end rounded-full border-2 border-[var(--brand-dark)] bg-white px-4 text-sm font-black disabled:opacity-60 md:mb-7"
                   disabled={cepLoading}
                   onClick={lookupCep}
                   type="button"
                 >
                   <Search aria-hidden size={18} />
-                  {cepLoading ? "Buscando..." : "Buscar CEP"}
+                  {cepLoading ? "Buscando..." : "Buscar"}
                 </button>
               </div>
 
-              <div className="grid gap-5 md:grid-cols-[1.4fr_0.8fr_0.5fr]">
+              <div className="grid gap-5 md:grid-cols-[1.2fr_0.45fr_0.8fr]">
                 <TextField
-                  label="Endereco"
+                  label="Rua e bairro"
                   name="address"
                   onChange={(event) => updateProfile("address", event.target.value)}
                   value={profile.address}
                 />
+                <TextField
+                  label="Numero"
+                  name="address_number"
+                  onChange={(event) =>
+                    updateProfile("address_number", event.target.value)
+                  }
+                  value={profile.address_number}
+                />
+                <TextField
+                  label="Complemento"
+                  name="address_complement"
+                  onChange={(event) =>
+                    updateProfile("address_complement", event.target.value)
+                  }
+                  value={profile.address_complement}
+                />
+              </div>
+
+              <div className="grid gap-5 md:grid-cols-[1fr_0.4fr]">
                 <TextField
                   label="Cidade"
                   name="city"
