@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { Send } from "lucide-react";
 import { FormShell } from "../components/FormShell";
 import { SelectField, TextAreaField, TextField } from "../components/Field";
 
@@ -21,12 +22,12 @@ export default function FamiliasPage() {
       description="Este formulario registra uma solicitacao inicial de hospedagem solidaria para familiares de criancas e adolescentes em tratamento oncologico."
     >
       <form
-        className="rounded-lg border border-[var(--line)] bg-white p-5 shadow-sm md:p-7"
+        className="soft-shell rounded-[2rem] p-5 md:p-7"
         onSubmit={handleSubmit}
       >
         <div className="grid gap-5">
           {submitted ? (
-            <div className="rounded-md border border-[#86efac] bg-[#f0fdf4] px-4 py-3 text-sm leading-6 text-[#166534]">
+            <div className="rounded-2xl border border-[#86efac] bg-[#f0fdf4] px-4 py-3 text-sm leading-6 text-[#166534]">
               Pedido registrado nesta demonstracao. Na proxima etapa vamos
               salvar essas informacoes no Supabase.
             </div>
@@ -76,7 +77,7 @@ export default function FamiliasPage() {
             name="notes"
           />
 
-          <label className="flex gap-3 rounded-md bg-[var(--background)] p-4 text-sm leading-6 text-[var(--muted)]">
+          <label className="flex gap-3 rounded-2xl bg-white p-4 text-sm leading-6 text-[var(--muted)]">
             <input className="mt-1 h-4 w-4" name="consent" required type="checkbox" />
             <span>
               Confirmo que entendo que este cadastro sera revisado manualmente
@@ -84,8 +85,9 @@ export default function FamiliasPage() {
             </span>
           </label>
 
-          <button className="min-h-12 rounded-md bg-[var(--brand)] px-6 font-bold text-white transition hover:bg-[var(--brand-dark)]">
+          <button className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--brand)] px-6 font-black text-white shadow-lg shadow-[#177a7230] transition hover:bg-[var(--brand-dark)]">
             Enviar pedido
+            <Send aria-hidden size={18} />
           </button>
         </div>
       </form>

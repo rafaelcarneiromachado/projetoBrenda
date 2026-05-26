@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 type SiteHeaderProps = {
   current?: "home" | "familias" | "anfitrioes" | "admin";
@@ -13,17 +14,32 @@ const links = [
 
 export function SiteHeader({ current = "home" }: SiteHeaderProps) {
   return (
-    <header className="border-b border-[var(--line)] bg-white">
-      <nav className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:justify-between md:px-10 lg:px-12">
-        <Link className="text-lg font-bold text-[var(--brand-dark)]" href="/">
-          Projeto Brenda
+    <header className="sticky top-0 z-20 border-b border-[var(--line)] bg-[#fffaf2]/92 backdrop-blur">
+      <nav className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-4 md:flex-row md:items-center md:justify-between md:px-10 lg:px-12">
+        <Link className="flex items-center gap-3" href="/">
+          <Image
+            alt=""
+            className="h-11 w-11 rounded-2xl"
+            height={44}
+            priority
+            src="/brand/logo-brenda.svg"
+            width={44}
+          />
+          <span className="leading-tight">
+            <span className="block text-lg font-black text-[var(--brand-dark)]">
+              Projeto Brenda
+            </span>
+            <span className="block text-xs font-bold uppercase tracking-[0.12em] text-[var(--rose)]">
+              acolhimento solidario
+            </span>
+          </span>
         </Link>
-        <div className="flex flex-wrap gap-2 text-sm text-[var(--muted)]">
+        <div className="flex flex-wrap gap-2 text-sm font-bold text-[var(--muted)]">
           {links.map((link) => (
             <Link
-              className={`rounded-md px-3 py-2 transition hover:bg-[#eef7f4] hover:text-[var(--brand-dark)] ${
+              className={`rounded-full px-4 py-2 transition hover:bg-white hover:text-[var(--brand-dark)] ${
                 current === link.key
-                  ? "bg-[#eef7f4] font-bold text-[var(--brand-dark)]"
+                  ? "bg-white text-[var(--brand-dark)] shadow-sm"
                   : ""
               }`}
               href={link.href}
