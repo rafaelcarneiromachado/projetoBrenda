@@ -208,6 +208,11 @@ create policy "Admins can read all profiles"
   on public.profiles for select
   using (public.is_admin());
 
+create policy "Admins can update profile roles"
+  on public.profiles for update
+  using (public.is_admin())
+  with check (public.is_admin());
+
 create policy "Admins can read all lodgings"
   on public.lodgings for select
   using (public.is_admin());

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   Camera,
+  Check,
   ClipboardCheck,
   Eye,
   MapPin,
@@ -10,6 +11,8 @@ import {
   RefreshCw,
   ShieldAlert,
   UserCircle,
+  UserCog,
+  X,
 } from "lucide-react";
 import { AuthGate } from "../components/AuthGate";
 import { SiteHeader } from "../components/SiteHeader";
@@ -61,6 +64,7 @@ type ProfileSummary = {
   city: string | null;
   state: string | null;
   bio: string | null;
+  role: "family" | "host" | "admin";
 };
 
 type LodgingPhoto = {
@@ -80,9 +84,28 @@ const statusLabels: Record<string, string> = {
   cancelled: "Cancelada",
 };
 
+const lodgingTypeLabels: Record<string, string> = {
+  room: "Quarto",
+  sofa: "Sofá",
+  entire_home: "Casa inteira",
+  guest_house: "Edícula",
+  mattress: "Colchão",
+  other: "Outro espaço",
+};
+
+const roleLabels: Record<ProfileSummary["role"], string> = {
+  family: "Família",
+  host: "Anfitrião",
+  admin: "Moderador",
+};
+
+const compactButton =
+  "inline-flex min-h-9 items-center justify-center gap-2 rounded-full px-3 text-sm font-black transition disabled:opacity-40";
+
 export default function AdminPage() {
   const [lodgings, setLodgings] = useState<Lodging[]>([]);
   const [requests, setRequests] = useState<StayRequest[]>([]);
+  const [users, setUsers] = useState<ProfileSummary[]>([]);
   const [expandedLodgingId, setExpandedLodgingId] = useState("");
   const [expandedRequestId, setExpandedRequestId] = useState("");
   const [loading, setLoading] = useState(true);
@@ -129,7 +152,6 @@ export default function AdminPage() {
 
     const lodgingRows = lodgingsResult.data ?? [];
     const lodgingIds = lodgingRows.map((lodging) => lodging.id);
-    const hostIds = Array.from(new Set(lodgingRows.map((lodging) => lodging.host_id)));
 
     const [conditionsResult, photosResult, profilesResult] = await Promise.all([
       lodgingIds.length > 0
@@ -144,12 +166,7 @@ export default function AdminPage() {
             .select("id,lodging_id,storage_path")
             .in("lodging_id", lodgingIds)
         : Promise.resolve({ data: [], error: null }),
-      hostIds.length > 0
-        ? client
-            .from("profiles")
-            .select("id,full_name,phone,city,state,bio")
-            .in("id", hostIds)
-        : Promise.resolve({ data: [], error: null }),
+      client.from("profiles").select("id,full_name,phone,city,state,bio,role"),
     ]);
 
     if (conditionsResult.error) {
@@ -201,9 +218,8 @@ export default function AdminPage() {
       photosByLodging.set(photo.lodging_id, current);
     }
 
-    const profilesById = new Map(
-      (profilesResult.data ?? []).map((profile) => [profile.id, profile]),
-    );
+    const profileRows = (profilesResult.data ?? []) as ProfileSummary[];
+    const profilesById = new Map(profileRows.map((profile) => [profile.id, profile]));
 
     setLodgings(
       lodgingRows.map((lodging) => ({
@@ -214,6 +230,7 @@ export default function AdminPage() {
       })),
     );
     setRequests(requestsResult.data ?? []);
+    setUsers(profileRows);
     setLoading(false);
   }, []);
 
@@ -245,6 +262,29 @@ export default function AdminPage() {
     }
 
     setMessage(status === "approved" ? "Hospedagem aprovada." : "Hospedagem rejeitada.");
+    await loadData();
+  }
+
+  async function promoteUserToAdmin(user: ProfileSummary) {
+    setError("");
+    setMessage("");
+
+    if (!supabase) {
+      setError("Supabase não está configurado neste ambiente.");
+      return;
+    }
+
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({ role: "admin" })
+      .eq("id", user.id);
+
+    if (updateError) {
+      setError(updateError.message);
+      return;
+    }
+
+    setMessage(`${user.full_name || "Usuário"} agora é moderador.`);
     await loadData();
   }
 
@@ -284,7 +324,7 @@ export default function AdminPage() {
         </div>
 
         <AuthGate message="Entre com uma conta autorizada para acessar a área de moderação.">
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
+          <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-[2rem] bg-white p-5 shadow-sm">
               <p className="text-3xl font-black text-[var(--rose-dark)]">
                 {lodgings.filter((item) => item.status === "pending").length}
@@ -302,6 +342,12 @@ export default function AdminPage() {
                 {lodgings.filter((item) => item.status === "approved").length}
               </p>
               <p className="mt-1 font-bold text-[var(--muted)]">hospedagens públicas</p>
+            </div>
+            <div className="rounded-[2rem] bg-white p-5 shadow-sm">
+              <p className="text-3xl font-black text-[var(--rose-dark)]">
+                {users.filter((item) => item.role === "admin").length}
+              </p>
+              <p className="mt-1 font-bold text-[var(--muted)]">moderadores</p>
             </div>
           </div>
 
@@ -354,27 +400,29 @@ export default function AdminPage() {
                     </div>
                     <div className="flex flex-wrap gap-2 lg:justify-end">
                       <button
-                        className="inline-flex items-center gap-2 rounded-full border border-[var(--brand-dark)] bg-white px-4 py-2 font-black"
+                        className={`${compactButton} border border-[var(--line)] bg-white text-[var(--brand-dark)] hover:bg-[var(--surface-soft)]`}
                         onClick={() => toggleLodgingDetails(lodging.id)}
                         type="button"
                       >
-                        <Eye aria-hidden size={16} />
+                        <Eye aria-hidden size={15} />
                         {expandedLodgingId === lodging.id ? "Ocultar" : "Ver detalhes"}
                       </button>
                       <button
-                        className="rounded-full bg-[var(--brand-dark)] px-4 py-2 font-black text-white disabled:opacity-40"
+                        className={`${compactButton} bg-[var(--brand-dark)] text-white hover:bg-[var(--brand)]`}
                         disabled={lodging.status === "approved"}
                         onClick={() => updateLodgingStatus(lodging.id, "approved")}
                         type="button"
                       >
+                        <Check aria-hidden size={15} />
                         Aprovar
                       </button>
                       <button
-                        className="rounded-full border border-[var(--brand-dark)] px-4 py-2 font-black disabled:opacity-40"
+                        className={`${compactButton} border border-[var(--line)] bg-white text-[var(--brand-dark)] hover:bg-[var(--surface-soft)]`}
                         disabled={lodging.status === "rejected"}
                         onClick={() => updateLodgingStatus(lodging.id, "rejected")}
                         type="button"
                       >
+                        <X aria-hidden size={15} />
                         Rejeitar
                       </button>
                     </div>
@@ -412,7 +460,7 @@ export default function AdminPage() {
                           <div className="mt-3 grid gap-2 rounded-2xl bg-[var(--surface-soft)] p-4 text-[var(--muted)]">
                             <p>
                               <strong className="text-[var(--foreground)]">Tipo:</strong>{" "}
-                              {lodging.type}
+                              {lodgingTypeLabels[lodging.type] ?? lodging.type}
                             </p>
                             <p>
                               <strong className="text-[var(--foreground)]">Endereço aproximado:</strong>{" "}
@@ -537,11 +585,11 @@ export default function AdminPage() {
                         {statusLabels[request.status] ?? request.status}
                       </span>
                       <button
-                        className="inline-flex items-center gap-2 rounded-full border border-[var(--brand-dark)] bg-white px-4 py-2 font-black"
+                        className={`${compactButton} border border-[var(--line)] bg-white text-[var(--brand-dark)] hover:bg-[var(--surface-soft)]`}
                         onClick={() => toggleRequestDetails(request.id)}
                         type="button"
                       >
-                        <Eye aria-hidden size={16} />
+                        <Eye aria-hidden size={15} />
                         {expandedRequestId === request.id ? "Ocultar" : "Ver detalhes"}
                       </button>
                     </div>
@@ -571,6 +619,53 @@ export default function AdminPage() {
                       </div>
                     </div>
                   ) : null}
+                </article>
+              ))
+            )}
+          </section>
+
+          <section className="soft-shell mt-8 overflow-hidden rounded-[2rem]">
+            <div className="border-b border-[var(--line)] bg-white/74 px-5 py-4">
+              <h2 className="text-xl font-black">Usuários e moderadores</h2>
+            </div>
+            {loading ? (
+              <p className="px-5 py-5 font-bold text-[var(--muted)]">Carregando...</p>
+            ) : users.length === 0 ? (
+              <p className="px-5 py-5 font-bold text-[var(--muted)]">
+                Nenhum usuário encontrado.
+              </p>
+            ) : (
+              users.map((user) => (
+                <article
+                  className="grid gap-4 border-b border-[var(--line)] bg-white/60 px-5 py-5 text-sm last:border-0 lg:grid-cols-[1fr_0.45fr_auto]"
+                  key={user.id}
+                >
+                  <div>
+                    <p className="flex items-center gap-2 text-base font-black">
+                      <UserCircle aria-hidden size={16} />
+                      {user.full_name || "Nome não informado"}
+                    </p>
+                    <p className="mt-1 text-[var(--muted)]">
+                      {user.phone || "Telefone não informado"}
+                      {user.city ? ` · ${user.city}${user.state ? `, ${user.state}` : ""}` : ""}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="inline-flex rounded-full bg-[var(--surface-soft)] px-3 py-1 font-black text-[var(--brand-dark)]">
+                      {roleLabels[user.role] ?? user.role}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-2 lg:justify-end">
+                    <button
+                      className={`${compactButton} bg-[var(--brand-dark)] text-white hover:bg-[var(--brand)]`}
+                      disabled={user.role === "admin"}
+                      onClick={() => promoteUserToAdmin(user)}
+                      type="button"
+                    >
+                      <UserCog aria-hidden size={15} />
+                      Tornar moderador
+                    </button>
+                  </div>
                 </article>
               ))
             )}
