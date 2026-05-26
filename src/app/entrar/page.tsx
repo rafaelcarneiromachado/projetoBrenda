@@ -81,13 +81,23 @@ export default function EntrarPage() {
       await ensureProfile(result.data.user.id, fullName, phone);
     }
 
-    setMessage(
-      mode === "signup"
-        ? "Conta criada. Se o Supabase pedir confirmacao de e-mail, confirme antes de entrar."
-        : "Login confirmado. Redirecionando...",
-    );
+    if (mode === "signup") {
+      if (result.data.session) {
+        setMessage("Conta criada e login realizado. Redirecionando...");
+        window.setTimeout(() => router.push("/buscar"), 1200);
+      } else {
+        setMessage(
+          "Conta criada. Verifique seu e-mail para confirmar o cadastro e depois entre com sua senha.",
+        );
+        setMode("signin");
+      }
 
-    window.setTimeout(() => router.push("/buscar"), 700);
+      setLoading(false);
+      return;
+    }
+
+    setMessage("Login confirmado. Redirecionando...");
+    window.setTimeout(() => router.push("/buscar"), 900);
     setLoading(false);
   }
 
