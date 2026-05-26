@@ -5,14 +5,131 @@ import { HeartHandshake } from "lucide-react";
 import { AuthGate } from "../components/AuthGate";
 import { FormShell } from "../components/FormShell";
 import { SelectField, TextAreaField, TextField } from "../components/Field";
+import { supabase } from "../lib/supabase";
+
+const lodgingTypeMap: Record<string, string> = {
+  Quarto: "room",
+  Sofa: "sofa",
+  "Casa inteira": "entire_home",
+  Edicula: "guest_house",
+  Colchao: "mattress",
+  "Outro espaco": "other",
+};
 
 export default function AnfitrioesPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setError("");
+    setSubmitted(false);
+    setLoading(true);
+
+    if (!supabase) {
+      setError("Supabase nao esta configurado neste ambiente.");
+      setLoading(false);
+      return;
+    }
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      setError("Entre novamente para cadastrar o espaco.");
+      setLoading(false);
+      return;
+    }
+
+    const form = new FormData(event.currentTarget);
+    const spaceType = String(form.get("spaceType") ?? "");
+    const city = String(form.get("city") ?? "");
+    const neighborhood = String(form.get("neighborhood") ?? "");
+    const conditions = form.getAll("conditions").map(String);
+    const photos = form.getAll("photos").filter((item): item is File => {
+      return item instanceof File && item.size > 0;
+    });
+
+    await supabase.from("profiles").upsert({
+      id: user.id,
+      full_name: String(form.get("name") ?? ""),
+      phone: String(form.get("phone") ?? ""),
+      role: "host",
+    });
+
+    const { data: lodging, error: lodgingError } = await supabase
+      .from("lodgings")
+      .insert({
+        host_id: user.id,
+        title: `${spaceType} em ${neighborhood}`,
+        description: String(form.get("notes") ?? ""),
+        type: lodgingTypeMap[spaceType] ?? "other",
+        city,
+        neighborhood,
+        approximate_address: String(form.get("address") ?? ""),
+        nearest_hospital: String(form.get("nearestHospital") ?? ""),
+        capacity: Number(String(form.get("capacity")).replace(/\D/g, "")) || 1,
+        bathroom: String(form.get("bathroom") ?? ""),
+        availability: String(form.get("availability") ?? ""),
+        status: "pending",
+      })
+      .select("id")
+      .single();
+
+    if (lodgingError || !lodging) {
+      setError(lodgingError?.message ?? "Nao foi possivel cadastrar o espaco.");
+      setLoading(false);
+      return;
+    }
+
+    if (conditions.length > 0) {
+      const { error: conditionsError } = await supabase
+        .from("lodging_conditions")
+        .insert(
+          conditions.map((label) => ({
+            lodging_id: lodging.id,
+            label,
+          })),
+        );
+
+      if (conditionsError) {
+        setError(conditionsError.message);
+        setLoading(false);
+        return;
+      }
+    }
+
+    for (const photo of photos) {
+      const safeName = photo.name.replace(/[^a-zA-Z0-9.-]/g, "-");
+      const storagePath = `${user.id}/${lodging.id}/${Date.now()}-${safeName}`;
+      const { error: uploadError } = await supabase.storage
+        .from("lodging-photos")
+        .upload(storagePath, photo);
+
+      if (uploadError) {
+        setError(uploadError.message);
+        setLoading(false);
+        return;
+      }
+
+      const { error: photoError } = await supabase.from("lodging_photos").insert({
+        lodging_id: lodging.id,
+        storage_path: storagePath,
+      });
+
+      if (photoError) {
+        setError(photoError.message);
+        setLoading(false);
+        return;
+      }
+    }
+
     setSubmitted(true);
     event.currentTarget.reset();
+    setLoading(false);
   }
 
   return (
@@ -34,6 +151,11 @@ export default function AnfitrioesPage() {
               <div className="rounded-2xl border border-[#f7a7bd] bg-white px-4 py-3 text-sm font-bold leading-6 text-[var(--rose-dark)]">
                 Oferta recebida. A equipe do Projeto Brenda revisara o cadastro
                 antes de disponibilizar o espaco para solicitacoes.
+              </div>
+            ) : null}
+            {error ? (
+              <div className="rounded-2xl border border-[#fecaca] bg-[#fff1f2] px-4 py-3 text-sm font-bold leading-6 text-[#be123c]">
+                {error}
               </div>
             ) : null}
 
@@ -136,8 +258,11 @@ export default function AnfitrioesPage() {
             </span>
           </label>
 
-            <button className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--brand-dark)] px-6 font-black text-white shadow-lg shadow-[#19101435] transition hover:bg-[var(--brand)]">
-              Enviar oferta
+            <button
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--brand-dark)] px-6 font-black text-white shadow-lg shadow-[#19101435] transition hover:bg-[var(--brand)] disabled:opacity-60"
+              disabled={loading}
+            >
+              {loading ? "Enviando..." : "Enviar oferta"}
               <HeartHandshake aria-hidden size={18} />
             </button>
           </div>

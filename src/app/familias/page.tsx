@@ -5,14 +5,62 @@ import { Send } from "lucide-react";
 import { AuthGate } from "../components/AuthGate";
 import { FormShell } from "../components/FormShell";
 import { SelectField, TextAreaField, TextField } from "../components/Field";
+import { supabase } from "../lib/supabase";
 
 export default function FamiliasPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setError("");
+    setSubmitted(false);
+    setLoading(true);
+
+    if (!supabase) {
+      setError("Supabase nao esta configurado neste ambiente.");
+      setLoading(false);
+      return;
+    }
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      setError("Entre novamente para enviar o pedido.");
+      setLoading(false);
+      return;
+    }
+
+    const form = new FormData(event.currentTarget);
+    const people = Number(String(form.get("people")).replace(/\D/g, ""));
+
+    const { error: insertError } = await supabase.from("stay_requests").insert({
+      requester_id: user.id,
+      responsible_name: String(form.get("name") ?? ""),
+      phone: String(form.get("phone") ?? ""),
+      origin_city: String(form.get("originCity") ?? ""),
+      hospital_name: String(form.get("hospital") ?? ""),
+      hospital_city: String(form.get("hospitalCity") ?? ""),
+      arrival_date: String(form.get("arrival") ?? ""),
+      nights: Number(form.get("nights") ?? 1),
+      guest_type: String(form.get("guestType") ?? ""),
+      people_count: people || 1,
+      notes: String(form.get("notes") ?? ""),
+    });
+
+    if (insertError) {
+      setError(insertError.message);
+      setLoading(false);
+      return;
+    }
+
     setSubmitted(true);
     event.currentTarget.reset();
+    setLoading(false);
   }
 
   return (
@@ -34,6 +82,11 @@ export default function FamiliasPage() {
               <div className="rounded-2xl border border-[#f7a7bd] bg-white px-4 py-3 text-sm font-bold leading-6 text-[var(--rose-dark)]">
                 Pedido recebido. A equipe do Projeto Brenda revisara as
                 informacoes antes de qualquer combinacao de hospedagem.
+              </div>
+            ) : null}
+            {error ? (
+              <div className="rounded-2xl border border-[#fecaca] bg-[#fff1f2] px-4 py-3 text-sm font-bold leading-6 text-[#be123c]">
+                {error}
               </div>
             ) : null}
 
@@ -89,8 +142,11 @@ export default function FamiliasPage() {
             </span>
           </label>
 
-            <button className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--brand-dark)] px-6 font-black text-white shadow-lg shadow-[#19101435] transition hover:bg-[var(--brand)]">
-              Enviar pedido
+            <button
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--brand-dark)] px-6 font-black text-white shadow-lg shadow-[#19101435] transition hover:bg-[var(--brand)] disabled:opacity-60"
+              disabled={loading}
+            >
+              {loading ? "Enviando..." : "Enviar pedido"}
               <Send aria-hidden size={18} />
             </button>
           </div>

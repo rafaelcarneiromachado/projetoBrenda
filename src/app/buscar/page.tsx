@@ -3,9 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Filter, List, LocateFixed, Map, SlidersHorizontal } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "../components/SiteHeader";
-import { stays, StayType } from "../data/stays";
+import { Stay, stays, StayType } from "../data/stays";
+import { supabase } from "../lib/supabase";
 
 const stayTypes: Array<StayType | "Todos"> = [
   "Todos",
@@ -15,15 +16,88 @@ const stayTypes: Array<StayType | "Todos"> = [
   "Edicula",
 ];
 
+const lodgingTypeLabels: Record<string, StayType> = {
+  room: "Quarto",
+  sofa: "Sofa",
+  entire_home: "Casa inteira",
+  guest_house: "Edicula",
+  mattress: "Sofa",
+  other: "Quarto",
+};
+
+const lodgingImages: Record<StayType, string> = {
+  Quarto: "/brand/stay-room.svg",
+  Sofa: "/brand/stay-sofa.svg",
+  "Casa inteira": "/brand/stay-suite.svg",
+  Edicula: "/brand/stay-suite.svg",
+};
+
 export default function BuscarPage() {
   const [query, setQuery] = useState("");
   const [type, setType] = useState<StayType | "Todos">("Todos");
   const [capacity, setCapacity] = useState("1");
   const [onlyTonight, setOnlyTonight] = useState(false);
   const [mapView, setMapView] = useState(false);
+  const [availableStays, setAvailableStays] = useState<Stay[]>(stays);
+  const [source, setSource] = useState<"example" | "supabase">("example");
+
+  useEffect(() => {
+    if (!supabase) {
+      return;
+    }
+
+    let mounted = true;
+    const client = supabase;
+
+    async function loadLodgings() {
+      const { data, error } = await client
+        .from("lodgings")
+        .select(
+          "id,title,type,neighborhood,city,capacity,bathroom,accessibility,available_now,description,nearest_hospital",
+        )
+        .eq("status", "approved")
+        .order("created_at", { ascending: false });
+
+      if (!mounted || error || !data || data.length === 0) {
+        return;
+      }
+
+      setAvailableStays(
+        data.map((lodging, index) => {
+          const type = lodgingTypeLabels[lodging.type] ?? "Quarto";
+
+          return {
+            id: lodging.id,
+            title: lodging.title,
+            type,
+            neighborhood: lodging.neighborhood,
+            city: lodging.city,
+            distanceKm: 0.8 + index * 0.7,
+            capacity: lodging.capacity,
+            bathroom:
+              lodging.bathroom === "Exclusivo" ? "Exclusivo" : "Compartilhado",
+            accessibility: Boolean(lodging.accessibility),
+            availableTonight: Boolean(lodging.available_now),
+            image: lodgingImages[type],
+            host: "Anfitriao verificado",
+            notes:
+              lodging.description ||
+              "Espaco cadastrado por anfitriao solidario e revisado pela equipe.",
+          };
+        }),
+      );
+      setSource("supabase");
+    }
+
+    loadLodgings();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const filtered = useMemo(() => {
-    return stays.filter((stay) => {
+    return availableStays.filter((stay) => {
       const matchesQuery = `${stay.title} ${stay.neighborhood} ${stay.city}`
         .toLowerCase()
         .includes(query.toLowerCase());
@@ -33,7 +107,7 @@ export default function BuscarPage() {
 
       return matchesQuery && matchesType && matchesCapacity && matchesTonight;
     });
-  }, [capacity, onlyTonight, query, type]);
+  }, [availableStays, capacity, onlyTonight, query, type]);
 
   return (
     <main className="min-h-screen quiet-pattern">
@@ -127,7 +201,14 @@ export default function BuscarPage() {
         <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_0.82fr]">
           <section className="grid gap-4">
             <div className="flex items-center justify-between">
-              <p className="font-black">{filtered.length} hospedagens encontradas</p>
+              <div>
+                <p className="font-black">{filtered.length} hospedagens encontradas</p>
+                {source === "example" ? (
+                  <p className="mt-1 text-sm font-bold text-[var(--muted)]">
+                    Exemplos visuais ate as primeiras ofertas serem aprovadas.
+                  </p>
+                ) : null}
+              </div>
               <p className="flex items-center gap-2 text-sm font-bold text-[var(--muted)]">
                 <SlidersHorizontal aria-hidden size={16} />
                 Ordenadas por proximidade
