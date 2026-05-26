@@ -12,6 +12,7 @@ import {
   ShieldAlert,
   UserCircle,
   UserCog,
+  UserX,
   X,
 } from "lucide-react";
 import { AuthGate } from "../components/AuthGate";
@@ -66,6 +67,7 @@ type ProfileSummary = {
   state: string | null;
   bio: string | null;
   role: "family" | "host" | "admin";
+  account_status: "active" | "blocked";
 };
 
 type LodgingPhoto = {
@@ -98,6 +100,11 @@ const roleLabels: Record<ProfileSummary["role"], string> = {
   family: "Família",
   host: "Anfitrião",
   admin: "Moderador",
+};
+
+const accountStatusLabels: Record<ProfileSummary["account_status"], string> = {
+  active: "Ativa",
+  blocked: "Bloqueada",
 };
 
 const compactButton =
@@ -178,13 +185,19 @@ export default function AdminPage() {
             .select("id,lodging_id,storage_path")
             .in("lodging_id", lodgingIds)
         : Promise.resolve({ data: [], error: null }),
-      client.from("profiles").select("id,email,full_name,phone,city,state,bio,role"),
+      client
+        .from("profiles")
+        .select("id,email,full_name,phone,city,state,bio,role,account_status"),
     ]);
 
     let profilesData = profilesResult.data ?? [];
     let profilesError = profilesResult.error;
 
-    if (profilesError && profilesError.message.includes("profiles.email")) {
+    if (
+      profilesError &&
+      (profilesError.message.includes("profiles.email") ||
+        profilesError.message.includes("profiles.account_status"))
+    ) {
       const fallbackProfilesResult = await client
         .from("profiles")
         .select("id,full_name,phone,city,state,bio,role");
@@ -192,8 +205,14 @@ export default function AdminPage() {
       profilesData = (fallbackProfilesResult.data ?? []).map((profile) => ({
         ...profile,
         email: null,
+        account_status: "active",
       }));
       profilesError = fallbackProfilesResult.error;
+    } else {
+      profilesData = profilesData.map((profile) => ({
+        ...profile,
+        account_status: profile.account_status ?? "active",
+      }));
     }
 
     if (conditionsResult.error) {
@@ -312,6 +331,41 @@ export default function AdminPage() {
     }
 
     setMessage(`${user.full_name || "Usuário"} agora é moderador.`);
+    await loadData();
+  }
+
+  async function updateUserAccountStatus(
+    user: ProfileSummary,
+    accountStatus: ProfileSummary["account_status"],
+  ) {
+    setError("");
+    setMessage("");
+
+    if (!supabase) {
+      setError("Supabase não está configurado neste ambiente.");
+      return;
+    }
+
+    if (user.id === currentUserId) {
+      setError("Você não pode bloquear a própria conta administrativa.");
+      return;
+    }
+
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({ account_status: accountStatus })
+      .eq("id", user.id);
+
+    if (updateError) {
+      setError(updateError.message);
+      return;
+    }
+
+    setMessage(
+      accountStatus === "blocked"
+        ? `${user.full_name || "Usuário"} foi bloqueado.`
+        : `${user.full_name || "Usuário"} foi desbloqueado.`,
+    );
     await loadData();
   }
 
@@ -690,7 +744,7 @@ export default function AdminPage() {
             ) : (
               filteredUsers.map((user) => (
                 <article
-                  className="grid gap-4 border-b border-[var(--line)] bg-white/60 px-5 py-5 text-sm last:border-0 lg:grid-cols-[minmax(0,1fr)_140px_auto] lg:items-center"
+                  className="grid gap-4 border-b border-[var(--line)] bg-white/60 px-5 py-5 text-sm last:border-0 lg:grid-cols-[minmax(0,1fr)_220px_auto] lg:items-center"
                   key={user.id}
                 >
                   <div>
@@ -705,9 +759,18 @@ export default function AdminPage() {
                       {user.city ? ` · ${user.city}${user.state ? `, ${user.state}` : ""}` : ""}
                     </p>
                   </div>
-                  <div className="flex items-center lg:justify-center">
+                  <div className="flex flex-wrap items-center gap-2 lg:justify-center">
                     <span className="inline-flex rounded-full bg-[var(--surface-soft)] px-3 py-1 font-black text-[var(--brand-dark)]">
                       {roleLabels[user.role] ?? user.role}
+                    </span>
+                    <span
+                      className={`inline-flex rounded-full px-3 py-1 font-black ${
+                        user.account_status === "blocked"
+                          ? "bg-[#ffe4e6] text-[#be123c]"
+                          : "bg-white text-[var(--muted)]"
+                      }`}
+                    >
+                      {accountStatusLabels[user.account_status] ?? user.account_status}
                     </span>
                   </div>
                   <div className="flex flex-wrap items-center gap-2 lg:justify-end">
@@ -723,6 +786,25 @@ export default function AdminPage() {
                       >
                         <UserCog aria-hidden size={15} />
                         Tornar moderador
+                      </button>
+                    )}
+                    {user.id === currentUserId ? null : user.account_status === "blocked" ? (
+                      <button
+                        className={secondaryActionButton}
+                        onClick={() => updateUserAccountStatus(user, "active")}
+                        type="button"
+                      >
+                        <Check aria-hidden size={15} />
+                        Desbloquear
+                      </button>
+                    ) : (
+                      <button
+                        className={secondaryActionButton}
+                        onClick={() => updateUserAccountStatus(user, "blocked")}
+                        type="button"
+                      >
+                        <UserX aria-hidden size={15} />
+                        Bloquear
                       </button>
                     )}
                   </div>

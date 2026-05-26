@@ -10,6 +10,7 @@ create table public.profiles (
   email text,
   full_name text,
   phone text,
+  account_status text not null default 'active' check (account_status in ('active', 'blocked')),
   cep text,
   address text,
   address_number text,
