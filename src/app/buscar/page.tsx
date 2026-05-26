@@ -216,7 +216,7 @@ export default function BuscarPage() {
                   <div className="mt-5 flex flex-wrap gap-2">
                     <Link
                       className="inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--brand-dark)] px-5 text-sm font-black text-white transition hover:bg-[var(--brand)]"
-                      href="/familias"
+                      href={`/familias?hospedagem=${stay.id}`}
                     >
                       Solicitar hospedagem
                     </Link>

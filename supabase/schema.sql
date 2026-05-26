@@ -83,6 +83,7 @@ create table public.stay_requests (
   guest_type text not null,
   people_count integer not null check (people_count > 0),
   notes text,
+  lodging_id uuid references public.lodgings(id) on delete set null,
   status public.request_status not null default 'pending',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()

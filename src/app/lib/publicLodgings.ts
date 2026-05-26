@@ -29,6 +29,7 @@ type LodgingRow = {
   available_now: boolean | null;
   description: string | null;
   nearest_hospital: string | null;
+  approximate_address: string | null;
   latitude: number | string | null;
   longitude: number | string | null;
 };
@@ -68,6 +69,8 @@ function mapLodgingToStay(lodging: LodgingRow, index: number, images: string[]):
     availableTonight: Boolean(lodging.available_now),
     image: images[0] || fallbackImage,
     images: images.length > 0 ? images : [fallbackImage],
+    address: lodging.approximate_address,
+    hospital: lodging.nearest_hospital,
     latitude: toNumber(lodging.latitude),
     longitude: toNumber(lodging.longitude),
     host: "Anfitrião verificado",
@@ -81,7 +84,7 @@ export async function loadApprovedStays(client: SupabaseClient): Promise<Stay[]>
   const { data, error } = await client
     .from("lodgings")
     .select(
-      "id,title,type,neighborhood,city,capacity,bathroom,accessibility,available_now,description,nearest_hospital,latitude,longitude",
+      "id,title,type,neighborhood,city,capacity,bathroom,accessibility,available_now,description,nearest_hospital,approximate_address,latitude,longitude",
     )
     .eq("status", "approved")
     .order("created_at", { ascending: false });

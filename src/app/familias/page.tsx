@@ -5,6 +5,8 @@ import { Send } from "lucide-react";
 import { AuthGate } from "../components/AuthGate";
 import { FormShell } from "../components/FormShell";
 import { SelectField, TextAreaField, TextField } from "../components/Field";
+import { Stay } from "../data/stays";
+import { loadApprovedStays } from "../lib/publicLodgings";
 import { supabase } from "../lib/supabase";
 
 export default function FamiliasPage() {
@@ -14,6 +16,11 @@ export default function FamiliasPage() {
     phone: "",
     city: "",
   });
+  const [requestDetails, setRequestDetails] = useState({
+    hospital: "",
+    hospitalCity: "",
+  });
+  const [selectedStay, setSelectedStay] = useState<Stay | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -24,6 +31,20 @@ export default function FamiliasPage() {
     async function loadProfile() {
       if (!supabase) {
         return;
+      }
+
+      const lodgingId = new URLSearchParams(window.location.search).get("hospedagem");
+      if (lodgingId) {
+        const approvedStays = await loadApprovedStays(supabase);
+        const stay = approvedStays.find((item) => item.id === lodgingId) ?? null;
+
+        if (mounted && stay) {
+          setSelectedStay(stay);
+          setRequestDetails({
+            hospital: stay.hospital ?? "",
+            hospitalCity: stay.city,
+          });
+        }
       }
 
       const {
@@ -61,6 +82,10 @@ export default function FamiliasPage() {
 
   function updateProfileField(field: keyof typeof profile, value: string) {
     setProfile((current) => ({ ...current, [field]: value }));
+  }
+
+  function updateRequestField(field: keyof typeof requestDetails, value: string) {
+    setRequestDetails((current) => ({ ...current, [field]: value }));
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -102,6 +127,7 @@ export default function FamiliasPage() {
       guest_type: String(form.get("guestType") ?? ""),
       people_count: people || 1,
       notes: String(form.get("notes") ?? ""),
+      lodging_id: selectedStay?.id ?? null,
     });
 
     if (insertError) {
@@ -120,8 +146,25 @@ export default function FamiliasPage() {
       current="familias"
       eyebrow="Pedido de acolhimento"
       title="Conte para a gente quem precisa ficar perto do hospital."
-      description="Este formulário registra uma solicitação inicial de hospedagem solidária para familiares de pessoas em tratamento ou acompanhamento hospitalar."
+      description={
+        selectedStay
+          ? "Revise seus dados e informe as datas para solicitar esta hospedagem. A moderação verificará disponibilidade e segurança antes de conectar vocês."
+          : "Escolha uma hospedagem em Buscar hospedagem para iniciar um pedido vinculado a um anfitrião."
+      }
     >
+      {selectedStay ? (
+        <div className="soft-shell mb-5 rounded-[2rem] p-5">
+          <p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
+            hospedagem selecionada
+          </p>
+          <h2 className="mt-2 text-xl font-black">{selectedStay.title}</h2>
+          <p className="mt-2 text-sm font-bold leading-6 text-[var(--muted)]">
+            {selectedStay.neighborhood}, {selectedStay.city} · {selectedStay.capacity}{" "}
+            pessoa{selectedStay.capacity > 1 ? "s" : ""} · banheiro{" "}
+            {selectedStay.bathroom.toLowerCase()}
+          </p>
+        </div>
+      ) : null}
       <AuthGate
         message="Para solicitar uma hospedagem solidária, precisamos confirmar seu acesso e manter um histórico seguro do pedido."
       >
@@ -140,6 +183,9 @@ export default function FamiliasPage() {
               <div className="rounded-2xl border border-[#fecaca] bg-[#fff1f2] px-4 py-3 text-sm font-bold leading-6 text-[#be123c]">
                 {error}
               </div>
+            ) : null}
+            {selectedStay ? (
+              <input name="lodgingId" type="hidden" value={selectedStay.id} />
             ) : null}
 
           <div className="grid gap-5 md:grid-cols-2">
@@ -172,8 +218,22 @@ export default function FamiliasPage() {
           </div>
 
           <div className="grid gap-5 md:grid-cols-2">
-            <TextField label="Hospital" name="hospital" required />
-            <TextField label="Cidade do hospital" name="hospitalCity" required />
+            <TextField
+              label="Hospital"
+              name="hospital"
+              onChange={(event) => updateRequestField("hospital", event.target.value)}
+              required
+              value={requestDetails.hospital}
+            />
+            <TextField
+              label="Cidade do hospital"
+              name="hospitalCity"
+              onChange={(event) =>
+                updateRequestField("hospitalCity", event.target.value)
+              }
+              required
+              value={requestDetails.hospitalCity}
+            />
           </div>
 
           <div className="grid gap-5 md:grid-cols-2">

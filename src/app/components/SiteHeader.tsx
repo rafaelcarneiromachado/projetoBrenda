@@ -21,12 +21,6 @@ type SiteHeaderProps = {
 const links = [
   { href: "/", label: "Início", shortLabel: "Início", key: "home" },
   { href: "/buscar", label: "Buscar hospedagem", shortLabel: "Buscar", key: "buscar" },
-  {
-    href: "/familias",
-    label: "Preciso de hospedagem",
-    shortLabel: "Preciso",
-    key: "familias",
-  },
   { href: "/anfitrioes", label: "Quero acolher", shortLabel: "Acolher", key: "anfitrioes" },
   { href: "/missao", label: "Missão", shortLabel: "Missão", key: "missao" },
 ];

@@ -13,6 +13,8 @@ export type Stay = {
   availableTonight: boolean;
   image: string;
   images?: string[];
+  address?: string | null;
+  hospital?: string | null;
   latitude?: number | null;
   longitude?: number | null;
   host: string;

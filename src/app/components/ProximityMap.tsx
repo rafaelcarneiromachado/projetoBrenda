@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { Stay } from "../data/stays";
 
 type ProximityMapProps = {
@@ -11,29 +12,226 @@ const defaultCenter = {
   longitude: -49.2733,
 };
 
-function getMapCenter(stays: Stay[]) {
-  const locatedStay = stays.find(
-    (stay) => typeof stay.latitude === "number" && typeof stay.longitude === "number",
-  );
+type LocatedStay = Stay & {
+  latitude: number;
+  longitude: number;
+};
 
-  return {
-    latitude: locatedStay?.latitude ?? defaultCenter.latitude,
-    longitude: locatedStay?.longitude ?? defaultCenter.longitude,
+type LeafletMap = {
+  setView: (center: [number, number], zoom: number) => LeafletMap;
+  remove: () => void;
+};
+
+type LeafletMarker = {
+  bindPopup: (content: string) => LeafletMarker;
+  addTo: (map: LeafletMap) => LeafletMarker;
+};
+
+type LeafletStatic = {
+  map: (element: HTMLDivElement) => LeafletMap;
+  tileLayer: (
+    url: string,
+    options: { attribution: string; maxZoom: number },
+  ) => { addTo: (map: LeafletMap) => void };
+  marker: (center: [number, number]) => LeafletMarker;
+};
+
+declare global {
+  interface Window {
+    L?: LeafletStatic;
+  }
+}
+
+function getAddressQuery(stay: Stay) {
+  return [stay.address, stay.neighborhood, stay.city, "Brasil"]
+    .filter(Boolean)
+    .join(", ");
+}
+
+function getCachedCoordinates(key: string) {
+  const cached = window.sessionStorage.getItem(`pb:geo:${key}`);
+
+  if (!cached) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(cached) as { latitude: number; longitude: number };
+  } catch {
+    return null;
+  }
+}
+
+async function geocodeStay(stay: Stay) {
+  if (typeof stay.latitude === "number" && typeof stay.longitude === "number") {
+    return { ...stay, latitude: stay.latitude, longitude: stay.longitude };
+  }
+
+  const query = getAddressQuery(stay);
+
+  if (!query) {
+    return null;
+  }
+
+  const cached = getCachedCoordinates(query);
+
+  if (cached) {
+    return { ...stay, ...cached };
+  }
+
+  const response = await fetch(
+    `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(
+      query,
+    )}`,
+  );
+  const results = (await response.json()) as Array<{ lat: string; lon: string }>;
+  const first = results[0];
+
+  if (!first) {
+    return null;
+  }
+
+  const coordinates = {
+    latitude: Number(first.lat),
+    longitude: Number(first.lon),
   };
+
+  if (!Number.isFinite(coordinates.latitude) || !Number.isFinite(coordinates.longitude)) {
+    return null;
+  }
+
+  window.sessionStorage.setItem(`pb:geo:${query}`, JSON.stringify(coordinates));
+  return { ...stay, ...coordinates };
+}
+
+function loadLeaflet() {
+  if (window.L) {
+    return Promise.resolve(window.L);
+  }
+
+  return new Promise<LeafletStatic>((resolve, reject) => {
+    const existingScript = document.querySelector<HTMLScriptElement>(
+      'script[data-project-brenda-leaflet="true"]',
+    );
+
+    if (existingScript) {
+      existingScript.addEventListener("load", () => {
+        if (window.L) {
+          resolve(window.L);
+        }
+      });
+      existingScript.addEventListener("error", reject);
+      return;
+    }
+
+    const css = document.createElement("link");
+    css.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+    css.rel = "stylesheet";
+    document.head.appendChild(css);
+
+    const script = document.createElement("script");
+    script.dataset.projectBrendaLeaflet = "true";
+    script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+    script.onload = () => {
+      if (window.L) {
+        resolve(window.L);
+      }
+    };
+    script.onerror = reject;
+    document.body.appendChild(script);
+  });
 }
 
 export function ProximityMap({ stays }: ProximityMapProps) {
-  const center = getMapCenter(stays);
-  const bbox = [
-    center.longitude - 0.035,
-    center.latitude - 0.025,
-    center.longitude + 0.035,
-    center.latitude + 0.025,
-  ].join(",");
-  const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${center.latitude},${center.longitude}`;
-  const locatedStays = stays.filter(
-    (stay) => typeof stay.latitude === "number" && typeof stay.longitude === "number",
-  );
+  const mapElement = useRef<HTMLDivElement | null>(null);
+  const mapInstance = useRef<LeafletMap | null>(null);
+  const [locatedStays, setLocatedStays] = useState<LocatedStay[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadLocations() {
+      const located: LocatedStay[] = [];
+
+      for (const stay of stays) {
+        try {
+          const result = await geocodeStay(stay);
+
+          if (result) {
+            located.push(result);
+          }
+        } catch {
+          // Geocoding is best-effort; cards still show even if the map cannot locate one.
+        }
+      }
+
+      if (!cancelled) {
+        setLocatedStays(located);
+      }
+    }
+
+    loadLocations();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [stays]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function renderMap() {
+      if (!mapElement.current) {
+        return;
+      }
+
+      const leaflet = await loadLeaflet();
+      const center = locatedStays[0] ?? defaultCenter;
+
+      if (cancelled || !mapElement.current) {
+        return;
+      }
+
+      if (mapInstance.current) {
+        mapInstance.current.remove();
+      }
+
+      const map = leaflet
+        .map(mapElement.current)
+        .setView([center.latitude, center.longitude], locatedStays.length > 0 ? 13 : 12);
+      leaflet
+        .tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: "&copy; OpenStreetMap",
+          maxZoom: 19,
+        })
+        .addTo(map);
+
+      for (const stay of locatedStays) {
+        leaflet
+          .marker([stay.latitude, stay.longitude])
+          .bindPopup(
+            `<strong>${stay.title}</strong><br>${stay.neighborhood}, ${stay.city}<br>${stay.distanceKm.toFixed(
+              1,
+            )} km`,
+          )
+          .addTo(map);
+      }
+
+      mapInstance.current = map;
+    }
+
+    renderMap();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [locatedStays]);
+
+  useEffect(() => {
+    return () => {
+      mapInstance.current?.remove();
+    };
+  }, []);
 
   return (
     <div className="sticky top-28 overflow-hidden rounded-[2rem] border border-[var(--line)] bg-white shadow-sm">
@@ -49,13 +247,7 @@ export function ProximityMap({ stays }: ProximityMapProps) {
         </span>
       </div>
 
-      <iframe
-        className="h-[420px] w-full border-0"
-        loading="lazy"
-        referrerPolicy="no-referrer-when-downgrade"
-        src={mapUrl}
-        title="Mapa de hospedagens próximas"
-      />
+      <div className="h-[420px] w-full bg-[#f8dfe8]" ref={mapElement} />
 
       <div className="grid max-h-56 gap-2 overflow-y-auto p-4">
         {stays.map((stay) => (
@@ -76,8 +268,8 @@ export function ProximityMap({ stays }: ProximityMapProps) {
         ))}
         {locatedStays.length === 0 ? (
           <p className="text-sm font-bold leading-6 text-[var(--muted)]">
-            Quando as hospedagens tiverem latitude e longitude cadastradas, o mapa será
-            centralizado exatamente nos endereços aproximados.
+            Estamos tentando localizar as hospedagens pelo endereço cadastrado. Se uma
+            localização não aparecer, revise o endereço aproximado no cadastro.
           </p>
         ) : null}
       </div>

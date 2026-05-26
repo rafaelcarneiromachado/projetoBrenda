@@ -125,26 +125,26 @@ export default function Home() {
     <main className="min-h-screen quiet-pattern">
       <SiteHeader current="home" />
 
-      <section className="border-b border-[var(--line)] bg-white px-5 py-4 md:px-8 lg:px-10">
+      <section className="border-b border-[var(--line)] bg-white px-5 py-3 md:px-8 lg:px-10">
         <div className="mx-auto grid max-w-6xl gap-3 sm:grid-cols-3">
-          <div className="rounded-2xl bg-[var(--surface-soft)] px-5 py-4">
-            <strong className="block text-3xl font-black text-[var(--rose-dark)]">
+          <div className="rounded-2xl bg-[var(--surface-soft)] px-5 py-3">
+            <strong className="block text-2xl font-black text-[var(--rose-dark)]">
               {impactCounts.available_lodgings}
             </strong>
             <span className="text-sm font-black text-[var(--muted)]">
               hospedagens disponíveis
             </span>
           </div>
-          <div className="rounded-2xl bg-[var(--surface-soft)] px-5 py-4">
-            <strong className="block text-3xl font-black text-[var(--rose-dark)]">
+          <div className="rounded-2xl bg-[var(--surface-soft)] px-5 py-3">
+            <strong className="block text-2xl font-black text-[var(--rose-dark)]">
               {impactCounts.lodging_requests}
             </strong>
             <span className="text-sm font-black text-[var(--muted)]">
               pedidos de hospedagem
             </span>
           </div>
-          <div className="rounded-2xl bg-[var(--surface-soft)] px-5 py-4">
-            <strong className="block text-3xl font-black text-[var(--rose-dark)]">
+          <div className="rounded-2xl bg-[var(--surface-soft)] px-5 py-3">
+            <strong className="block text-2xl font-black text-[var(--rose-dark)]">
               {impactCounts.registered_users}
             </strong>
             <span className="text-sm font-black text-[var(--muted)]">
@@ -154,8 +154,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="px-5 pb-0 pt-7 md:px-8 lg:px-10">
-        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+      <section className="px-5 pb-6 pt-5 md:px-8 lg:px-10">
+        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
           <div className="lg:pr-6">
             <p className="mb-4 inline-flex rounded-full border border-[var(--line)] bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[var(--rose-dark)] shadow-sm">
               acolhimento solidário familiar

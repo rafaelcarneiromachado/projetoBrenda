@@ -54,6 +54,7 @@ type StayRequest = {
   nights: number;
   guest_type: string;
   notes: string | null;
+  lodging_id: string | null;
   status: string;
   created_at: string;
 };
@@ -186,7 +187,7 @@ export default function AdminPage() {
       client
         .from("stay_requests")
         .select(
-          "id,requester_id,responsible_name,phone,origin_city,hospital_name,hospital_city,arrival_date,people_count,nights,guest_type,notes,status,created_at",
+          "id,requester_id,responsible_name,phone,origin_city,hospital_name,hospital_city,arrival_date,people_count,nights,guest_type,notes,lodging_id,status,created_at",
         )
         .order("created_at", { ascending: false }),
     ]);
@@ -733,7 +734,12 @@ export default function AdminPage() {
                 Nenhum pedido cadastrado ainda.
               </p>
             ) : (
-              requests.map((request) => (
+              requests.map((request) => {
+                const linkedLodging = lodgings.find(
+                  (lodging) => lodging.id === request.lodging_id,
+                );
+
+                return (
                 <article
                   className="border-b border-[var(--line)] bg-white/60 px-5 py-5 text-sm last:border-0"
                   key={request.id}
@@ -745,6 +751,11 @@ export default function AdminPage() {
                         {request.origin_city} {"->"} {request.hospital_name},{" "}
                         {request.hospital_city}
                       </p>
+                      {linkedLodging ? (
+                        <p className="mt-1 font-bold text-[var(--rose-dark)]">
+                          Pedido para: {linkedLodging.title}
+                        </p>
+                      ) : null}
                     </div>
                     <p className="leading-6 text-[var(--muted)]">
                       {request.people_count} pessoa{request.people_count > 1 ? "s" : ""} por{" "}
@@ -780,6 +791,11 @@ export default function AdminPage() {
                         <p className="mt-2 text-[var(--muted)]">
                           Hospedagem para: {request.guest_type}
                         </p>
+                        {linkedLodging ? (
+                          <p className="mt-2 text-[var(--muted)]">
+                            Espaço solicitado: {linkedLodging.title}
+                          </p>
+                        ) : null}
                       </div>
                       <div>
                         <h3 className="font-black">Observações</h3>
@@ -790,7 +806,8 @@ export default function AdminPage() {
                     </div>
                   ) : null}
                 </article>
-              ))
+                );
+              })
             )}
           </section>
 
