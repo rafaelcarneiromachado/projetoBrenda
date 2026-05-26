@@ -348,24 +348,28 @@ export default function PerfilPage() {
                 />
               </div>
 
-              <div className="grid gap-3 md:grid-cols-[0.7fr_auto] md:items-start">
-                <TextField
-                  hint="Digite o CEP e use a busca para preencher endereco, cidade e UF."
-                  label="CEP"
-                  name="cep"
-                  onChange={(event) => updateProfile("cep", event.target.value)}
-                  placeholder="00000-000"
-                  value={profile.cep}
-                />
-                <button
-                  className="inline-flex min-h-10 items-center justify-center gap-2 self-end rounded-full border-2 border-[var(--brand-dark)] bg-white px-4 text-sm font-black disabled:opacity-60 md:mb-7"
-                  disabled={cepLoading}
-                  onClick={lookupCep}
-                  type="button"
-                >
-                  <Search aria-hidden size={18} />
-                  {cepLoading ? "Buscando..." : "Buscar"}
-                </button>
+              <div>
+                <div className="grid gap-3 md:grid-cols-[1fr_160px] md:items-end">
+                  <TextField
+                    label="CEP"
+                    name="cep"
+                    onChange={(event) => updateProfile("cep", event.target.value)}
+                    placeholder="00000-000"
+                    value={profile.cep}
+                  />
+                  <button
+                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border-2 border-[var(--brand-dark)] bg-white px-4 text-sm font-black disabled:opacity-60"
+                    disabled={cepLoading}
+                    onClick={lookupCep}
+                    type="button"
+                  >
+                    <Search aria-hidden size={18} />
+                    {cepLoading ? "Buscando..." : "Buscar"}
+                  </button>
+                </div>
+                <p className="mt-2 text-xs leading-5 text-[var(--muted)]">
+                  Digite o CEP e use a busca para preencher endereco, cidade e UF.
+                </p>
               </div>
 
               <div className="grid gap-5 md:grid-cols-[1.2fr_0.45fr_0.8fr]">
