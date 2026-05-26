@@ -57,6 +57,7 @@ type StayRequest = {
   lodging_id: string | null;
   status: string;
   created_at: string;
+  requester?: ProfileSummary;
 };
 
 type ProfileSummary = {
@@ -83,7 +84,7 @@ const statusLabels: Record<string, string> = {
   approved: "Aprovada",
   rejected: "Rejeitada",
   suspended: "Suspensa",
-  matched: "Combinada",
+  matched: "Conexão Aprovada",
   completed: "Concluída",
   cancelled: "Cancelada",
 };
@@ -310,7 +311,12 @@ export default function AdminPage() {
         photos: photosByLodging.get(lodging.id) ?? [],
       })),
     );
-    setRequests(requestsResult.data ?? []);
+    setRequests(
+      (requestsResult.data ?? []).map((request) => ({
+        ...request,
+        requester: profilesById.get(request.requester_id),
+      })),
+    );
     setUsers(profileRows);
     setLoading(false);
   }, []);
@@ -343,6 +349,33 @@ export default function AdminPage() {
     }
 
     setMessage(status === "approved" ? "Hospedagem aprovada." : "Hospedagem rejeitada.");
+    await loadData();
+  }
+
+  async function updateRequestStatus(id: string, status: "matched" | "cancelled") {
+    setError("");
+    setMessage("");
+
+    if (!supabase) {
+      setError("Supabase não está configurado neste ambiente.");
+      return;
+    }
+
+    const { error: updateError } = await supabase
+      .from("stay_requests")
+      .update({ status })
+      .eq("id", id);
+
+    if (updateError) {
+      setError(updateError.message);
+      return;
+    }
+
+    setMessage(
+      status === "matched"
+        ? "Conexão aprovada. A equipe já pode aproximar solicitante e anfitrião."
+        : "Pedido cancelado.",
+    );
     await loadData();
   }
 
@@ -773,35 +806,165 @@ export default function AdminPage() {
                         <Eye aria-hidden size={15} />
                         {expandedRequestId === request.id ? "Ocultar" : "Ver detalhes"}
                       </button>
+                      <button
+                        className={primaryActionButton}
+                        disabled={request.status === "matched"}
+                        onClick={() => updateRequestStatus(request.id, "matched")}
+                        type="button"
+                      >
+                        <Check aria-hidden size={15} />
+                        Aprovar
+                      </button>
+                      <button
+                        className={secondaryActionButton}
+                        disabled={request.status === "cancelled"}
+                        onClick={() => updateRequestStatus(request.id, "cancelled")}
+                        type="button"
+                      >
+                        <X aria-hidden size={15} />
+                        Rejeitar
+                      </button>
                     </div>
                   </div>
 
                   {expandedRequestId === request.id ? (
-                    <div className="mt-5 grid gap-4 rounded-[1.5rem] border border-[var(--line)] bg-white p-4 md:grid-cols-2">
-                      <div className="rounded-2xl bg-[var(--surface-soft)] p-4">
-                        <h3 className="font-black">Contato e viagem</h3>
-                        <p className="mt-3 flex items-center gap-2 text-[var(--muted)]">
-                          <Phone aria-hidden size={16} />
-                          {request.phone}
-                        </p>
-                        <p className="mt-2 flex items-center gap-2 text-[var(--muted)]">
-                          <MapPin aria-hidden size={16} />
-                          Chegada em {request.arrival_date}
-                        </p>
-                        <p className="mt-2 text-[var(--muted)]">
-                          Hospedagem para: {request.guest_type}
-                        </p>
-                        {linkedLodging ? (
-                          <p className="mt-2 text-[var(--muted)]">
-                            Espaço solicitado: {linkedLodging.title}
-                          </p>
-                        ) : null}
-                      </div>
+                    <div className="mt-5 grid gap-4 rounded-[1.5rem] border border-[var(--line)] bg-white p-4 lg:grid-cols-2">
                       <div>
-                        <h3 className="font-black">Observações</h3>
-                        <p className="mt-3 min-h-24 rounded-2xl bg-[var(--surface-soft)] p-4 leading-6 text-[var(--muted)]">
-                          {request.notes || "Nenhuma observação informada."}
-                        </p>
+                        <h3 className="font-black">Detalhes Do Solicitante</h3>
+                        <div className="mt-3 grid gap-3 rounded-2xl bg-[var(--surface-soft)] p-4 text-[var(--muted)]">
+                          <p className="flex items-center gap-2 font-black text-[var(--foreground)]">
+                            <UserCircle aria-hidden size={18} />
+                            {request.responsible_name || "Nome não informado"}
+                          </p>
+                          <p className="flex items-center gap-2">
+                            <Phone aria-hidden size={16} />
+                            {request.phone || "Telefone não informado"}
+                          </p>
+                          <p>
+                            <strong className="text-[var(--foreground)]">E-mail:</strong>{" "}
+                            {request.requester?.email || "E-mail não informado"}
+                          </p>
+                          <p>
+                            <strong className="text-[var(--foreground)]">Cidade de origem:</strong>{" "}
+                            {request.origin_city || "Não informada"}
+                          </p>
+                          <p>
+                            <strong className="text-[var(--foreground)]">Hospital:</strong>{" "}
+                            {request.hospital_name}, {request.hospital_city}
+                          </p>
+                          <p className="flex items-center gap-2">
+                            <MapPin aria-hidden size={16} />
+                            Chegada em {request.arrival_date}
+                          </p>
+                          <p>
+                            <strong className="text-[var(--foreground)]">Período:</strong>{" "}
+                            {request.nights} noite{request.nights > 1 ? "s" : ""}
+                          </p>
+                          <p>
+                            <strong className="text-[var(--foreground)]">Pessoas:</strong>{" "}
+                            {request.people_count} pessoa{request.people_count > 1 ? "s" : ""}
+                          </p>
+                          <p>
+                            <strong className="text-[var(--foreground)]">Hospedagem para:</strong>{" "}
+                            {request.guest_type}
+                          </p>
+                        </div>
+                        <div className="mt-4">
+                          <h4 className="font-black">Observações</h4>
+                          <p className="mt-3 min-h-24 rounded-2xl bg-[var(--surface-soft)] p-4 leading-6 text-[var(--muted)]">
+                            {request.notes || "Nenhuma observação informada."}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h3 className="font-black">Detalhes Da Hospedagem Solicitada</h3>
+                        {linkedLodging ? (
+                          <div className="mt-3 grid gap-4">
+                            <div className="rounded-2xl bg-[var(--surface-soft)] p-4">
+                              <div className="flex flex-wrap items-start justify-between gap-3">
+                                <div>
+                                  <p className="text-lg font-black text-[var(--foreground)]">
+                                    {linkedLodging.title}
+                                  </p>
+                                  <p className="mt-1 text-[var(--muted)]">
+                                    {linkedLodging.neighborhood}, {linkedLodging.city}
+                                  </p>
+                                </div>
+                                <span className="rounded-full bg-white px-3 py-1 font-black text-[var(--brand-dark)]">
+                                  {statusLabels[linkedLodging.status] ?? linkedLodging.status}
+                                </span>
+                              </div>
+                              <div className="mt-4 grid gap-2 text-[var(--muted)]">
+                                <p>
+                                  <strong className="text-[var(--foreground)]">Anfitrião:</strong>{" "}
+                                  {linkedLodging.host?.full_name || "Nome não informado"}
+                                </p>
+                                <p>
+                                  <strong className="text-[var(--foreground)]">Telefone:</strong>{" "}
+                                  {linkedLodging.host?.phone || "Telefone não informado"}
+                                </p>
+                                <p>
+                                  <strong className="text-[var(--foreground)]">Tipo:</strong>{" "}
+                                  {lodgingTypeLabels[linkedLodging.type] ?? linkedLodging.type}
+                                </p>
+                                <p>
+                                  <strong className="text-[var(--foreground)]">Capacidade:</strong>{" "}
+                                  {linkedLodging.capacity} pessoa
+                                  {linkedLodging.capacity > 1 ? "s" : ""}
+                                </p>
+                                <p>
+                                  <strong className="text-[var(--foreground)]">Banheiro:</strong>{" "}
+                                  {linkedLodging.bathroom}
+                                </p>
+                                <p>
+                                  <strong className="text-[var(--foreground)]">Endereço aproximado:</strong>{" "}
+                                  {linkedLodging.approximate_address || "Não informado"}
+                                </p>
+                                <p>
+                                  <strong className="text-[var(--foreground)]">Hospital próximo:</strong>{" "}
+                                  {linkedLodging.nearest_hospital || "Não informado"}
+                                </p>
+                                <p>
+                                  <strong className="text-[var(--foreground)]">Disponibilidade:</strong>{" "}
+                                  {linkedLodging.availability || "Não informada"}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div>
+                              <h4 className="font-black">Fotos</h4>
+                              <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                                {linkedLodging.photos.length > 0 ? (
+                                  linkedLodging.photos.map((photo) =>
+                                    photo.signed_url ? (
+                                      // eslint-disable-next-line @next/next/no-img-element
+                                      <img
+                                        alt="Foto da hospedagem solicitada"
+                                        className="aspect-[4/3] w-full rounded-2xl border border-[var(--line)] object-cover"
+                                        key={photo.id}
+                                        src={photo.signed_url}
+                                      />
+                                    ) : (
+                                      <div
+                                        className="rounded-2xl border border-[var(--line)] bg-[var(--surface-soft)] p-4 text-[var(--muted)]"
+                                        key={photo.id}
+                                      >
+                                        Foto sem URL disponível.
+                                      </div>
+                                    ),
+                                  )
+                                ) : (
+                                  <p className="text-[var(--muted)]">Nenhuma foto enviada.</p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="mt-3 rounded-2xl bg-[var(--surface-soft)] p-4 text-[var(--muted)]">
+                            Este pedido não está vinculado a uma hospedagem específica.
+                          </div>
+                        )}
                       </div>
                     </div>
                   ) : null}
