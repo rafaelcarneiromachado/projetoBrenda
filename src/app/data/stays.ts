@@ -6,7 +6,6 @@ export type Stay = {
   type: StayType;
   neighborhood: string;
   city: string;
-  distanceKm: number;
   capacity: number;
   bathroom: "Compartilhado" | "Exclusivo";
   accessibility: boolean;
@@ -28,7 +27,6 @@ export const stays: Stay[] = [
     type: "Quarto",
     neighborhood: "Jardim das Flores",
     city: "Curitiba",
-    distanceKm: 0.8,
     capacity: 1,
     bathroom: "Compartilhado",
     accessibility: false,
@@ -43,7 +41,6 @@ export const stays: Stay[] = [
     type: "Edícula",
     neighborhood: "Centro",
     city: "Curitiba",
-    distanceKm: 1.6,
     capacity: 2,
     bathroom: "Exclusivo",
     accessibility: true,
@@ -58,7 +55,6 @@ export const stays: Stay[] = [
     type: "Sofá",
     neighborhood: "Vila Esperança",
     city: "Curitiba",
-    distanceKm: 2.3,
     capacity: 1,
     bathroom: "Compartilhado",
     accessibility: false,

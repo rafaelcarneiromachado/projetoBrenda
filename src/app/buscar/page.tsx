@@ -25,7 +25,6 @@ export default function BuscarPage() {
   const [type, setType] = useState<StayType | "Todos">("Todos");
   const [capacity, setCapacity] = useState("1");
   const [availability, setAvailability] = useState("all");
-  const [maxDistance, setMaxDistance] = useState("all");
   const [availableStays, setAvailableStays] = useState<Stay[]>(stays);
   const [source, setSource] = useState<"example" | "supabase">("example");
 
@@ -89,8 +88,6 @@ export default function BuscarPage() {
           availability === "all" ||
           (availability === "today" && stay.availableTonight) ||
           (availability === "consult" && !stay.availableTonight);
-        const matchesDistance =
-          maxDistance === "all" || stay.distanceKm <= Number(maxDistance);
 
         return (
           matchesQuery &&
@@ -99,18 +96,21 @@ export default function BuscarPage() {
           matchesHospital &&
           matchesType &&
           matchesCapacity &&
-          matchesAvailability &&
-          matchesDistance
+          matchesAvailability
         );
       })
-      .sort((a, b) => a.distanceKm - b.distanceKm);
+      .sort((a, b) =>
+        `${a.city} ${a.neighborhood} ${a.title}`.localeCompare(
+          `${b.city} ${b.neighborhood} ${b.title}`,
+          "pt-BR",
+        ),
+      );
   }, [
     availableStays,
     availability,
     capacity,
     city,
     hospital,
-    maxDistance,
     neighborhood,
     query,
     type,
@@ -172,7 +172,7 @@ export default function BuscarPage() {
             </label>
           </div>
 
-          <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_0.8fr_0.65fr_0.65fr]">
+          <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_0.8fr_0.65fr]">
             <label className="block">
               <span className="text-sm font-black">Hospital Próximo</span>
               <select
@@ -213,19 +213,6 @@ export default function BuscarPage() {
               </select>
             </label>
 
-            <label className="block">
-              <span className="text-sm font-black">Proximidade</span>
-              <select
-                className="mt-2 min-h-12 w-full rounded-2xl border border-[var(--line)] bg-white px-4 outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[#f7a7bd]/45"
-                onChange={(event) => setMaxDistance(event.target.value)}
-                value={maxDistance}
-              >
-                <option value="all">Qualquer Distância</option>
-                <option value="1">Até 1 km</option>
-                <option value="3">Até 3 km</option>
-                <option value="5">Até 5 km</option>
-              </select>
-            </label>
           </div>
 
           <div className="mt-4 flex flex-wrap items-end justify-between gap-3">
@@ -256,7 +243,7 @@ export default function BuscarPage() {
             </div>
             <p className="flex items-center gap-2 text-sm font-bold text-[var(--muted)]">
               <SlidersHorizontal aria-hidden size={16} />
-              Ordenadas Por Proximidade
+              Ordenadas Por Cidade
             </p>
           </div>
 
@@ -279,9 +266,11 @@ export default function BuscarPage() {
                       </p>
                       <h2 className="mt-1 text-xl font-black">{stay.title}</h2>
                     </div>
-                    <span className="rounded-full bg-[var(--surface-soft)] px-3 py-1 text-sm font-black text-[var(--rose-dark)]">
-                      {stay.distanceKm.toFixed(1)} km
-                    </span>
+                    {stay.hospital ? (
+                      <span className="rounded-full bg-[var(--surface-soft)] px-3 py-1 text-sm font-black text-[var(--rose-dark)]">
+                        {stay.hospital}
+                      </span>
+                    ) : null}
                   </div>
                   <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
                     {stay.neighborhood}, {stay.city} · {stay.capacity} pessoa

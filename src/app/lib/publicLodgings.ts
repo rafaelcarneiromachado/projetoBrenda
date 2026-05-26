@@ -52,7 +52,7 @@ function toNumber(value: number | string | null) {
   return null;
 }
 
-function mapLodgingToStay(lodging: LodgingRow, index: number, images: string[]): Stay {
+function mapLodgingToStay(lodging: LodgingRow, images: string[]): Stay {
   const type = lodgingTypeLabels[lodging.type] ?? "Quarto";
   const fallbackImage = lodgingImages[type];
 
@@ -62,7 +62,6 @@ function mapLodgingToStay(lodging: LodgingRow, index: number, images: string[]):
     type,
     neighborhood: lodging.neighborhood,
     city: lodging.city,
-    distanceKm: 0.8 + index * 0.7,
     capacity: lodging.capacity,
     bathroom: lodging.bathroom === "Exclusivo" ? "Exclusivo" : "Compartilhado",
     accessibility: Boolean(lodging.accessibility),
@@ -131,7 +130,7 @@ export async function loadApprovedStays(client: SupabaseClient): Promise<Stay[]>
   );
   const photoUrlsByLodging = new Map(signedPhotos);
 
-  return lodgings.map((lodging, index) =>
-    mapLodgingToStay(lodging, index, photoUrlsByLodging.get(lodging.id) ?? []),
+  return lodgings.map((lodging) =>
+    mapLodgingToStay(lodging, photoUrlsByLodging.get(lodging.id) ?? []),
   );
 }

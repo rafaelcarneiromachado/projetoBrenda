@@ -178,7 +178,7 @@ export default function FamiliasPage() {
               </p>
             </div>
             <div className="grid gap-2 rounded-2xl bg-[var(--surface-soft)] p-4 text-sm font-black text-[var(--brand-dark)]">
-              <span>{selectedStay.distanceKm.toFixed(1)} km do hospital</span>
+              <span>{selectedStay.hospital || "Hospital Próximo Não Informado"}</span>
               <span>{selectedStay.availableTonight ? "Disponível Hoje" : "Sob Consulta"}</span>
             </div>
           </div>
