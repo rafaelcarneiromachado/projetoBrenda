@@ -25,7 +25,7 @@ export function SiteFooter() {
   return (
     <footer className="border-t border-[var(--line)] bg-white">
       <div className="mx-auto max-w-6xl px-6 py-8 md:px-10 lg:px-12">
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
           <div>
             <p className="text-lg font-black text-[var(--brand-dark)]">Projeto Brenda</p>
             <p className="mt-2 max-w-xl leading-7 text-[var(--muted)]">
@@ -33,9 +33,6 @@ export function SiteFooter() {
               oferecer um lugar seguro para descansar.
             </p>
           </div>
-          <p className="text-sm font-bold text-[var(--muted)]">
-            © 2026 Projeto Brenda. Todos os direitos reservados.
-          </p>
         </div>
 
         <div className="mt-6 grid gap-3 md:grid-cols-3">
@@ -64,6 +61,10 @@ export function SiteFooter() {
             );
           })}
         </div>
+
+        <p className="mt-6 text-center text-sm font-bold text-[var(--muted)]">
+          © 2026 Projeto Brenda. Todos os direitos reservados.
+        </p>
       </div>
     </footer>
   );
