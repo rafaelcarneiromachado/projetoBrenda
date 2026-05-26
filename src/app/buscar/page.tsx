@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Filter, List, LocateFixed, Map, SlidersHorizontal } from "lucide-react";
+import { List, LocateFixed, Map, SlidersHorizontal } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { LodgingPhotoCarousel } from "../components/LodgingPhotoCarousel";
 import { ProximityMap } from "../components/ProximityMap";
@@ -20,9 +20,13 @@ const stayTypes: Array<StayType | "Todos"> = [
 
 export default function BuscarPage() {
   const [query, setQuery] = useState("");
+  const [city, setCity] = useState("Todos");
+  const [neighborhood, setNeighborhood] = useState("Todos");
+  const [hospital, setHospital] = useState("Todos");
   const [type, setType] = useState<StayType | "Todos">("Todos");
   const [capacity, setCapacity] = useState("1");
-  const [onlyTonight, setOnlyTonight] = useState(false);
+  const [availability, setAvailability] = useState("all");
+  const [maxDistance, setMaxDistance] = useState("all");
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
   const [availableStays, setAvailableStays] = useState<Stay[]>(stays);
   const [source, setSource] = useState<"example" | "supabase">("example");
@@ -53,18 +57,66 @@ export default function BuscarPage() {
     };
   }, []);
 
+  const filterOptions = useMemo(() => {
+    const cities = [...new Set(availableStays.map((stay) => stay.city).filter(Boolean))];
+    const neighborhoods = [
+      ...new Set(availableStays.map((stay) => stay.neighborhood).filter(Boolean)),
+    ];
+    const hospitals = [
+      ...new Set(availableStays.map((stay) => stay.hospital).filter(Boolean) as string[]),
+    ];
+
+    return {
+      cities: cities.sort(),
+      neighborhoods: neighborhoods.sort(),
+      hospitals: hospitals.sort(),
+    };
+  }, [availableStays]);
+
   const filtered = useMemo(() => {
-    return availableStays.filter((stay) => {
-      const matchesQuery = `${stay.title} ${stay.neighborhood} ${stay.city}`
+    return availableStays
+      .filter((stay) => {
+      const matchesQuery = `${stay.title} ${stay.neighborhood} ${stay.city} ${
+        stay.hospital ?? ""
+      }`
         .toLowerCase()
         .includes(query.toLowerCase());
+      const matchesCity = city === "Todos" || stay.city === city;
+      const matchesNeighborhood =
+        neighborhood === "Todos" || stay.neighborhood === neighborhood;
+      const matchesHospital = hospital === "Todos" || stay.hospital === hospital;
       const matchesType = type === "Todos" || stay.type === type;
       const matchesCapacity = stay.capacity >= Number(capacity);
-      const matchesTonight = !onlyTonight || stay.availableTonight;
+      const matchesAvailability =
+        availability === "all" ||
+        (availability === "today" && stay.availableTonight) ||
+        (availability === "consult" && !stay.availableTonight);
+      const matchesDistance =
+        maxDistance === "all" || stay.distanceKm <= Number(maxDistance);
 
-      return matchesQuery && matchesType && matchesCapacity && matchesTonight;
-    });
-  }, [availableStays, capacity, onlyTonight, query, type]);
+      return (
+        matchesQuery &&
+        matchesCity &&
+        matchesNeighborhood &&
+        matchesHospital &&
+        matchesType &&
+        matchesCapacity &&
+        matchesAvailability &&
+        matchesDistance
+      );
+    })
+      .sort((a, b) => a.distanceKm - b.distanceKm);
+  }, [
+    availableStays,
+    availability,
+    capacity,
+    city,
+    hospital,
+    maxDistance,
+    neighborhood,
+    query,
+    type,
+  ]);
 
   return (
     <main className="min-h-screen quiet-pattern">
@@ -88,8 +140,8 @@ export default function BuscarPage() {
           </button>
         </div>
 
-        <div className="soft-shell mt-8 rounded-[2rem] p-4">
-          <div className="grid gap-3 lg:grid-cols-[1.2fr_0.9fr_0.7fr_auto]">
+        <div className="soft-shell mt-8 rounded-[2rem] p-4 md:p-5">
+          <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
             <label className="block">
               <span className="text-sm font-black">Destino ou hospital</span>
               <input
@@ -98,6 +150,50 @@ export default function BuscarPage() {
                 placeholder="Cidade, bairro ou hospital"
                 value={query}
               />
+            </label>
+
+            <label className="block">
+              <span className="text-sm font-black">Cidade</span>
+              <select
+                className="mt-2 min-h-12 w-full rounded-2xl border border-[var(--line)] bg-white px-4 outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[#f7a7bd]/45"
+                onChange={(event) => setCity(event.target.value)}
+                value={city}
+              >
+                <option>Todos</option>
+                {filterOptions.cities.map((option) => (
+                  <option key={option}>{option}</option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block">
+              <span className="text-sm font-black">Bairro</span>
+              <select
+                className="mt-2 min-h-12 w-full rounded-2xl border border-[var(--line)] bg-white px-4 outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[#f7a7bd]/45"
+                onChange={(event) => setNeighborhood(event.target.value)}
+                value={neighborhood}
+              >
+                <option>Todos</option>
+                {filterOptions.neighborhoods.map((option) => (
+                  <option key={option}>{option}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_0.8fr_0.65fr_0.65fr]">
+            <label className="block">
+              <span className="text-sm font-black">Hospital próximo</span>
+              <select
+                className="mt-2 min-h-12 w-full rounded-2xl border border-[var(--line)] bg-white px-4 outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[#f7a7bd]/45"
+                onChange={(event) => setHospital(event.target.value)}
+                value={hospital}
+              >
+                <option>Todos</option>
+                {filterOptions.hospitals.map((option) => (
+                  <option key={option}>{option}</option>
+                ))}
+              </select>
             </label>
 
             <label className="block">
@@ -126,47 +222,65 @@ export default function BuscarPage() {
               </select>
             </label>
 
-            <button
-              className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--brand-dark)] px-5 font-black text-white shadow-lg shadow-[#19101435] transition hover:bg-[var(--brand)] lg:mt-auto"
-              type="button"
-            >
-              <Filter aria-hidden size={18} />
-              Buscar
-            </button>
+            <label className="block">
+              <span className="text-sm font-black">Proximidade</span>
+              <select
+                className="mt-2 min-h-12 w-full rounded-2xl border border-[var(--line)] bg-white px-4 outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[#f7a7bd]/45"
+                onChange={(event) => setMaxDistance(event.target.value)}
+                value={maxDistance}
+              >
+                <option value="all">Qualquer distância</option>
+                <option value="1">Até 1 km</option>
+                <option value="3">Até 3 km</option>
+                <option value="5">Até 5 km</option>
+              </select>
+            </label>
           </div>
 
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-            <label className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold">
-              <input
-                checked={onlyTonight}
-                onChange={(event) => setOnlyTonight(event.target.checked)}
-                type="checkbox"
-              />
-              Disponível hoje
+          <div className="mt-4 flex flex-wrap items-end justify-between gap-3">
+            <label className="block min-w-[220px] flex-1 md:flex-none">
+              <span className="text-sm font-black">Disponibilidade</span>
+              <select
+                className="mt-2 min-h-12 w-full rounded-2xl border border-[var(--line)] bg-white px-4 outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[#f7a7bd]/45"
+                onChange={(event) => setAvailability(event.target.value)}
+                value={availability}
+              >
+                <option value="all">Todas</option>
+                <option value="today">Disponível hoje</option>
+                <option value="consult">Sob consulta</option>
+              </select>
             </label>
-            <button
-              className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-black text-[var(--brand-dark)] shadow-sm"
-              onClick={() =>
-                setViewMode((current) => (current === "list" ? "map" : "list"))
-              }
-              type="button"
-            >
-              {viewMode === "map" ? (
+            <div className="grid grid-cols-2 rounded-full border border-[var(--line)] bg-white p-1 shadow-sm">
+              <button
+                className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-4 text-sm font-black transition ${
+                  viewMode === "list"
+                    ? "bg-[var(--brand-dark)] text-white"
+                    : "text-[var(--brand-dark)] hover:bg-[var(--surface-soft)]"
+                }`}
+                onClick={() => setViewMode("list")}
+                type="button"
+              >
                 <List aria-hidden size={18} />
-              ) : (
+                Lista
+              </button>
+              <button
+                className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-4 text-sm font-black transition ${
+                  viewMode === "map"
+                    ? "bg-[var(--brand-dark)] text-white"
+                    : "text-[var(--brand-dark)] hover:bg-[var(--surface-soft)]"
+                }`}
+                onClick={() => setViewMode("map")}
+                type="button"
+              >
                 <Map aria-hidden size={18} />
-              )}
-              {viewMode === "map" ? "Ver lista" : "Ver mapa"}
-            </button>
+                Mapa
+              </button>
+            </div>
           </div>
         </div>
 
-        <div
-          className={`mt-8 grid gap-6 ${
-            viewMode === "map" ? "lg:grid-cols-[0.78fr_1.22fr]" : "lg:grid-cols-[1fr_0.82fr]"
-          }`}
-        >
-          <section className={`grid gap-4 ${viewMode === "map" ? "lg:order-2" : ""}`}>
+        {viewMode === "list" ? (
+          <section className="mt-8 grid gap-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-black">{filtered.length} hospedagens encontradas</p>
@@ -182,17 +296,14 @@ export default function BuscarPage() {
               </p>
             </div>
 
-            {filtered.map((stay) => (
+            <div className="grid gap-5">
+              {filtered.map((stay) => (
               <article
-                className={`grid overflow-hidden rounded-[2rem] border border-[var(--line)] bg-white shadow-sm ${
-                  viewMode === "map" ? "" : "md:grid-cols-[220px_1fr]"
-                }`}
+                className="grid overflow-hidden rounded-[2rem] border border-[var(--line)] bg-white shadow-sm md:grid-cols-[260px_1fr]"
                 key={stay.id}
               >
                 <LodgingPhotoCarousel
-                  className={`h-56 w-full ${
-                    viewMode === "map" ? "" : "md:h-full"
-                  }`}
+                  className="h-56 w-full md:h-full"
                   images={stay.images ?? [stay.image]}
                   title={stay.title}
                 />
@@ -226,13 +337,30 @@ export default function BuscarPage() {
                   </div>
                 </div>
               </article>
-            ))}
+              ))}
+            </div>
           </section>
-
-          <aside className={`${viewMode === "map" ? "block lg:order-1" : "hidden lg:block"}`}>
-            <ProximityMap stays={filtered} />
-          </aside>
-        </div>
+        ) : (
+          <section className="mt-8 grid gap-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="font-black">{filtered.length} hospedagens no mapa</p>
+                <p className="mt-1 text-sm font-bold text-[var(--muted)]">
+                  Use zoom e arraste para explorar a região.
+                </p>
+              </div>
+              <button
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-4 text-sm font-black text-[var(--brand-dark)] shadow-sm"
+                onClick={() => setViewMode("list")}
+                type="button"
+              >
+                <List aria-hidden size={18} />
+                Ver lista
+              </button>
+            </div>
+            <ProximityMap className="shadow-xl shadow-[#19101410]" showResults={false} stays={filtered} />
+          </section>
+        )}
       </section>
     </main>
   );

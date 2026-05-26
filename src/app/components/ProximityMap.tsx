@@ -5,6 +5,8 @@ import { Stay } from "../data/stays";
 
 type ProximityMapProps = {
   stays: Stay[];
+  className?: string;
+  showResults?: boolean;
 };
 
 const defaultCenter = {
@@ -197,7 +199,11 @@ function loadLeaflet() {
   });
 }
 
-export function ProximityMap({ stays }: ProximityMapProps) {
+export function ProximityMap({
+  stays,
+  className = "",
+  showResults = true,
+}: ProximityMapProps) {
   const mapElement = useRef<HTMLDivElement | null>(null);
   const mapInstance = useRef<LeafletMap | null>(null);
   const [locatedStays, setLocatedStays] = useState<LocatedStay[]>([]);
@@ -290,7 +296,9 @@ export function ProximityMap({ stays }: ProximityMapProps) {
   }, []);
 
   return (
-    <div className="sticky top-28 overflow-hidden rounded-[2rem] border border-[var(--line)] bg-white shadow-sm">
+    <div
+      className={`overflow-hidden rounded-[2rem] border border-[var(--line)] bg-white shadow-sm ${className}`}
+    >
       <div className="flex items-center justify-between gap-4 border-b border-[var(--line)] p-5">
         <div>
           <p className="text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
@@ -303,8 +311,9 @@ export function ProximityMap({ stays }: ProximityMapProps) {
         </span>
       </div>
 
-      <div className="h-[420px] w-full bg-[#f8dfe8]" ref={mapElement} />
+      <div className="h-[min(68vh,680px)] min-h-[440px] w-full bg-[#f8dfe8]" ref={mapElement} />
 
+      {showResults ? (
       <div className="grid max-h-56 gap-2 overflow-y-auto p-4">
         {stays.map((stay) => (
           <div
@@ -329,6 +338,7 @@ export function ProximityMap({ stays }: ProximityMapProps) {
           </p>
         ) : null}
       </div>
+      ) : null}
     </div>
   );
 }
