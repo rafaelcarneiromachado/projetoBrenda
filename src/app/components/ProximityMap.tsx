@@ -12,6 +12,24 @@ const defaultCenter = {
   longitude: -49.2733,
 };
 
+const knownLocationFallbacks = [
+  {
+    keys: ["bairro alto", "curitiba"],
+    latitude: -25.399,
+    longitude: -49.207,
+  },
+  {
+    keys: ["erasto gaertner", "curitiba"],
+    latitude: -25.452,
+    longitude: -49.232,
+  },
+  {
+    keys: ["curitiba"],
+    latitude: -25.4284,
+    longitude: -49.2733,
+  },
+];
+
 type LocatedStay = Stay & {
   latitude: number;
   longitude: number;
@@ -42,10 +60,22 @@ declare global {
   }
 }
 
-function getAddressQuery(stay: Stay) {
-  return [stay.address, stay.neighborhood, stay.city, "Brasil"]
-    .filter(Boolean)
-    .join(", ");
+function normalize(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+function getAddressQueries(stay: Stay) {
+  return [
+    [stay.address, stay.neighborhood, stay.city, "Brasil"],
+    [stay.neighborhood, stay.city, "Brasil"],
+    [stay.hospital, stay.city, "Brasil"],
+    [stay.city, "Brasil"],
+  ]
+    .map((parts) => parts.filter(Boolean).join(", "))
+    .filter((query, index, queries) => query && queries.indexOf(query) === index);
 }
 
 function getCachedCoordinates(key: string) {
@@ -62,46 +92,71 @@ function getCachedCoordinates(key: string) {
   }
 }
 
+function getKnownFallbackCoordinates(stay: Stay, index: number) {
+  const haystack = normalize(
+    [stay.address, stay.neighborhood, stay.hospital, stay.city].filter(Boolean).join(" "),
+  );
+  const fallback = knownLocationFallbacks.find((location) =>
+    location.keys.every((key) => haystack.includes(key)),
+  );
+
+  if (!fallback) {
+    return null;
+  }
+
+  const offset = index * 0.0025;
+  return {
+    ...stay,
+    latitude: fallback.latitude + offset,
+    longitude: fallback.longitude + offset,
+  };
+}
+
 async function geocodeStay(stay: Stay) {
   if (typeof stay.latitude === "number" && typeof stay.longitude === "number") {
     return { ...stay, latitude: stay.latitude, longitude: stay.longitude };
   }
 
-  const query = getAddressQuery(stay);
+  const queries = getAddressQueries(stay);
 
-  if (!query) {
-    return null;
+  for (const query of queries) {
+    const cached = getCachedCoordinates(query);
+
+    if (cached) {
+      return { ...stay, ...cached };
+    }
   }
 
-  const cached = getCachedCoordinates(query);
+  for (const query of queries) {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(
+        query,
+      )}`,
+    );
+    const results = (await response.json()) as Array<{ lat: string; lon: string }>;
+    const first = results[0];
 
-  if (cached) {
-    return { ...stay, ...cached };
+    if (!first) {
+      continue;
+    }
+
+    const coordinates = {
+      latitude: Number(first.lat),
+      longitude: Number(first.lon),
+    };
+
+    if (
+      !Number.isFinite(coordinates.latitude) ||
+      !Number.isFinite(coordinates.longitude)
+    ) {
+      continue;
+    }
+
+    window.sessionStorage.setItem(`pb:geo:${query}`, JSON.stringify(coordinates));
+    return { ...stay, ...coordinates };
   }
 
-  const response = await fetch(
-    `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(
-      query,
-    )}`,
-  );
-  const results = (await response.json()) as Array<{ lat: string; lon: string }>;
-  const first = results[0];
-
-  if (!first) {
-    return null;
-  }
-
-  const coordinates = {
-    latitude: Number(first.lat),
-    longitude: Number(first.lon),
-  };
-
-  if (!Number.isFinite(coordinates.latitude) || !Number.isFinite(coordinates.longitude)) {
-    return null;
-  }
-
-  window.sessionStorage.setItem(`pb:geo:${query}`, JSON.stringify(coordinates));
-  return { ...stay, ...coordinates };
+  return null;
 }
 
 function loadLeaflet() {
@@ -155,7 +210,8 @@ export function ProximityMap({ stays }: ProximityMapProps) {
 
       for (const stay of stays) {
         try {
-          const result = await geocodeStay(stay);
+          const result =
+            (await geocodeStay(stay)) ?? getKnownFallbackCoordinates(stay, located.length);
 
           if (result) {
             located.push(result);
