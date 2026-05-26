@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { LogIn, UserPlus } from "lucide-react";
+import { Apple, LogIn, UserPlus } from "lucide-react";
 import { SiteHeader } from "../components/SiteHeader";
 import { TextField } from "../components/Field";
 import { supabase } from "../lib/supabase";
@@ -101,6 +101,27 @@ export default function EntrarPage() {
     setLoading(false);
   }
 
+  async function handleOAuth(provider: "google" | "apple") {
+    setError("");
+    setMessage("");
+
+    if (!supabase) {
+      setError("Supabase nao esta configurado neste ambiente.");
+      return;
+    }
+
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/perfil`,
+      },
+    });
+
+    if (oauthError) {
+      setError(oauthError.message);
+    }
+  }
+
   return (
     <main className="min-h-screen quiet-pattern">
       <SiteHeader current="entrar" />
@@ -181,6 +202,29 @@ export default function EntrarPage() {
                 <LogIn aria-hidden size={18} />
               )}
             </button>
+
+            <div className="relative py-2 text-center text-sm font-bold text-[var(--muted)]">
+              <span className="bg-[#fff4f7] px-3">ou continue com</span>
+            </div>
+
+            <div className="grid gap-3 md:grid-cols-2">
+              <button
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border-2 border-[var(--brand-dark)] bg-white px-5 font-black"
+                onClick={() => handleOAuth("google")}
+                type="button"
+              >
+                <span className="text-lg">G</span>
+                Google
+              </button>
+              <button
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border-2 border-[var(--brand-dark)] bg-white px-5 font-black"
+                onClick={() => handleOAuth("apple")}
+                type="button"
+              >
+                <Apple aria-hidden size={18} />
+                Apple
+              </button>
+            </div>
           </div>
         </form>
       </section>

@@ -9,6 +9,7 @@ create table public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   full_name text,
   phone text,
+  cep text,
   address text,
   city text,
   state text,
@@ -227,6 +228,10 @@ insert into storage.buckets (id, name, public)
 values ('lodging-photos', 'lodging-photos', false)
 on conflict (id) do nothing;
 
+insert into storage.buckets (id, name, public)
+values ('profile-avatars', 'profile-avatars', true)
+on conflict (id) do nothing;
+
 create policy "Hosts can upload lodging photos"
   on storage.objects for insert
   with check (
@@ -240,3 +245,28 @@ create policy "Authenticated users can read lodging photos"
     bucket_id = 'lodging-photos'
     and auth.role() = 'authenticated'
   );
+
+create policy "Users can upload own avatar"
+  on storage.objects for insert
+  with check (
+    bucket_id = 'profile-avatars'
+    and auth.role() = 'authenticated'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+create policy "Users can update own avatar"
+  on storage.objects for update
+  using (
+    bucket_id = 'profile-avatars'
+    and auth.role() = 'authenticated'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  )
+  with check (
+    bucket_id = 'profile-avatars'
+    and auth.role() = 'authenticated'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+create policy "Anyone can read profile avatars"
+  on storage.objects for select
+  using (bucket_id = 'profile-avatars');

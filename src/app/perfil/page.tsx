@@ -1,7 +1,8 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
-import { Save, UserCircle } from "lucide-react";
+import Image from "next/image";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { Camera, Save, Search, UserCircle } from "lucide-react";
 import { AuthGate } from "../components/AuthGate";
 import { TextAreaField, TextField } from "../components/Field";
 import { SiteHeader } from "../components/SiteHeader";
@@ -10,6 +11,7 @@ import { supabase } from "../lib/supabase";
 type Profile = {
   full_name: string;
   phone: string;
+  cep: string;
   address: string;
   city: string;
   state: string;
@@ -21,6 +23,7 @@ type Profile = {
 const emptyProfile: Profile = {
   full_name: "",
   phone: "",
+  cep: "",
   address: "",
   city: "",
   state: "",
@@ -29,13 +32,24 @@ const emptyProfile: Profile = {
   avatar_url: "",
 };
 
+type ViaCepResponse = {
+  erro?: boolean;
+  logradouro?: string;
+  bairro?: string;
+  localidade?: string;
+  uf?: string;
+};
+
 export default function PerfilPage() {
   const [email, setEmail] = useState("");
   const [profile, setProfile] = useState<Profile>(emptyProfile);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [cepLoading, setCepLoading] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -59,7 +73,7 @@ export default function PerfilPage() {
 
       const { data, error: profileError } = await supabase
         .from("profiles")
-        .select("full_name,phone,address,city,state,family_info,bio,avatar_url")
+        .select("full_name,phone,cep,address,city,state,family_info,bio,avatar_url")
         .eq("id", user.id)
         .maybeSingle();
 
@@ -69,17 +83,21 @@ export default function PerfilPage() {
 
       if (profileError) {
         setError(profileError.message);
-      } else if (data) {
-        setProfile({
-          full_name: data.full_name ?? "",
-          phone: data.phone ?? "",
-          address: data.address ?? "",
-          city: data.city ?? "",
-          state: data.state ?? "",
-          family_info: data.family_info ?? "",
-          bio: data.bio ?? "",
-          avatar_url: data.avatar_url ?? "",
-        });
+      } else {
+        const metadata = user.user_metadata;
+        const nextProfile = {
+          full_name: data?.full_name ?? metadata.full_name ?? "",
+          phone: data?.phone ?? metadata.phone ?? "",
+          cep: data?.cep ?? "",
+          address: data?.address ?? "",
+          city: data?.city ?? "",
+          state: data?.state ?? "",
+          family_info: data?.family_info ?? "",
+          bio: data?.bio ?? "",
+          avatar_url: data?.avatar_url ?? metadata.avatar_url ?? "",
+        };
+        setProfile(nextProfile);
+        setAvatarPreview(nextProfile.avatar_url);
       }
 
       setLoading(false);
@@ -92,10 +110,76 @@ export default function PerfilPage() {
     };
   }, []);
 
+  function updateProfile(field: keyof Profile, value: string) {
+    setProfile((current) => ({ ...current, [field]: value }));
+  }
+
+  function handleAvatarChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    setAvatarFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
+  }
+
+  async function lookupCep() {
+    const cep = profile.cep.replace(/\D/g, "");
+
+    if (cep.length !== 8) {
+      setError("Informe um CEP com 8 digitos.");
+      return;
+    }
+
+    setError("");
+    setCepLoading(true);
+
+    try {
+      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = (await response.json()) as ViaCepResponse;
+
+      if (data.erro) {
+        setError("CEP nao encontrado.");
+        setCepLoading(false);
+        return;
+      }
+
+      setProfile((current) => ({
+        ...current,
+        address: [data.logradouro, data.bairro].filter(Boolean).join(", "),
+        city: data.localidade ?? current.city,
+        state: data.uf ?? current.state,
+      }));
+    } catch {
+      setError("Nao foi possivel buscar o CEP agora.");
+    }
+
+    setCepLoading(false);
+  }
+
+  async function uploadAvatar(userId: string) {
+    if (!supabase || !avatarFile) {
+      return profile.avatar_url;
+    }
+
+    const safeName = avatarFile.name.replace(/[^a-zA-Z0-9.-]/g, "-");
+    const path = `${userId}/avatar-${Date.now()}-${safeName}`;
+    const { error: uploadError } = await supabase.storage
+      .from("profile-avatars")
+      .upload(path, avatarFile);
+
+    if (uploadError) {
+      throw new Error(uploadError.message);
+    }
+
+    const { data } = supabase.storage.from("profile-avatars").getPublicUrl(path);
+    return data.publicUrl;
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const formElement = event.currentTarget;
-    const form = new FormData(formElement);
     setError("");
     setMessage("");
     setSaving(true);
@@ -116,16 +200,24 @@ export default function PerfilPage() {
       return;
     }
 
+    let avatarUrl = profile.avatar_url;
+
+    try {
+      avatarUrl = await uploadAvatar(user.id);
+    } catch (uploadError) {
+      setError(
+        uploadError instanceof Error
+          ? uploadError.message
+          : "Nao foi possivel enviar a foto.",
+      );
+      setSaving(false);
+      return;
+    }
+
     const nextProfile = {
       id: user.id,
-      full_name: String(form.get("full_name") ?? ""),
-      phone: String(form.get("phone") ?? ""),
-      address: String(form.get("address") ?? ""),
-      city: String(form.get("city") ?? ""),
-      state: String(form.get("state") ?? ""),
-      family_info: String(form.get("family_info") ?? ""),
-      bio: String(form.get("bio") ?? ""),
-      avatar_url: String(form.get("avatar_url") ?? ""),
+      ...profile,
+      avatar_url: avatarUrl,
     };
 
     let saveError;
@@ -146,6 +238,8 @@ export default function PerfilPage() {
     }
 
     setProfile(nextProfile);
+    setAvatarPreview(avatarUrl);
+    setAvatarFile(null);
     setMessage("Perfil salvo.");
     setSaving(false);
   }
@@ -167,11 +261,21 @@ export default function PerfilPage() {
           </p>
           <div className="soft-shell mt-8 rounded-[1.5rem] p-5">
             <div className="flex items-center gap-3">
-              <UserCircle aria-hidden size={32} />
+              {avatarPreview ? (
+                <Image
+                  alt=""
+                  className="h-14 w-14 rounded-full object-cover"
+                  height={56}
+                  src={avatarPreview}
+                  width={56}
+                />
+              ) : (
+                <UserCircle aria-hidden size={48} />
+              )}
               <div>
-                <p className="font-black">{email || "Usuario autenticado"}</p>
+                <p className="font-black">{profile.full_name || email}</p>
                 <p className="text-sm font-bold text-[var(--muted)]">
-                  Sessao ativa
+                  {email}
                 </p>
               </div>
             </div>
@@ -195,50 +299,105 @@ export default function PerfilPage() {
                 </div>
               ) : null}
 
+              <div className="rounded-2xl bg-white p-4">
+                <p className="text-sm font-black">Foto de perfil</p>
+                <div className="mt-4 flex flex-wrap items-center gap-4">
+                  {avatarPreview ? (
+                    <Image
+                      alt=""
+                      className="h-20 w-20 rounded-full object-cover"
+                      height={80}
+                      src={avatarPreview}
+                      width={80}
+                    />
+                  ) : (
+                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[var(--surface-soft)]">
+                      <UserCircle aria-hidden size={40} />
+                    </div>
+                  )}
+                  <label className="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-full border-2 border-[var(--brand-dark)] bg-white px-5 text-sm font-black">
+                    <Camera aria-hidden size={18} />
+                    Enviar foto
+                    <input
+                      accept="image/*"
+                      className="sr-only"
+                      onChange={handleAvatarChange}
+                      type="file"
+                    />
+                  </label>
+                </div>
+              </div>
+
               <div className="grid gap-5 md:grid-cols-2">
                 <TextField
-                  defaultValue={profile.full_name}
                   label="Nome completo"
                   name="full_name"
+                  onChange={(event) => updateProfile("full_name", event.target.value)}
+                  value={profile.full_name}
                 />
                 <TextField
-                  defaultValue={profile.phone}
                   label="Telefone com WhatsApp"
                   name="phone"
+                  onChange={(event) => updateProfile("phone", event.target.value)}
+                  value={profile.phone}
                 />
               </div>
 
-              <TextField
-                defaultValue={profile.avatar_url}
-                hint="Por enquanto use uma URL de imagem. Depois vamos trocar por upload de foto."
-                label="Foto de perfil"
-                name="avatar_url"
-                placeholder="https://..."
-                type="url"
-              />
+              <div className="grid gap-5 md:grid-cols-[0.7fr_auto]">
+                <TextField
+                  hint="Digite o CEP e use a busca para preencher endereco, cidade e UF."
+                  label="CEP"
+                  name="cep"
+                  onChange={(event) => updateProfile("cep", event.target.value)}
+                  placeholder="00000-000"
+                  value={profile.cep}
+                />
+                <button
+                  className="mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-full border-2 border-[var(--brand-dark)] bg-white px-5 font-black disabled:opacity-60"
+                  disabled={cepLoading}
+                  onClick={lookupCep}
+                  type="button"
+                >
+                  <Search aria-hidden size={18} />
+                  {cepLoading ? "Buscando..." : "Buscar CEP"}
+                </button>
+              </div>
 
               <div className="grid gap-5 md:grid-cols-[1.4fr_0.8fr_0.5fr]">
                 <TextField
-                  defaultValue={profile.address}
                   label="Endereco"
                   name="address"
+                  onChange={(event) => updateProfile("address", event.target.value)}
+                  value={profile.address}
                 />
-                <TextField defaultValue={profile.city} label="Cidade" name="city" />
-                <TextField defaultValue={profile.state} label="UF" name="state" />
+                <TextField
+                  label="Cidade"
+                  name="city"
+                  onChange={(event) => updateProfile("city", event.target.value)}
+                  value={profile.city}
+                />
+                <TextField
+                  label="UF"
+                  name="state"
+                  onChange={(event) => updateProfile("state", event.target.value)}
+                  value={profile.state}
+                />
               </div>
 
               <TextAreaField
-                defaultValue={profile.family_info}
                 hint="Ex.: familiar em tratamento, relacao com a crianca, cidade de origem. Evite detalhes medicos sensiveis."
                 label="Familiares e contexto"
                 name="family_info"
+                onChange={(event) => updateProfile("family_info", event.target.value)}
+                value={profile.family_info}
               />
 
               <TextAreaField
-                defaultValue={profile.bio}
                 hint="Uma breve apresentacao para a equipe de moderacao."
                 label="Bio"
                 name="bio"
+                onChange={(event) => updateProfile("bio", event.target.value)}
+                value={profile.bio}
               />
 
               <button

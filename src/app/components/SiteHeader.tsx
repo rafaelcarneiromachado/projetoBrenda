@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { LogOut, UserCircle } from "lucide-react";
+import { ChevronDown, LogOut, ShieldCheck, UserCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 
@@ -26,6 +26,8 @@ const links = [
 
 export function SiteHeader({ current = "home" }: SiteHeaderProps) {
   const [email, setEmail] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!supabase) {
@@ -39,12 +41,27 @@ export function SiteHeader({ current = "home" }: SiteHeaderProps) {
       client.auth.getUser().then(({ data }) => {
         if (mounted) {
           setEmail(data.user?.email ?? "");
+          if (data.user) {
+            client
+              .from("profiles")
+              .select("avatar_url")
+              .eq("id", data.user.id)
+              .maybeSingle()
+              .then(({ data: profile }) => {
+                if (mounted) {
+                  setAvatarUrl(profile?.avatar_url ?? "");
+                }
+              });
+          }
         }
       });
     }, 0);
 
     const { data } = client.auth.onAuthStateChange((_event, session) => {
       setEmail(session?.user.email ?? "");
+      if (!session) {
+        setAvatarUrl("");
+      }
     });
 
     return () => {
@@ -98,27 +115,60 @@ export function SiteHeader({ current = "home" }: SiteHeaderProps) {
             </Link>
           ))}
           {email ? (
-            <>
-              <Link
-                className={`inline-flex items-center gap-2 rounded-full px-4 py-2 transition hover:bg-white hover:text-[var(--brand-dark)] ${
+            <div className="relative">
+              <button
+                className={`inline-flex items-center gap-2 rounded-full px-3 py-2 transition hover:bg-white hover:text-[var(--brand-dark)] ${
                   current === "perfil"
                     ? "bg-white text-[var(--brand-dark)] shadow-md shadow-[#19101420]"
                     : ""
                 }`}
-                href="/perfil"
-              >
-                <UserCircle aria-hidden size={18} />
-                Minha conta
-              </Link>
-              <button
-                className="inline-flex items-center gap-2 rounded-full px-4 py-2 font-bold transition hover:bg-white hover:text-[var(--brand-dark)]"
-                onClick={handleSignOut}
+                onClick={() => setMenuOpen((open) => !open)}
                 type="button"
               >
-                <LogOut aria-hidden size={17} />
-                Sair
+                {avatarUrl ? (
+                  <Image
+                    alt=""
+                    className="h-7 w-7 rounded-full object-cover"
+                    height={28}
+                    src={avatarUrl}
+                    width={28}
+                  />
+                ) : (
+                  <UserCircle aria-hidden size={18} />
+                )}
+                Minha conta
+                <ChevronDown aria-hidden size={16} />
               </button>
-            </>
+
+              {menuOpen ? (
+                <div className="absolute right-0 top-12 z-30 w-56 overflow-hidden rounded-3xl border border-[var(--line)] bg-white p-2 shadow-xl shadow-[#19101420]">
+                  <Link
+                    className="flex items-center gap-2 rounded-2xl px-4 py-3 text-[var(--brand-dark)] hover:bg-[var(--surface-soft)]"
+                    href="/perfil"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <UserCircle aria-hidden size={18} />
+                    Editar perfil
+                  </Link>
+                  <Link
+                    className="flex items-center gap-2 rounded-2xl px-4 py-3 text-[var(--brand-dark)] hover:bg-[var(--surface-soft)]"
+                    href="/admin"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <ShieldCheck aria-hidden size={18} />
+                    Moderacao
+                  </Link>
+                  <button
+                    className="flex w-full items-center gap-2 rounded-2xl px-4 py-3 text-left font-bold text-[var(--brand-dark)] hover:bg-[var(--surface-soft)]"
+                    onClick={handleSignOut}
+                    type="button"
+                  >
+                    <LogOut aria-hidden size={17} />
+                    Sair
+                  </button>
+                </div>
+              ) : null}
+            </div>
           ) : (
             <Link
               className={`rounded-full px-4 py-2 transition hover:bg-white hover:text-[var(--brand-dark)] ${
