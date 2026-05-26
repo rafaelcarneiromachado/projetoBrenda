@@ -132,42 +132,40 @@ export default function MissaoPage() {
         </div>
 
         <section className="mt-10 rounded-[2rem] border border-[var(--line)] bg-[var(--brand-dark)] p-6 text-white shadow-xl shadow-[#19101418] md:p-8">
-          <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
-            <div>
-              <p className="text-sm font-black uppercase tracking-[0.14em] text-[#f7a7bd]">
-                Fale Com O Projeto
-              </p>
-              <h2 className="mt-3 text-2xl font-black md:text-3xl">
-                Um canal direto para dúvidas, parcerias e acolhimento.
-              </h2>
-            </div>
+          <div>
+            <p className="text-sm font-black uppercase tracking-[0.14em] text-[#f7a7bd]">
+              Fale Com O Projeto
+            </p>
+            <h2 className="mt-3 max-w-3xl text-2xl font-black md:text-3xl">
+              Um canal direto para dúvidas, parcerias e acolhimento.
+            </h2>
+          </div>
 
-            <div className="grid gap-3 sm:grid-cols-3">
-              {contactItems.map((item) => {
-                const Icon = item.icon;
-                const content = (
-                  <div className="h-full rounded-[1.25rem] bg-white/10 p-4 ring-1 ring-white/15 transition hover:bg-white/15">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[var(--brand-dark)]">
-                      <Icon aria-hidden size={18} />
-                    </div>
-                    <p className="mt-4 text-[0.7rem] font-black uppercase tracking-[0.12em] text-[#f7a7bd]">
-                      {item.label}
-                    </p>
-                    <p className="mt-1 break-words text-sm font-black text-white">
-                      {item.value}
-                    </p>
+          <div className="mt-6 grid gap-3 md:grid-cols-3">
+            {contactItems.map((item) => {
+              const Icon = item.icon;
+              const content = (
+                <div className="h-full rounded-[1.25rem] bg-white/10 p-4 ring-1 ring-white/15 transition hover:bg-white/15">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[var(--brand-dark)]">
+                    <Icon aria-hidden size={18} />
                   </div>
-                );
+                  <p className="mt-4 text-[0.7rem] font-black uppercase tracking-[0.12em] text-[#f7a7bd]">
+                    {item.label}
+                  </p>
+                  <p className="mt-1 overflow-hidden text-ellipsis whitespace-nowrap text-sm font-black text-white">
+                    {item.value}
+                  </p>
+                </div>
+              );
 
-                return item.href ? (
-                  <Link href={item.href} key={item.label}>
-                    {content}
-                  </Link>
-                ) : (
-                  <div key={item.label}>{content}</div>
-                );
-              })}
-            </div>
+              return item.href ? (
+                <Link href={item.href} key={item.label}>
+                  {content}
+                </Link>
+              ) : (
+                <div key={item.label}>{content}</div>
+              );
+            })}
           </div>
         </section>
       </section>

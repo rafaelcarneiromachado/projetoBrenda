@@ -24,19 +24,21 @@ const contactItems = [
 export function SiteFooter() {
   return (
     <footer className="border-t border-[var(--line)] bg-white">
-      <div className="mx-auto grid max-w-6xl gap-8 px-6 py-8 md:grid-cols-[1fr_1.5fr] md:px-10 lg:px-12">
-        <div>
-          <p className="text-lg font-black text-[var(--brand-dark)]">Projeto Brenda</p>
-          <p className="mt-2 max-w-sm leading-7 text-[var(--muted)]">
-            Acolhimento solidário para aproximar famílias de pessoas dispostas a
-            oferecer um lugar seguro para descansar.
-          </p>
-          <p className="mt-5 text-sm font-bold text-[var(--muted)]">
+      <div className="mx-auto max-w-6xl px-6 py-8 md:px-10 lg:px-12">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-lg font-black text-[var(--brand-dark)]">Projeto Brenda</p>
+            <p className="mt-2 max-w-xl leading-7 text-[var(--muted)]">
+              Acolhimento solidário para aproximar famílias de pessoas dispostas a
+              oferecer um lugar seguro para descansar.
+            </p>
+          </div>
+          <p className="text-sm font-bold text-[var(--muted)]">
             © 2026 Projeto Brenda. Todos os direitos reservados.
           </p>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="mt-6 grid gap-3 md:grid-cols-3">
           {contactItems.map((item) => {
             const Icon = item.icon;
             const content = (
@@ -47,7 +49,7 @@ export function SiteFooter() {
                 <p className="mt-4 text-[0.7rem] font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
                   {item.label}
                 </p>
-                <p className="mt-1 break-words text-sm font-black text-[var(--brand-dark)]">
+                <p className="mt-1 overflow-hidden text-ellipsis whitespace-nowrap text-sm font-black text-[var(--brand-dark)]">
                   {item.value}
                 </p>
               </div>
