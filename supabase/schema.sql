@@ -181,5 +181,20 @@ create policy "Hospitals are readable"
   on public.hospitals for select
   using (true);
 
-create bucket if not exists lodging-photos
-  with (public = false);
+insert into storage.buckets (id, name, public)
+values ('lodging-photos', 'lodging-photos', false)
+on conflict (id) do nothing;
+
+create policy "Hosts can upload lodging photos"
+  on storage.objects for insert
+  with check (
+    bucket_id = 'lodging-photos'
+    and auth.role() = 'authenticated'
+  );
+
+create policy "Authenticated users can read lodging photos"
+  on storage.objects for select
+  using (
+    bucket_id = 'lodging-photos'
+    and auth.role() = 'authenticated'
+  );
