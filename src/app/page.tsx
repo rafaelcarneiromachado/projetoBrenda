@@ -14,12 +14,14 @@ import { SiteHeader } from "./components/SiteHeader";
 const featuredStays = [
   {
     title: "Quarto tranquilo",
-    meta: "0.8 km do hospital",
+    meta: "0,8 km do hospital",
+    detail: "1 cama, banho compartilhado",
     image: "/brand/stay-room.svg",
   },
   {
     title: "Edicula reservada",
     meta: "Banheiro exclusivo",
+    detail: "Entrada independente",
     image: "/brand/stay-suite.svg",
   },
 ];
@@ -54,25 +56,24 @@ export default function Home() {
     <main className="min-h-screen quiet-pattern">
       <SiteHeader current="home" />
 
-      <section className="px-6 pb-14 pt-8 md:px-10 lg:px-12">
-        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1fr_0.86fr] lg:items-center">
-          <div>
-            <p className="mb-4 text-sm font-black uppercase tracking-[0.14em] text-[var(--rose-dark)]">
-              hospedagem solidaria oncologica
+      <section className="px-5 pb-12 pt-7 md:px-8 lg:px-10">
+        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+          <div className="lg:pr-6">
+            <p className="mb-4 inline-flex rounded-full border border-[var(--line)] bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[var(--rose-dark)] shadow-sm">
+              acolhimento solidario oncologico
             </p>
-            <h1 className="max-w-3xl text-4xl font-black leading-[1.02] text-[var(--foreground)] md:text-6xl">
-              Fique perto de quem mais precisa de voce.
+            <h1 className="max-w-2xl text-4xl font-black leading-[1.03] text-[var(--foreground)] md:text-5xl">
+              Um lugar seguro para descansar perto do hospital.
             </h1>
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--muted)]">
+            <p className="mt-5 max-w-xl text-lg leading-8 text-[var(--muted)]">
               O Projeto Brenda conecta familiares de criancas e adolescentes em
-              tratamento contra o cancer a anfitrioes solidarios proximos aos
-              hospitais.
+              tratamento contra o cancer a anfitrioes solidarios verificados.
             </p>
 
-            <div className="mt-8 rounded-[2rem] border border-[var(--line)] bg-white p-3 shadow-xl shadow-[#19101412]">
-              <div className="grid gap-2 lg:grid-cols-[1fr_0.8fr_0.7fr_auto]">
+            <div className="mt-7 rounded-[1.75rem] border border-[var(--line)] bg-white p-2 shadow-xl shadow-[#19101410]">
+              <div className="grid gap-1 md:grid-cols-[1.2fr_0.95fr_0.95fr_auto]">
                 <Link
-                  className="flex min-h-16 items-center gap-3 rounded-3xl px-4 transition hover:bg-[var(--surface-soft)]"
+                  className="flex min-h-16 items-center gap-3 rounded-[1.35rem] px-4 transition hover:bg-[var(--surface-soft)]"
                   href="/buscar"
                 >
                   <MapPin aria-hidden className="shrink-0 text-[var(--rose-dark)]" />
@@ -80,13 +81,13 @@ export default function Home() {
                     <span className="block text-xs font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
                       Onde
                     </span>
-                    <span className="font-bold text-[var(--foreground)]">
+                    <span className="font-bold text-[var(--foreground)] md:whitespace-nowrap">
                       Cidade ou hospital
                     </span>
                   </span>
                 </Link>
                 <Link
-                  className="flex min-h-16 items-center gap-3 rounded-3xl px-4 transition hover:bg-[var(--surface-soft)]"
+                  className="flex min-h-16 items-center gap-3 rounded-[1.35rem] px-4 transition hover:bg-[var(--surface-soft)]"
                   href="/buscar"
                 >
                   <Users aria-hidden className="shrink-0 text-[var(--rose-dark)]" />
@@ -94,13 +95,13 @@ export default function Home() {
                     <span className="block text-xs font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
                       Quem
                     </span>
-                    <span className="font-bold text-[var(--foreground)]">
+                    <span className="font-bold text-[var(--foreground)] md:whitespace-nowrap">
                       Acompanhantes
                     </span>
                   </span>
                 </Link>
                 <Link
-                  className="flex min-h-16 items-center gap-3 rounded-3xl px-4 transition hover:bg-[var(--surface-soft)]"
+                  className="flex min-h-16 items-center gap-3 rounded-[1.35rem] px-4 transition hover:bg-[var(--surface-soft)]"
                   href="/buscar"
                 >
                   <HomeIcon aria-hidden className="shrink-0 text-[var(--rose-dark)]" />
@@ -108,13 +109,13 @@ export default function Home() {
                     <span className="block text-xs font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
                       Espaco
                     </span>
-                    <span className="font-bold text-[var(--foreground)]">
+                    <span className="font-bold text-[var(--foreground)] md:whitespace-nowrap">
                       Quarto ou sofa
                     </span>
                   </span>
                 </Link>
                 <Link
-                  className="inline-flex min-h-16 items-center justify-center gap-2 rounded-3xl bg-[var(--brand-dark)] px-6 font-black text-white transition hover:bg-[var(--brand)]"
+                  className="inline-flex min-h-16 items-center justify-center gap-2 rounded-[1.35rem] bg-[var(--brand-dark)] px-6 font-black text-white transition hover:bg-[var(--brand)]"
                   href="/buscar"
                 >
                   <Search aria-hidden size={18} />
@@ -123,69 +124,80 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="mt-8 flex flex-wrap gap-x-8 gap-y-3 text-sm font-bold text-[var(--muted)]">
+            <div className="mt-7 grid max-w-xl grid-cols-3 gap-3 text-sm font-bold text-[var(--muted)]">
               <span>
-                <strong className="text-xl text-[var(--rose-dark)]">24h</strong>{" "}
+                <strong className="block text-2xl text-[var(--rose-dark)]">24h</strong>
                 revisao cuidadosa
               </span>
               <span>
-                <strong className="text-xl text-[var(--rose-dark)]">0</strong>{" "}
+                <strong className="block text-2xl text-[var(--rose-dark)]">0</strong>
                 custo para familias
               </span>
               <span>
-                <strong className="text-xl text-[var(--rose-dark)]">100%</strong>{" "}
+                <strong className="block text-2xl text-[var(--rose-dark)]">100%</strong>
                 moderado
               </span>
             </div>
           </div>
 
-          <aside className="rounded-[2rem] border border-[var(--line)] bg-white p-4 shadow-xl shadow-[#19101412]">
-            <div className="flex items-center justify-between px-2 pb-4">
-              <div>
-                <p className="text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
-                  proximas ao hospital
-                </p>
-                <h2 className="mt-1 text-2xl font-black">Hospedagens solidarias</h2>
-              </div>
-              <Link className="text-sm font-black text-[var(--rose-dark)]" href="/buscar">
-                Ver mapa
-              </Link>
-            </div>
-
-            <div className="grid gap-3">
-              {featuredStays.map((stay) => (
+          <aside className="grid gap-4">
+            <div className="rounded-[1.75rem] border border-[var(--line)] bg-white p-4 shadow-xl shadow-[#19101410]">
+              <div className="flex items-center justify-between gap-4 px-1 pb-4">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.14em] text-[var(--rose-dark)]">
+                    perto de voce
+                  </p>
+                  <h2 className="mt-1 text-2xl font-black">Hospedagens disponiveis</h2>
+                </div>
                 <Link
-                  className="grid grid-cols-[130px_1fr] overflow-hidden rounded-[1.5rem] border border-[var(--line)] bg-[#fff8fa] transition hover:-translate-y-0.5 hover:shadow-lg"
+                  className="shrink-0 rounded-full border border-[var(--line)] px-4 py-2 text-sm font-black text-[var(--brand-dark)] transition hover:bg-[var(--surface-soft)]"
                   href="/buscar"
-                  key={stay.title}
                 >
-                  <Image
-                    alt=""
-                    className="h-full min-h-32 w-full object-cover"
-                    height={620}
-                    src={stay.image}
-                    width={900}
-                  />
-                  <div className="p-4">
-                    <p className="text-lg font-black">{stay.title}</p>
-                    <p className="mt-2 text-sm font-bold text-[var(--muted)]">
-                      {stay.meta}
-                    </p>
-                    <span className="mt-4 inline-flex rounded-full bg-white px-3 py-1 text-xs font-black text-[var(--rose-dark)]">
-                      Ver disponibilidade
-                    </span>
-                  </div>
+                  Ver mapa
                 </Link>
-              ))}
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                {featuredStays.map((stay) => (
+                  <Link
+                    className="overflow-hidden rounded-[1.25rem] border border-[var(--line)] bg-white transition hover:-translate-y-0.5 hover:shadow-lg"
+                    href="/buscar"
+                    key={stay.title}
+                  >
+                    <Image
+                      alt=""
+                      className="aspect-[4/3] w-full bg-[var(--surface-soft)] object-cover"
+                      height={620}
+                      src={stay.image}
+                      width={900}
+                    />
+                    <div className="p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <p className="font-black">{stay.title}</p>
+                        <span className="rounded-full bg-[var(--surface-soft)] px-2 py-1 text-xs font-black text-[var(--rose-dark)]">
+                          Gratis
+                        </span>
+                      </div>
+                      <p className="mt-2 text-sm font-bold text-[var(--muted)]">
+                        {stay.meta}
+                      </p>
+                      <p className="mt-1 text-sm text-[var(--muted)]">{stay.detail}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </div>
 
-            <div className="mt-4 rounded-[1.5rem] bg-[var(--brand-dark)] p-5 text-white">
-              <p className="text-sm font-black uppercase tracking-[0.12em] text-[#f7a7bd]">
-                principio central
-              </p>
-              <p className="mt-2 text-xl font-black leading-7">
-                Seguranca antes de escala. Acolhimento antes de automacao.
-              </p>
+            <div className="grid gap-3 rounded-[1.75rem] bg-[var(--brand-dark)] p-5 text-white shadow-xl shadow-[#19101418] sm:grid-cols-[1fr_auto] sm:items-center">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.14em] text-[#f7a7bd]">
+                  principio central
+                </p>
+                <p className="mt-2 text-xl font-black leading-7">
+                  Seguranca antes de escala. Acolhimento antes de automacao.
+                </p>
+              </div>
+              <ShieldCheck aria-hidden className="hidden text-[#f7a7bd] sm:block" size={46} />
             </div>
           </aside>
         </div>
@@ -208,10 +220,10 @@ export default function Home() {
 
               return (
                 <article
-                  className="rounded-3xl border border-[var(--line)] bg-[var(--surface-soft)] p-6 shadow-sm"
+                  className="rounded-[1.5rem] border border-[var(--line)] bg-white p-6 shadow-sm"
                   key={step.title}
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--brand-dark)] text-white shadow-md shadow-[#19101430]">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--brand-dark)] text-white shadow-md shadow-[#19101425]">
                     <Icon aria-hidden size={24} />
                   </div>
                   <h3 className="mt-5 text-xl font-black">{step.title}</h3>
@@ -241,10 +253,10 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="rounded-[2rem] border border-[var(--line)] bg-white p-6 shadow-xl shadow-[#19101412]">
+          <div className="rounded-[1.75rem] border border-[var(--line)] bg-white p-6 shadow-xl shadow-[#19101410]">
             <div className="grid gap-3">
               {safeguards.map((item) => (
-                <div className="flex gap-3 rounded-2xl bg-[#fff8fa] px-4 py-4" key={item}>
+                <div className="flex gap-3 rounded-2xl bg-[var(--surface-soft)] px-4 py-4" key={item}>
                   <CheckCircle2
                     aria-hidden
                     className="mt-0.5 shrink-0 text-[var(--rose-dark)]"

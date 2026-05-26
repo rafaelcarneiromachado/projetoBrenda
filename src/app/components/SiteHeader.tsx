@@ -18,10 +18,15 @@ type SiteHeaderProps = {
 };
 
 const links = [
-  { href: "/", label: "Inicio", key: "home" },
-  { href: "/buscar", label: "Buscar hospedagem", key: "buscar" },
-  { href: "/familias", label: "Preciso de hospedagem", key: "familias" },
-  { href: "/anfitrioes", label: "Quero acolher", key: "anfitrioes" },
+  { href: "/", label: "Inicio", shortLabel: "Inicio", key: "home" },
+  { href: "/buscar", label: "Buscar hospedagem", shortLabel: "Buscar", key: "buscar" },
+  {
+    href: "/familias",
+    label: "Preciso de hospedagem",
+    shortLabel: "Preciso",
+    key: "familias",
+  },
+  { href: "/anfitrioes", label: "Quero acolher", shortLabel: "Acolher", key: "anfitrioes" },
 ];
 
 export function SiteHeader({ current = "home" }: SiteHeaderProps) {
@@ -80,16 +85,16 @@ export function SiteHeader({ current = "home" }: SiteHeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-20 border-b border-[var(--line)] bg-[#fff4f7]/94 backdrop-blur">
-      <nav className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-4 md:flex-row md:items-center md:justify-between md:px-10 lg:px-12">
-        <Link className="flex items-center gap-3" href="/">
+    <header className="sticky top-0 z-20 border-b border-[var(--line)] bg-white/95 backdrop-blur">
+      <nav className="mx-auto flex max-w-6xl flex-col gap-3 px-5 py-3 md:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-10">
+        <Link className="flex shrink-0 items-center gap-3" href="/">
           <Image
             alt=""
-            className="h-11 w-11 rounded-2xl"
-            height={44}
+            className="h-10 w-10 rounded-2xl"
+            height={40}
             priority
             src="/brand/logo-brenda.svg"
-            width={44}
+            width={40}
           />
           <span className="leading-tight">
             <span className="block text-lg font-black text-[var(--brand-dark)]">
@@ -100,26 +105,27 @@ export function SiteHeader({ current = "home" }: SiteHeaderProps) {
             </span>
           </span>
         </Link>
-        <div className="flex flex-wrap gap-2 text-sm font-bold text-[var(--muted)]">
+        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 text-sm font-bold text-[var(--muted)] [scrollbar-width:none] lg:mx-0 lg:overflow-visible lg:pb-0">
           {links.map((link) => (
             <Link
-              className={`rounded-full px-4 py-2 transition hover:bg-white hover:text-[var(--brand-dark)] ${
+              className={`shrink-0 rounded-full px-4 py-2 transition hover:bg-[var(--surface-soft)] hover:text-[var(--brand-dark)] ${
                 current === link.key
-                  ? "bg-white text-[var(--brand-dark)] shadow-md shadow-[#19101420]"
+                  ? "bg-[var(--brand-dark)] text-white shadow-md shadow-[#19101420] hover:bg-[var(--brand-dark)] hover:text-white"
                   : ""
               }`}
               href={link.href}
               key={link.key}
             >
-              {link.label}
+              <span className="sm:hidden">{link.shortLabel}</span>
+              <span className="hidden sm:inline">{link.label}</span>
             </Link>
           ))}
           {email ? (
-            <div className="relative">
+            <div className="relative shrink-0">
               <button
-                className={`inline-flex items-center gap-2 rounded-full px-3 py-2 transition hover:bg-white hover:text-[var(--brand-dark)] ${
+                className={`inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 shadow-sm ring-1 ring-[var(--line)] transition hover:bg-[var(--surface-soft)] hover:text-[var(--brand-dark)] ${
                   current === "perfil"
-                    ? "bg-white text-[var(--brand-dark)] shadow-md shadow-[#19101420]"
+                    ? "text-[var(--brand-dark)] shadow-md shadow-[#19101420]"
                     : ""
                 }`}
                 onClick={() => setMenuOpen((open) => !open)}
@@ -171,9 +177,9 @@ export function SiteHeader({ current = "home" }: SiteHeaderProps) {
             </div>
           ) : (
             <Link
-              className={`rounded-full px-4 py-2 transition hover:bg-white hover:text-[var(--brand-dark)] ${
+              className={`shrink-0 rounded-full px-4 py-2 transition hover:bg-[var(--surface-soft)] hover:text-[var(--brand-dark)] ${
                 current === "entrar"
-                  ? "bg-white text-[var(--brand-dark)] shadow-md shadow-[#19101420]"
+                  ? "bg-[var(--brand-dark)] text-white shadow-md shadow-[#19101420] hover:bg-[var(--brand-dark)] hover:text-white"
                   : ""
               }`}
               href="/entrar"
