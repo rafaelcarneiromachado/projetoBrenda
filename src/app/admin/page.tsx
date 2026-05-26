@@ -60,7 +60,7 @@ export default function AdminPage() {
               </div>
               <p className="leading-6 text-[var(--muted)]">{request.need}</p>
               <div>
-                <span className="inline-flex rounded-full bg-[#f7efe3] px-3 py-1 font-black text-[var(--brand-dark)]">
+                <span className="inline-flex rounded-full bg-[var(--surface-soft)] px-3 py-1 font-black text-[var(--brand-dark)]">
                   {request.status}
                 </span>
               </div>

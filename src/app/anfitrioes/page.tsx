@@ -97,7 +97,7 @@ export default function AnfitrioesPage() {
             </span>
           </label>
 
-          <button className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--brand-dark)] px-6 font-black text-white shadow-lg shadow-[#093f3940] transition hover:bg-[var(--brand)]">
+          <button className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--brand-dark)] px-6 font-black text-white shadow-lg shadow-[#19101435] transition hover:bg-[var(--brand)]">
             Enviar oferta
             <HeartHandshake aria-hidden size={18} />
           </button>

@@ -62,7 +62,7 @@ export default function Home() {
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--brand-dark)] px-6 font-black text-white shadow-lg shadow-[#093f3940] transition hover:bg-[var(--brand)]"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--brand-dark)] px-6 font-black text-white shadow-lg shadow-[#19101435] transition hover:bg-[var(--brand)]"
                 href="/familias"
               >
                 Preciso de hospedagem
@@ -132,7 +132,7 @@ export default function Home() {
                   className="rounded-3xl border border-[var(--line)] bg-[var(--surface-soft)] p-6 shadow-sm"
                   key={step.title}
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--brand-dark)] text-white shadow-md shadow-[#093f3930]">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--brand-dark)] text-white shadow-md shadow-[#19101430]">
                     <Icon aria-hidden size={24} />
                   </div>
                   <h3 className="mt-5 text-xl font-black">{step.title}</h3>

@@ -21,7 +21,7 @@ function FieldFrame({ label, hint, children }: BaseProps) {
 }
 
 const inputClass =
-  "min-h-12 w-full rounded-2xl border border-[var(--line)] bg-white px-4 text-[var(--foreground)] outline-none transition focus:border-[var(--brand)] focus:ring-4 focus:ring-[#99f6e4]/50";
+  "min-h-12 w-full rounded-2xl border border-[var(--line)] bg-white px-4 text-[var(--foreground)] outline-none transition focus:border-[var(--brand)] focus:ring-4 focus:ring-[#f7a7bd]/45";
 
 export function TextField({
   label,

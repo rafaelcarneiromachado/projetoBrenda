@@ -14,7 +14,7 @@ const links = [
 
 export function SiteHeader({ current = "home" }: SiteHeaderProps) {
   return (
-    <header className="sticky top-0 z-20 border-b border-[var(--line)] bg-[#fff7ed]/94 backdrop-blur">
+    <header className="sticky top-0 z-20 border-b border-[var(--line)] bg-[#fff4f7]/94 backdrop-blur">
       <nav className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-4 md:flex-row md:items-center md:justify-between md:px-10 lg:px-12">
         <Link className="flex items-center gap-3" href="/">
           <Image
@@ -39,7 +39,7 @@ export function SiteHeader({ current = "home" }: SiteHeaderProps) {
             <Link
               className={`rounded-full px-4 py-2 transition hover:bg-white hover:text-[var(--brand-dark)] ${
                 current === link.key
-                  ? "bg-white text-[var(--brand-dark)] shadow-md shadow-[#173b3420]"
+                  ? "bg-white text-[var(--brand-dark)] shadow-md shadow-[#19101420]"
                   : ""
               }`}
               href={link.href}
