@@ -127,7 +127,7 @@ const moderationFilters: Array<{ label: string; value: ModerationFilter }> = [
 ];
 
 function filterButtonClass(isActive: boolean) {
-  return `${compactButton} ${
+  return `inline-flex h-8 items-center justify-center gap-1.5 rounded-full px-2.5 text-xs font-black leading-none transition ${
     isActive
       ? "bg-[var(--brand-dark)] text-white shadow-sm"
       : "bg-white text-[var(--brand-dark)] hover:bg-[var(--surface-soft)]"
