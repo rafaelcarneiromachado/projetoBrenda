@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { SiteHeader } from "./components/SiteHeader";
+
 const stats = [
   { value: "1", label: "rede inicial focada em seguranca" },
   { value: "3", label: "perfis essenciais: familia, anfitriao e moderacao" },
@@ -13,19 +16,9 @@ const steps = [
 export default function Home() {
   return (
     <main className="min-h-screen">
+      <SiteHeader current="home" />
       <section className="border-b border-[var(--line)] bg-[var(--surface)]">
         <div className="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-6 md:px-10 lg:px-12">
-          <nav className="flex items-center justify-between gap-4">
-            <a className="text-lg font-bold text-[var(--brand-dark)]" href="#">
-              Projeto Brenda
-            </a>
-            <div className="hidden items-center gap-6 text-sm text-[var(--muted)] md:flex">
-              <a href="#como-funciona">Como funciona</a>
-              <a href="#mvp">MVP</a>
-              <a href="#seguranca">Seguranca</a>
-            </div>
-          </nav>
-
           <div className="grid gap-10 pb-12 pt-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div className="max-w-3xl">
               <p className="mb-4 text-sm font-bold uppercase tracking-[0.12em] text-[var(--brand)]">
@@ -40,18 +33,18 @@ export default function Home() {
                 aos hospitais.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <a
+                <Link
                   className="inline-flex min-h-12 items-center justify-center rounded-md bg-[var(--brand)] px-6 font-bold text-white transition hover:bg-[var(--brand-dark)]"
-                  href="#mvp"
+                  href="/familias"
                 >
-                  Ver primeira versao
-                </a>
-                <a
+                  Preciso de hospedagem
+                </Link>
+                <Link
                   className="inline-flex min-h-12 items-center justify-center rounded-md border border-[var(--line)] bg-white px-6 font-bold text-[var(--foreground)] transition hover:border-[var(--brand)]"
-                  href="#seguranca"
+                  href="/anfitrioes"
                 >
-                  Entender seguranca
-                </a>
+                  Quero acolher
+                </Link>
               </div>
             </div>
 
