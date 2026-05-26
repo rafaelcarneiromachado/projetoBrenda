@@ -424,10 +424,12 @@ export default function AnfitrioesPage() {
       eyebrow="Oferta solidária"
       title="Ofereça um espaço seguro para uma família descansar."
       description="Este cadastro é para pessoas que moram perto de hospitais e podem oferecer hospedagem temporária, gratuita e verificada."
+      layout="single"
     >
       <AuthGate
         message="Para cadastrar um espaço, precisamos confirmar seu acesso e proteger as informações do local."
       >
+        {hostLodgings.length > 0 ? (
         <section className="soft-shell mb-6 rounded-[2rem] p-5 md:p-7">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
@@ -443,12 +445,7 @@ export default function AnfitrioesPage() {
             </div>
           ) : null}
           <div className="mt-5 grid gap-4">
-            {hostLodgings.length === 0 ? (
-              <p className="rounded-2xl bg-white p-4 font-bold text-[var(--muted)]">
-                Você ainda não cadastrou nenhuma hospedagem.
-              </p>
-            ) : (
-              hostLodgings.map((lodging) => (
+            {hostLodgings.map((lodging) => (
                 <article
                   className="overflow-hidden rounded-[1.5rem] border border-[var(--line)] bg-white"
                   key={lodging.id}
@@ -626,10 +623,10 @@ export default function AnfitrioesPage() {
                     </form>
                   ) : null}
                 </article>
-              ))
-            )}
+            ))}
           </div>
         </section>
+        ) : null}
 
         <form
           className="soft-shell rounded-[2rem] p-5 md:p-7"
@@ -648,7 +645,7 @@ export default function AnfitrioesPage() {
               </div>
             ) : null}
 
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="grid gap-5">
             <TextField
               label="Nome completo"
               name="name"
@@ -666,7 +663,7 @@ export default function AnfitrioesPage() {
             />
           </div>
 
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="grid gap-5">
             <TextField label="E-mail da conta" name="email" readOnly value={profile.email} />
             <TextField
               label="Cidade"
@@ -677,7 +674,7 @@ export default function AnfitrioesPage() {
             />
           </div>
 
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="grid gap-5">
             <TextField label="Bairro" name="neighborhood" required />
             <TextField
               hint="Nesta fase, use um endereço aproximado. O endereço completo só deve ser compartilhado após verificação."
@@ -689,7 +686,7 @@ export default function AnfitrioesPage() {
             />
           </div>
 
-          <div className="grid gap-5 md:grid-cols-3">
+          <div className="grid gap-5">
             <SelectField label="Tipo de espaço" name="spaceType" required>
               <option value="">Selecione</option>
               <option>Quarto</option>
@@ -712,7 +709,7 @@ export default function AnfitrioesPage() {
             </SelectField>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="grid gap-5">
             <TextField label="Dias disponíveis" name="availability" placeholder="Ex.: segunda a sexta" required />
             <TextField label="Hospital mais próximo" name="nearestHospital" />
           </div>
