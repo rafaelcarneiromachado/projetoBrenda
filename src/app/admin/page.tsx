@@ -100,7 +100,13 @@ const roleLabels: Record<ProfileSummary["role"], string> = {
 };
 
 const compactButton =
-  "inline-flex min-h-9 items-center justify-center gap-2 rounded-full px-3 text-sm font-black transition disabled:opacity-40";
+  "inline-flex h-9 items-center justify-center gap-1.5 rounded-full px-3 text-sm font-black leading-none transition disabled:opacity-40";
+
+const secondaryActionButton =
+  `${compactButton} border border-transparent bg-white text-[var(--brand-dark)] shadow-sm hover:bg-[var(--surface-soft)]`;
+
+const primaryActionButton =
+  `${compactButton} bg-[var(--brand-dark)] text-white shadow-sm hover:bg-[var(--brand)]`;
 
 export default function AdminPage() {
   const [lodgings, setLodgings] = useState<Lodging[]>([]);
@@ -379,7 +385,7 @@ export default function AdminPage() {
                   className="border-b border-[var(--line)] bg-white/60 px-5 py-5 text-sm last:border-0"
                   key={lodging.id}
                 >
-                  <div className="grid gap-4 lg:grid-cols-[1fr_0.55fr_0.9fr]">
+                  <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_120px_auto] lg:items-center">
                     <div>
                       <p className="flex items-center gap-2 text-base font-black">
                         <ClipboardCheck aria-hidden size={16} />
@@ -393,14 +399,14 @@ export default function AdminPage() {
                         {lodging.bathroom} · {lodging.nearest_hospital || "Hospital não informado"}
                       </p>
                     </div>
-                    <div>
+                    <div className="flex items-center lg:justify-center">
                       <span className="inline-flex rounded-full bg-[var(--surface-soft)] px-3 py-1 font-black text-[var(--brand-dark)]">
                         {statusLabels[lodging.status] ?? lodging.status}
                       </span>
                     </div>
-                    <div className="flex flex-wrap gap-2 lg:justify-end">
+                    <div className="flex flex-wrap items-center gap-1.5 rounded-full border border-[var(--line)] bg-[#fff9fb] p-1 lg:justify-end">
                       <button
-                        className={`${compactButton} border border-[var(--line)] bg-white text-[var(--brand-dark)] hover:bg-[var(--surface-soft)]`}
+                        className={secondaryActionButton}
                         onClick={() => toggleLodgingDetails(lodging.id)}
                         type="button"
                       >
@@ -408,7 +414,7 @@ export default function AdminPage() {
                         {expandedLodgingId === lodging.id ? "Ocultar" : "Ver detalhes"}
                       </button>
                       <button
-                        className={`${compactButton} bg-[var(--brand-dark)] text-white hover:bg-[var(--brand)]`}
+                        className={primaryActionButton}
                         disabled={lodging.status === "approved"}
                         onClick={() => updateLodgingStatus(lodging.id, "approved")}
                         type="button"
@@ -417,7 +423,7 @@ export default function AdminPage() {
                         Aprovar
                       </button>
                       <button
-                        className={`${compactButton} border border-[var(--line)] bg-white text-[var(--brand-dark)] hover:bg-[var(--surface-soft)]`}
+                        className={secondaryActionButton}
                         disabled={lodging.status === "rejected"}
                         onClick={() => updateLodgingStatus(lodging.id, "rejected")}
                         type="button"
@@ -568,7 +574,7 @@ export default function AdminPage() {
                   className="border-b border-[var(--line)] bg-white/60 px-5 py-5 text-sm last:border-0"
                   key={request.id}
                 >
-                  <div className="grid gap-4 lg:grid-cols-[1fr_0.7fr_0.7fr]">
+                  <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_0.7fr_auto] lg:items-center">
                     <div>
                       <p className="font-black">{request.responsible_name}</p>
                       <p className="mt-1 text-[var(--muted)]">
@@ -580,12 +586,12 @@ export default function AdminPage() {
                       {request.people_count} pessoa{request.people_count > 1 ? "s" : ""} por{" "}
                       {request.nights} noite{request.nights > 1 ? "s" : ""}
                     </p>
-                    <div className="flex flex-wrap gap-2 lg:justify-end">
+                    <div className="flex flex-wrap items-center gap-1.5 rounded-full border border-[var(--line)] bg-[#fff9fb] p-1 lg:justify-end">
                       <span className="inline-flex rounded-full bg-[var(--surface-soft)] px-3 py-2 font-black text-[var(--brand-dark)]">
                         {statusLabels[request.status] ?? request.status}
                       </span>
                       <button
-                        className={`${compactButton} border border-[var(--line)] bg-white text-[var(--brand-dark)] hover:bg-[var(--surface-soft)]`}
+                        className={secondaryActionButton}
                         onClick={() => toggleRequestDetails(request.id)}
                         type="button"
                       >
