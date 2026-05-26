@@ -125,7 +125,7 @@ export default function BuscarPage() {
             <p className="inline-flex rounded-full bg-white px-4 py-2 text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)] shadow-sm">
               Buscar Acolhimento
             </p>
-            <h1 className="mt-4 text-3xl font-black md:text-5xl">
+            <h1 className="mt-4 text-3xl font-black md:text-4xl lg:whitespace-nowrap">
               Encontre uma hospedagem solidária perto do hospital.
             </h1>
           </div>
