@@ -11,52 +11,14 @@ import {
   Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { LodgingPhotoCarousel } from "./components/LodgingPhotoCarousel";
 import { SiteHeader } from "./components/SiteHeader";
-import { Stay } from "./data/stays";
-import { loadApprovedStays } from "./lib/publicLodgings";
 import { supabase } from "./lib/supabase";
-
-type FeaturedStay = {
-  title: string;
-  meta: string;
-  detail: string;
-  image: string;
-  images?: string[];
-};
 
 type ImpactCounts = {
   available_lodgings: number;
   lodging_requests: number;
   registered_users: number;
 };
-
-const fallbackFeaturedStays: FeaturedStay[] = [
-  {
-    title: "Quarto tranquilo",
-    meta: "0,8 km do hospital",
-    detail: "1 cama, banho compartilhado",
-    image: "/brand/stay-room.svg",
-    images: ["/brand/stay-room.svg"],
-  },
-  {
-    title: "Edícula reservada",
-    meta: "Banheiro exclusivo",
-    detail: "Entrada independente",
-    image: "/brand/stay-suite.svg",
-    images: ["/brand/stay-suite.svg"],
-  },
-];
-
-function toFeaturedStays(stays: Stay[]): FeaturedStay[] {
-  return stays.slice(0, 2).map((stay) => ({
-    title: stay.title,
-    meta: `${stay.distanceKm.toFixed(1).replace(".", ",")} km do hospital`,
-    detail: `${stay.capacity} pessoa${stay.capacity > 1 ? "s" : ""}, banheiro ${stay.bathroom.toLowerCase()}`,
-    image: stay.image,
-    images: stay.images ?? [stay.image],
-  }));
-}
 
 const steps = [
   {
@@ -84,7 +46,6 @@ const safeguards = [
 ];
 
 export default function Home() {
-  const [featuredStays, setFeaturedStays] = useState(fallbackFeaturedStays);
   const [impactCounts, setImpactCounts] = useState<ImpactCounts>({
     available_lodgings: 0,
     lodging_requests: 0,
@@ -99,22 +60,15 @@ export default function Home() {
     let mounted = true;
     const client = supabase;
 
-    async function loadFeaturedStays() {
-      const [approvedStays, countsResult] = await Promise.all([
-        loadApprovedStays(client),
-        client.rpc("public_impact_counts").maybeSingle(),
-      ]);
-
-      if (mounted && approvedStays.length > 0) {
-        setFeaturedStays(toFeaturedStays(approvedStays));
-      }
+    async function loadImpactCounts() {
+      const countsResult = await client.rpc("public_impact_counts").maybeSingle();
 
       if (mounted && countsResult.data) {
         setImpactCounts(countsResult.data as ImpactCounts);
       }
     }
 
-    loadFeaturedStays();
+    loadImpactCounts();
 
     return () => {
       mounted = false;
@@ -155,7 +109,7 @@ export default function Home() {
       </section>
 
       <section className="px-5 pb-6 pt-5 md:px-8 lg:px-10">
-        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-stretch">
           <div className="lg:pr-6">
             <p className="mb-4 inline-flex rounded-full border border-[var(--line)] bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[var(--rose-dark)] shadow-sm">
               acolhimento solidário familiar
@@ -224,62 +178,29 @@ export default function Home() {
 
           </div>
 
-          <aside className="grid gap-4">
-            <div className="rounded-[1.75rem] border border-[var(--line)] bg-white p-4 shadow-xl shadow-[#19101410]">
-              <div className="flex items-center justify-between gap-4 px-1 pb-4">
-                <div>
-                  <p className="text-xs font-black uppercase tracking-[0.14em] text-[var(--rose-dark)]">
-                    perto de você
-                  </p>
-                  <h2 className="mt-1 text-2xl font-black">Hospedagens disponíveis</h2>
-                </div>
-                <Link
-                  className="shrink-0 rounded-full border border-[var(--line)] px-4 py-2 text-sm font-black text-[var(--brand-dark)] transition hover:bg-[var(--surface-soft)]"
-                  href="/buscar"
-                >
-                  Ver mapa
-                </Link>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-2">
-                {featuredStays.map((stay) => (
-                  <Link
-                    className="overflow-hidden rounded-[1.25rem] border border-[var(--line)] bg-white transition hover:-translate-y-0.5 hover:shadow-lg"
-                    href="/buscar"
-                    key={stay.title}
-                  >
-                    <LodgingPhotoCarousel
-                      className="aspect-[4/3] w-full bg-[var(--surface-soft)] object-cover"
-                      images={stay.images ?? [stay.image]}
-                      title={stay.title}
-                    />
-                    <div className="p-4">
-                      <div className="flex items-start justify-between gap-3">
-                        <p className="font-black">{stay.title}</p>
-                        <span className="rounded-full bg-[var(--surface-soft)] px-2 py-1 text-xs font-black text-[var(--rose-dark)]">
-                          Grátis
-                        </span>
-                      </div>
-                      <p className="mt-2 text-sm font-bold text-[var(--muted)]">
-                        {stay.meta}
-                      </p>
-                      <p className="mt-1 text-sm text-[var(--muted)]">{stay.detail}</p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            <div className="grid gap-3 rounded-[1.75rem] bg-[var(--brand-dark)] p-5 text-white shadow-xl shadow-[#19101418] sm:grid-cols-[1fr_auto] sm:items-center">
+          <aside className="flex">
+            <div className="flex min-h-full w-full flex-col justify-between rounded-[1.75rem] bg-[var(--brand-dark)] p-7 text-white shadow-xl shadow-[#19101418]">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.14em] text-[#f7a7bd]">
                   princípio central
                 </p>
-                <p className="mt-2 text-xl font-black leading-7">
+                <p className="mt-4 text-2xl font-black leading-8">
                   Segurança antes de escala. Acolhimento antes de automação.
                 </p>
+                <p className="mt-5 leading-7 text-white/75">
+                  Cada pedido e cada oferta passam por revisão humana antes de aproximar
+                  família e anfitrião.
+                </p>
               </div>
-              <ShieldCheck aria-hidden className="hidden text-[#f7a7bd] sm:block" size={46} />
+              <div className="mt-8 flex items-end justify-between gap-4">
+                <Link
+                  className="inline-flex min-h-11 items-center justify-center rounded-full bg-white px-5 text-sm font-black text-[var(--brand-dark)] transition hover:bg-[#ffe8ef]"
+                  href="/missao"
+                >
+                  Conhecer a missão
+                </Link>
+                <ShieldCheck aria-hidden className="text-[#f7a7bd]" size={54} />
+              </div>
             </div>
           </aside>
         </div>
