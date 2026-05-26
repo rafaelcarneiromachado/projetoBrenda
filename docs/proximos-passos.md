@@ -2,7 +2,7 @@
 
 ## Fase 0: Fundacao
 
-- Definir escopo do MVP.
+- Definir escopo do produto.
 - Definir arquitetura inicial.
 - Definir regras de seguranca e moderacao.
 - Definir telas essenciais.
@@ -14,7 +14,7 @@
 - Criar paginas principais.
 - Criar formulario de familia.
 - Criar formulario de anfitriao.
-- Criar painel admin inicial com dados simulados.
+- Criar painel admin inicial para revisao operacional.
 
 ## Fase 2: Banco e autenticacao
 
@@ -24,7 +24,7 @@
 - Configurar permissoes.
 - Conectar formularios ao banco.
 
-## Fase 3: Operacao piloto
+## Fase 3: Operacao inicial
 
 - Testar com poucas pessoas.
 - Ajustar perguntas dos formularios.

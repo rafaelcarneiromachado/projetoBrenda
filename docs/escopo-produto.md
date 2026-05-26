@@ -1,4 +1,4 @@
-# Escopo do MVP
+# Escopo do produto
 
 ## Problema
 
@@ -14,7 +14,7 @@ O Projeto Brenda conecta familiares em tratamento oncologico infantil com anfitr
 2. Anfitriao que pode oferecer um espaco.
 3. Administrador ou moderador do Projeto Brenda.
 
-## Funcionalidades da primeira versao
+## Funcionalidades iniciais
 
 ### Familia
 
@@ -57,7 +57,7 @@ O Projeto Brenda conecta familiares em tratamento oncologico infantil com anfitr
 - Indisponivel
 - Suspensa
 
-## Fora do MVP
+## Fora da primeira entrega
 
 - Pagamentos.
 - Reserva automatica sem moderacao.

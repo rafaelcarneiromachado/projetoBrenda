@@ -4,7 +4,7 @@
 
 Comecar com uma aplicacao web responsiva, funcionando bem no celular, antes de investir em aplicativo nativo. Isso reduz custo, acelera validacao e evita depender da aprovacao inicial das lojas.
 
-## Stack recomendada para o MVP
+## Stack recomendada
 
 - Frontend: Next.js
 - Linguagem: TypeScript
@@ -26,7 +26,7 @@ Comecar com uma aplicacao web responsiva, funcionando bem no celular, antes de i
 
 ## Cuidado com dados sensiveis
 
-O projeto pode lidar com documentos, dados de saude, enderecos e informacoes de criancas. A primeira versao deve coletar apenas o minimo necessario.
+O projeto pode lidar com documentos, dados de saude, enderecos e informacoes de criancas. O produto deve coletar apenas o minimo necessario.
 
 Regras iniciais:
 

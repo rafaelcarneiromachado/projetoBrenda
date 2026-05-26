@@ -1,18 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ArrowRight,
   CheckCircle2,
   HeartHandshake,
   HomeIcon,
+  Search,
   ShieldCheck,
 } from "lucide-react";
 import { SiteHeader } from "./components/SiteHeader";
 
 const stats = [
-  { value: "1", label: "piloto com moderacao humana" },
-  { value: "3", label: "fluxos: familia, anfitriao e admin" },
-  { value: "0", label: "custo obrigatorio para testar" },
+  { value: "24h", label: "pedidos revisados com cuidado" },
+  { value: "3", label: "tipos de espaco para acolher" },
+  { value: "0", label: "custo para familias atendidas" },
 ];
 
 const steps = [
@@ -63,10 +63,10 @@ export default function Home() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--brand-dark)] px-6 font-black text-white shadow-lg shadow-[#19101435] transition hover:bg-[var(--brand)]"
-                href="/familias"
+                href="/buscar"
               >
-                Preciso de hospedagem
-                <ArrowRight aria-hidden size={18} />
+                Buscar hospedagem
+                <Search aria-hidden size={18} />
               </Link>
               <Link
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border-2 border-[var(--brand-dark)] bg-white px-6 font-black text-[var(--brand-dark)] shadow-sm transition hover:bg-[var(--surface-soft)]"
@@ -74,6 +74,42 @@ export default function Home() {
               >
                 Quero acolher
                 <HeartHandshake aria-hidden size={18} />
+              </Link>
+            </div>
+
+            <div className="soft-shell mt-8 grid gap-3 rounded-[2rem] p-4 md:grid-cols-[1fr_auto]">
+              <div className="grid gap-2 md:grid-cols-3">
+                <div className="rounded-2xl bg-white px-4 py-3">
+                  <p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
+                    Onde
+                  </p>
+                  <p className="mt-1 font-bold text-[var(--muted)]">
+                    Cidade ou hospital
+                  </p>
+                </div>
+                <div className="rounded-2xl bg-white px-4 py-3">
+                  <p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
+                    Quem
+                  </p>
+                  <p className="mt-1 font-bold text-[var(--muted)]">
+                    1 ou 2 acompanhantes
+                  </p>
+                </div>
+                <div className="rounded-2xl bg-white px-4 py-3">
+                  <p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
+                    Espaco
+                  </p>
+                  <p className="mt-1 font-bold text-[var(--muted)]">
+                    Quarto, sofa ou edicula
+                  </p>
+                </div>
+              </div>
+              <Link
+                className="inline-flex min-h-14 items-center justify-center gap-2 rounded-full bg-[var(--rose-dark)] px-6 font-black text-white transition hover:bg-[var(--brand)]"
+                href="/buscar"
+              >
+                <Search aria-hidden size={18} />
+                Pesquisar
               </Link>
             </div>
 
@@ -153,12 +189,12 @@ export default function Home() {
               cuidado operacional
             </p>
             <h2 className="mt-3 text-3xl font-black md:text-5xl">
-              O MVP nao precisa parecer grande. Precisa ser confiavel.
+              A rede precisa ser simples, segura e acolhedora.
             </h2>
             <p className="mt-5 leading-8 text-[var(--muted)]">
-              A primeira versao existe para aprender com responsabilidade:
-              poucos usuarios, moderacao manual e dados sensiveis tratados com
-              cuidado.
+              Cada pedido passa por revisao antes de aproximar familia e
+              anfitriao. O objetivo e facilitar o acolhimento sem abrir mao da
+              responsabilidade.
             </p>
           </div>
 

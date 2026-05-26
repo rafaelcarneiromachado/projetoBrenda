@@ -6,7 +6,7 @@ O Projeto Brenda nasce para conectar familias que precisam ficar perto de hospit
 
 ## Objetivo inicial
 
-Construir um MVP de baixo custo, com foco em seguranca, validacao manual e operacao simples.
+Construir o produto com baixo custo, foco em seguranca, validacao manual e operacao simples.
 
 Nesta primeira fase, o projeto deve funcionar mais como uma rede verificada de acolhimento do que como um marketplace aberto.
 
@@ -14,12 +14,12 @@ Nesta primeira fase, o projeto deve funcionar mais como uma rede verificada de a
 
 - Custo inicial baixo ou zero sempre que possivel.
 - Seguranca e verificacao antes de automacao.
-- Comecar pequeno, com uma cidade ou hospital piloto.
+- Comecar pequeno, com uma cidade ou hospital de referencia.
 - Proteger dados sensiveis de familias, criancas e anfitrioes.
 - Permitir crescimento futuro sem reescrever tudo do zero.
 
 ## Documentos
 
-- [Escopo do MVP](docs/mvp.md)
+- [Escopo do produto](docs/escopo-produto.md)
 - [Arquitetura inicial](docs/arquitetura.md)
 - [Plano de proximos passos](docs/proximos-passos.md)

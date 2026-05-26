@@ -2,14 +2,15 @@ import Link from "next/link";
 import Image from "next/image";
 
 type SiteHeaderProps = {
-  current?: "home" | "familias" | "anfitrioes" | "admin";
+  current?: "home" | "buscar" | "familias" | "anfitrioes" | "admin" | "entrar";
 };
 
 const links = [
   { href: "/", label: "Inicio", key: "home" },
+  { href: "/buscar", label: "Buscar hospedagem", key: "buscar" },
   { href: "/familias", label: "Preciso de hospedagem", key: "familias" },
   { href: "/anfitrioes", label: "Quero acolher", key: "anfitrioes" },
-  { href: "/admin", label: "Admin", key: "admin" },
+  { href: "/entrar", label: "Entrar", key: "entrar" },
 ];
 
 export function SiteHeader({ current = "home" }: SiteHeaderProps) {

@@ -35,8 +35,8 @@ export default function AdminPage() {
             Painel inicial para revisar pedidos e ofertas.
           </h1>
           <p className="mt-5 leading-8 text-[var(--muted)]">
-            Esta tela ainda usa dados simulados. Ela mostra o tipo de visao que
-            a moderacao precisara antes de conectar uma familia a um anfitriao.
+            Area interna para acompanhar solicitacoes, ofertas e revisoes antes
+            de conectar uma familia a um anfitriao.
           </p>
         </div>
 

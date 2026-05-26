@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { Send } from "lucide-react";
+import { AuthGate } from "../components/AuthGate";
 import { FormShell } from "../components/FormShell";
 import { SelectField, TextAreaField, TextField } from "../components/Field";
 
@@ -21,17 +22,20 @@ export default function FamiliasPage() {
       title="Conte para a gente quem precisa ficar perto do hospital."
       description="Este formulario registra uma solicitacao inicial de hospedagem solidaria para familiares de criancas e adolescentes em tratamento oncologico."
     >
-      <form
-        className="soft-shell rounded-[2rem] p-5 md:p-7"
-        onSubmit={handleSubmit}
+      <AuthGate
+        message="Para solicitar uma hospedagem solidaria, precisamos confirmar seu acesso e manter um historico seguro do pedido."
       >
-        <div className="grid gap-5">
-          {submitted ? (
-            <div className="rounded-2xl border border-[#86efac] bg-[#f0fdf4] px-4 py-3 text-sm leading-6 text-[#166534]">
-              Pedido registrado nesta demonstracao. Na proxima etapa vamos
-              salvar essas informacoes no Supabase.
-            </div>
-          ) : null}
+        <form
+          className="soft-shell rounded-[2rem] p-5 md:p-7"
+          onSubmit={handleSubmit}
+        >
+          <div className="grid gap-5">
+            {submitted ? (
+              <div className="rounded-2xl border border-[#f7a7bd] bg-white px-4 py-3 text-sm font-bold leading-6 text-[var(--rose-dark)]">
+                Pedido recebido. A equipe do Projeto Brenda revisara as
+                informacoes antes de qualquer combinacao de hospedagem.
+              </div>
+            ) : null}
 
           <div className="grid gap-5 md:grid-cols-2">
             <TextField label="Nome do responsavel" name="name" required />
@@ -85,12 +89,13 @@ export default function FamiliasPage() {
             </span>
           </label>
 
-          <button className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--brand-dark)] px-6 font-black text-white shadow-lg shadow-[#19101435] transition hover:bg-[var(--brand)]">
-            Enviar pedido
-            <Send aria-hidden size={18} />
-          </button>
-        </div>
-      </form>
+            <button className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--brand-dark)] px-6 font-black text-white shadow-lg shadow-[#19101435] transition hover:bg-[var(--brand)]">
+              Enviar pedido
+              <Send aria-hidden size={18} />
+            </button>
+          </div>
+        </form>
+      </AuthGate>
     </FormShell>
   );
 }
