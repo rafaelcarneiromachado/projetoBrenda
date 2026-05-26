@@ -192,7 +192,7 @@ export default function PerfilPage() {
     setSaving(true);
 
     if (!supabase) {
-      setError("Supabase nao esta configurado neste ambiente.");
+      setError("Supabase não está configurado neste ambiente.");
       setSaving(false);
       return;
     }
@@ -223,6 +223,7 @@ export default function PerfilPage() {
 
     const nextProfile = {
       id: user.id,
+      email: user.email ?? null,
       ...profile,
       avatar_url: avatarUrl,
     };

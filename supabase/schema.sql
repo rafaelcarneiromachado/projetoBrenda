@@ -7,6 +7,7 @@ create type public.request_status as enum ('pending', 'in_review', 'matched', 'c
 
 create table public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
+  email text,
   full_name text,
   phone text,
   cep text,

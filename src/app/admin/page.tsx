@@ -59,6 +59,7 @@ type StayRequest = {
 
 type ProfileSummary = {
   id: string;
+  email: string | null;
   full_name: string | null;
   phone: string | null;
   city: string | null;
@@ -112,6 +113,7 @@ export default function AdminPage() {
   const [lodgings, setLodgings] = useState<Lodging[]>([]);
   const [requests, setRequests] = useState<StayRequest[]>([]);
   const [users, setUsers] = useState<ProfileSummary[]>([]);
+  const [userSearch, setUserSearch] = useState("");
   const [expandedLodgingId, setExpandedLodgingId] = useState("");
   const [expandedRequestId, setExpandedRequestId] = useState("");
   const [loading, setLoading] = useState(true);
@@ -172,7 +174,7 @@ export default function AdminPage() {
             .select("id,lodging_id,storage_path")
             .in("lodging_id", lodgingIds)
         : Promise.resolve({ data: [], error: null }),
-      client.from("profiles").select("id,full_name,phone,city,state,bio,role"),
+      client.from("profiles").select("id,email,full_name,phone,city,state,bio,role"),
     ]);
 
     if (conditionsResult.error) {
@@ -301,6 +303,18 @@ export default function AdminPage() {
   function toggleRequestDetails(id: string) {
     setExpandedRequestId((current) => (current === id ? "" : id));
   }
+
+  const filteredUsers = users.filter((user) => {
+    const normalizedSearch = userSearch.trim().toLowerCase();
+
+    if (!normalizedSearch) {
+      return true;
+    }
+
+    return [user.full_name, user.phone, user.email]
+      .filter(Boolean)
+      .some((value) => value!.toLowerCase().includes(normalizedSearch));
+  });
 
   return (
     <main className="min-h-screen quiet-pattern">
@@ -631,19 +645,33 @@ export default function AdminPage() {
           </section>
 
           <section className="soft-shell mt-8 overflow-hidden rounded-[2rem]">
-            <div className="border-b border-[var(--line)] bg-white/74 px-5 py-4">
-              <h2 className="text-xl font-black">Usuários e moderadores</h2>
+            <div className="grid gap-4 border-b border-[var(--line)] bg-white/74 px-5 py-4 lg:grid-cols-[1fr_360px] lg:items-center">
+              <div>
+                <h2 className="text-xl font-black">Usuários e moderadores</h2>
+                <p className="mt-1 text-sm font-bold text-[var(--muted)]">
+                  Busque por nome, telefone ou e-mail antes de promover alguém.
+                </p>
+              </div>
+              <label className="block">
+                <span className="sr-only">Buscar usuário</span>
+                <input
+                  className="min-h-11 w-full rounded-full border border-[var(--line)] bg-white px-4 text-sm font-bold outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[#f7a7bd]/35"
+                  onChange={(event) => setUserSearch(event.target.value)}
+                  placeholder="Buscar usuário"
+                  value={userSearch}
+                />
+              </label>
             </div>
             {loading ? (
               <p className="px-5 py-5 font-bold text-[var(--muted)]">Carregando...</p>
-            ) : users.length === 0 ? (
+            ) : filteredUsers.length === 0 ? (
               <p className="px-5 py-5 font-bold text-[var(--muted)]">
-                Nenhum usuário encontrado.
+                Nenhum usuário encontrado para essa busca.
               </p>
             ) : (
-              users.map((user) => (
+              filteredUsers.map((user) => (
                 <article
-                  className="grid gap-4 border-b border-[var(--line)] bg-white/60 px-5 py-5 text-sm last:border-0 lg:grid-cols-[1fr_0.45fr_auto]"
+                  className="grid gap-4 border-b border-[var(--line)] bg-white/60 px-5 py-5 text-sm last:border-0 lg:grid-cols-[minmax(0,1fr)_140px_auto] lg:items-center"
                   key={user.id}
                 >
                   <div>
@@ -652,25 +680,32 @@ export default function AdminPage() {
                       {user.full_name || "Nome não informado"}
                     </p>
                     <p className="mt-1 text-[var(--muted)]">
+                      {user.email || "E-mail não informado"}
+                      {" · "}
                       {user.phone || "Telefone não informado"}
                       {user.city ? ` · ${user.city}${user.state ? `, ${user.state}` : ""}` : ""}
                     </p>
                   </div>
-                  <div>
+                  <div className="flex items-center lg:justify-center">
                     <span className="inline-flex rounded-full bg-[var(--surface-soft)] px-3 py-1 font-black text-[var(--brand-dark)]">
                       {roleLabels[user.role] ?? user.role}
                     </span>
                   </div>
-                  <div className="flex flex-wrap gap-2 lg:justify-end">
-                    <button
-                      className={`${compactButton} bg-[var(--brand-dark)] text-white hover:bg-[var(--brand)]`}
-                      disabled={user.role === "admin"}
-                      onClick={() => promoteUserToAdmin(user)}
-                      type="button"
-                    >
-                      <UserCog aria-hidden size={15} />
-                      Tornar moderador
-                    </button>
+                  <div className="flex flex-wrap items-center gap-2 lg:justify-end">
+                    {user.role === "admin" ? (
+                      <span className="inline-flex h-9 items-center rounded-full bg-white px-3 text-sm font-black text-[var(--muted)] shadow-sm">
+                        Já é moderador
+                      </span>
+                    ) : (
+                      <button
+                        className={primaryActionButton}
+                        onClick={() => promoteUserToAdmin(user)}
+                        type="button"
+                      >
+                        <UserCog aria-hidden size={15} />
+                        Tornar moderador
+                      </button>
+                    )}
                   </div>
                 </article>
               ))

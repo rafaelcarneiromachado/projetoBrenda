@@ -54,11 +54,18 @@ export default function AnfitrioesPage() {
       return item instanceof File && item.size > 0;
     });
 
+    const { data: currentProfile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+
     await supabase.from("profiles").upsert({
       id: user.id,
+      email: user.email ?? null,
       full_name: String(form.get("name") ?? ""),
       phone: String(form.get("phone") ?? ""),
-      role: "host",
+      role: currentProfile?.role === "admin" ? "admin" : "host",
     });
 
     const { data: lodging, error: lodgingError } = await supabase

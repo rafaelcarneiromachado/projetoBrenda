@@ -16,16 +16,28 @@ export default function EntrarPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function ensureProfile(userId: string, fullName: string, phone: string) {
+  async function ensureProfile(
+    userId: string,
+    email: string,
+    fullName: string,
+    phone: string,
+  ) {
     if (!supabase) {
       return;
     }
 
+    const { data: currentProfile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", userId)
+      .maybeSingle();
+
     await supabase.from("profiles").upsert({
       id: userId,
+      email: email || null,
       full_name: fullName || null,
       phone: phone || null,
-      role: "family",
+      role: currentProfile?.role ?? "family",
     });
   }
 
@@ -78,7 +90,7 @@ export default function EntrarPage() {
     }
 
     if (result.data.user) {
-      await ensureProfile(result.data.user.id, fullName, phone);
+      await ensureProfile(result.data.user.id, result.data.user.email ?? email, fullName, phone);
     }
 
     if (mode === "signup") {
