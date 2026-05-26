@@ -14,6 +14,8 @@ export default function FamiliasPage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     setError("");
     setSubmitted(false);
     setLoading(true);
@@ -35,7 +37,6 @@ export default function FamiliasPage() {
       return;
     }
 
-    const form = new FormData(event.currentTarget);
     const people = Number(String(form.get("people")).replace(/\D/g, ""));
 
     const { error: insertError } = await supabase.from("stay_requests").insert({
@@ -59,7 +60,7 @@ export default function FamiliasPage() {
     }
 
     setSubmitted(true);
-    event.currentTarget.reset();
+    formElement.reset();
     setLoading(false);
   }
 
@@ -80,7 +81,7 @@ export default function FamiliasPage() {
           <div className="grid gap-5">
             {submitted ? (
               <div className="rounded-2xl border border-[#f7a7bd] bg-white px-4 py-3 text-sm font-bold leading-6 text-[var(--rose-dark)]">
-                Pedido recebido. A equipe do Projeto Brenda revisara as
+                Pedido recebido. A equipe do Projeto Brenda revisará as
                 informações antes de qualquer combinação de hospedagem.
               </div>
             ) : null}

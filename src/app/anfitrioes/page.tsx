@@ -23,6 +23,8 @@ export default function AnfitrioesPage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     setError("");
     setSubmitted(false);
     setLoading(true);
@@ -44,7 +46,6 @@ export default function AnfitrioesPage() {
       return;
     }
 
-    const form = new FormData(event.currentTarget);
     const spaceType = String(form.get("spaceType") ?? "");
     const city = String(form.get("city") ?? "");
     const neighborhood = String(form.get("neighborhood") ?? "");
@@ -128,7 +129,7 @@ export default function AnfitrioesPage() {
     }
 
     setSubmitted(true);
-    event.currentTarget.reset();
+    formElement.reset();
     setLoading(false);
   }
 
@@ -149,7 +150,7 @@ export default function AnfitrioesPage() {
           <div className="grid gap-5">
             {submitted ? (
               <div className="rounded-2xl border border-[#f7a7bd] bg-white px-4 py-3 text-sm font-bold leading-6 text-[var(--rose-dark)]">
-                Oferta recebida. A equipe do Projeto Brenda revisara o cadastro
+                Oferta recebida. A equipe do Projeto Brenda revisará o cadastro
                 antes de disponibilizar o espaço para solicitações.
               </div>
             ) : null}
