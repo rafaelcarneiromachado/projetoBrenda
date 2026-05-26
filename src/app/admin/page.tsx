@@ -78,6 +78,8 @@ type LodgingPhoto = {
   signed_url?: string;
 };
 
+type ModerationFilter = "pending" | "approved" | "all";
+
 const statusLabels: Record<string, string> = {
   pending: "Pendente",
   in_review: "Em revisão",
@@ -118,11 +120,27 @@ const secondaryActionButton =
 const primaryActionButton =
   `${compactButton} bg-[var(--brand-dark)] text-white shadow-sm hover:bg-[var(--brand)]`;
 
+const moderationFilters: Array<{ label: string; value: ModerationFilter }> = [
+  { label: "Pendentes", value: "pending" },
+  { label: "Aprovadas", value: "approved" },
+  { label: "Todas", value: "all" },
+];
+
+function filterButtonClass(isActive: boolean) {
+  return `${compactButton} ${
+    isActive
+      ? "bg-[var(--brand-dark)] text-white shadow-sm"
+      : "bg-white text-[var(--brand-dark)] hover:bg-[var(--surface-soft)]"
+  }`;
+}
+
 export default function AdminPage() {
   const [lodgings, setLodgings] = useState<Lodging[]>([]);
   const [requests, setRequests] = useState<StayRequest[]>([]);
   const [users, setUsers] = useState<ProfileSummary[]>([]);
   const [userSearch, setUserSearch] = useState("");
+  const [lodgingFilter, setLodgingFilter] = useState<ModerationFilter>("pending");
+  const [requestFilter, setRequestFilter] = useState<ModerationFilter>("pending");
   const [currentUserId, setCurrentUserId] = useState("");
   const [accessStatus, setAccessStatus] = useState<"checking" | "allowed" | "denied">(
     "checking",
@@ -480,6 +498,42 @@ export default function AdminPage() {
       .some((value) => value!.toLowerCase().includes(normalizedSearch));
   });
 
+  const filteredLodgings = lodgings.filter((lodging) => {
+    if (lodgingFilter === "all") {
+      return true;
+    }
+
+    return lodging.status === lodgingFilter;
+  });
+
+  const filteredRequests = requests.filter((request) => {
+    if (requestFilter === "all") {
+      return true;
+    }
+
+    return requestFilter === "approved"
+      ? request.status === "matched"
+      : request.status === "pending";
+  });
+
+  function getLodgingFilterCount(filter: ModerationFilter) {
+    if (filter === "all") {
+      return lodgings.length;
+    }
+
+    return lodgings.filter((lodging) => lodging.status === filter).length;
+  }
+
+  function getRequestFilterCount(filter: ModerationFilter) {
+    if (filter === "all") {
+      return requests.length;
+    }
+
+    return requests.filter((request) =>
+      filter === "approved" ? request.status === "matched" : request.status === "pending",
+    ).length;
+  }
+
   return (
     <main className="min-h-screen quiet-pattern">
       <SiteHeader current="admin" />
@@ -568,8 +622,21 @@ export default function AdminPage() {
           ) : null}
 
           <section className="soft-shell mt-8 overflow-hidden rounded-[2rem]">
-            <div className="border-b border-[var(--line)] bg-white/74 px-5 py-4">
-              <h2 className="text-xl font-black">Ofertas de hospedagem</h2>
+            <div className="grid gap-4 border-b border-[var(--line)] bg-white/74 px-5 py-4 lg:grid-cols-[1fr_auto] lg:items-center">
+              <h2 className="text-xl font-black">Ofertas De Hospedagem</h2>
+              <div className="flex flex-wrap items-center gap-1.5 rounded-full border border-[var(--line)] bg-[#fff9fb] p-1">
+                {moderationFilters.map((filter) => (
+                  <button
+                    className={filterButtonClass(lodgingFilter === filter.value)}
+                    key={filter.value}
+                    onClick={() => setLodgingFilter(filter.value)}
+                    type="button"
+                  >
+                    {filter.label}
+                    <span className="opacity-70">{getLodgingFilterCount(filter.value)}</span>
+                  </button>
+                ))}
+              </div>
             </div>
             {loading ? (
               <p className="px-5 py-5 font-bold text-[var(--muted)]">Carregando...</p>
@@ -577,8 +644,12 @@ export default function AdminPage() {
               <p className="px-5 py-5 font-bold text-[var(--muted)]">
                 Nenhuma oferta cadastrada ainda.
               </p>
+            ) : filteredLodgings.length === 0 ? (
+              <p className="px-5 py-5 font-bold text-[var(--muted)]">
+                Nenhuma oferta encontrada para este filtro.
+              </p>
             ) : (
-              lodgings.map((lodging) => (
+              filteredLodgings.map((lodging) => (
                 <article
                   className="border-b border-[var(--line)] bg-white/60 px-5 py-5 text-sm last:border-0"
                   key={lodging.id}
@@ -757,8 +828,21 @@ export default function AdminPage() {
           </section>
 
           <section className="soft-shell mt-8 overflow-hidden rounded-[2rem]">
-            <div className="border-b border-[var(--line)] bg-white/74 px-5 py-4">
-              <h2 className="text-xl font-black">Pedidos de famílias</h2>
+            <div className="grid gap-4 border-b border-[var(--line)] bg-white/74 px-5 py-4 lg:grid-cols-[1fr_auto] lg:items-center">
+              <h2 className="text-xl font-black">Pedidos De Famílias</h2>
+              <div className="flex flex-wrap items-center gap-1.5 rounded-full border border-[var(--line)] bg-[#fff9fb] p-1">
+                {moderationFilters.map((filter) => (
+                  <button
+                    className={filterButtonClass(requestFilter === filter.value)}
+                    key={filter.value}
+                    onClick={() => setRequestFilter(filter.value)}
+                    type="button"
+                  >
+                    {filter.label}
+                    <span className="opacity-70">{getRequestFilterCount(filter.value)}</span>
+                  </button>
+                ))}
+              </div>
             </div>
             {loading ? (
               <p className="px-5 py-5 font-bold text-[var(--muted)]">Carregando...</p>
@@ -766,8 +850,12 @@ export default function AdminPage() {
               <p className="px-5 py-5 font-bold text-[var(--muted)]">
                 Nenhum pedido cadastrado ainda.
               </p>
+            ) : filteredRequests.length === 0 ? (
+              <p className="px-5 py-5 font-bold text-[var(--muted)]">
+                Nenhum pedido encontrado para este filtro.
+              </p>
             ) : (
-              requests.map((request) => {
+              filteredRequests.map((request) => {
                 const linkedLodging = lodgings.find(
                   (lodging) => lodging.id === request.lodging_id,
                 );
