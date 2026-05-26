@@ -19,7 +19,7 @@ export default function FamiliasPage() {
     setLoading(true);
 
     if (!supabase) {
-      setError("Supabase nao esta configurado neste ambiente.");
+      setError("Supabase não está configurado neste ambiente.");
       setLoading(false);
       return;
     }
@@ -68,10 +68,10 @@ export default function FamiliasPage() {
       current="familias"
       eyebrow="Pedido de acolhimento"
       title="Conte para a gente quem precisa ficar perto do hospital."
-      description="Este formulario registra uma solicitacao inicial de hospedagem solidaria para familiares de criancas e adolescentes em tratamento oncologico."
+      description="Este formulário registra uma solicitação inicial de hospedagem solidária para familiares de pessoas em tratamento ou acompanhamento hospitalar."
     >
       <AuthGate
-        message="Para solicitar uma hospedagem solidaria, precisamos confirmar seu acesso e manter um historico seguro do pedido."
+        message="Para solicitar uma hospedagem solidária, precisamos confirmar seu acesso e manter um histórico seguro do pedido."
       >
         <form
           className="soft-shell rounded-[2rem] p-5 md:p-7"
@@ -81,7 +81,7 @@ export default function FamiliasPage() {
             {submitted ? (
               <div className="rounded-2xl border border-[#f7a7bd] bg-white px-4 py-3 text-sm font-bold leading-6 text-[var(--rose-dark)]">
                 Pedido recebido. A equipe do Projeto Brenda revisara as
-                informacoes antes de qualquer combinacao de hospedagem.
+                informações antes de qualquer combinação de hospedagem.
               </div>
             ) : null}
             {error ? (
@@ -91,7 +91,7 @@ export default function FamiliasPage() {
             ) : null}
 
           <div className="grid gap-5 md:grid-cols-2">
-            <TextField label="Nome do responsavel" name="name" required />
+            <TextField label="Nome do responsável" name="name" required />
             <TextField
               label="Telefone com WhatsApp"
               name="phone"
@@ -115,10 +115,10 @@ export default function FamiliasPage() {
             <SelectField label="Quem precisa da hospedagem?" name="guestType" required>
               <option value="">Selecione</option>
               <option>Pai</option>
-              <option>Mae</option>
-              <option>Avo ou avo</option>
-              <option>Irmao ou irma</option>
-              <option>Outro responsavel</option>
+              <option>Mãe</option>
+              <option>Avó ou avô</option>
+              <option>Irmão ou irmã</option>
+              <option>Outro responsável</option>
             </SelectField>
             <SelectField label="Quantidade de pessoas" name="people" required>
               <option value="">Selecione</option>
@@ -129,16 +129,16 @@ export default function FamiliasPage() {
           </div>
 
           <TextAreaField
-            hint="Nao inclua detalhes medicos desnecessarios. Basta explicar o contexto da viagem e da necessidade de acolhimento."
-            label="Observacoes"
+            hint="Não inclua detalhes médicos desnecessários. Basta explicar o contexto da viagem e da necessidade de acolhimento."
+            label="Observações"
             name="notes"
           />
 
           <label className="flex gap-3 rounded-2xl bg-white p-4 text-sm leading-6 text-[var(--muted)]">
             <input className="mt-1 h-4 w-4" name="consent" required type="checkbox" />
             <span>
-              Confirmo que entendo que este cadastro sera revisado manualmente
-              e que a hospedagem depende de disponibilidade e verificacao.
+              Confirmo que entendo que este cadastro será revisado manualmente
+              e que a hospedagem depende de disponibilidade e verificação.
             </span>
           </label>
 

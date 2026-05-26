@@ -36,7 +36,7 @@ export default function EntrarPage() {
     setLoading(true);
 
     if (!supabase) {
-      setError("Supabase nao esta configurado neste ambiente.");
+      setError("Supabase não está configurado neste ambiente.");
       setLoading(false);
       return;
     }
@@ -65,7 +65,7 @@ export default function EntrarPage() {
           : await supabase.auth.signInWithPassword({ email, password });
     } catch {
       setError(
-        "Nao foi possivel conectar ao Supabase. Verifique a Project URL e sua conexao.",
+        "Não foi possível conectar ao Supabase. Verifique a Project URL e sua conexão.",
       );
       setLoading(false);
       return;
@@ -106,7 +106,7 @@ export default function EntrarPage() {
     setMessage("");
 
     if (!supabase) {
-      setError("Supabase nao esta configurado neste ambiente.");
+      setError("Supabase não está configurado neste ambiente.");
       return;
     }
 
@@ -134,9 +134,9 @@ export default function EntrarPage() {
             Entre para solicitar ou oferecer hospedagem.
           </h1>
           <p className="mt-5 leading-8 text-[var(--muted)]">
-            O acesso ajuda a proteger familias, anfitrioes e informacoes
-            sensiveis. Depois do login, voce pode solicitar acolhimento ou
-            cadastrar um espaco.
+            O acesso ajuda a proteger famílias, anfitriões e informações
+            sensíveis. Depois do login, você pode solicitar acolhimento ou
+            cadastrar um espaço.
           </p>
         </div>
 
@@ -183,7 +183,7 @@ export default function EntrarPage() {
 
             <TextField label="E-mail" name="email" required type="email" />
             <TextField
-              hint={mode === "signup" ? "Use no minimo 6 caracteres." : undefined}
+              hint={mode === "signup" ? "Use no mínimo 6 caracteres." : undefined}
               label="Senha"
               minLength={6}
               name="password"
@@ -204,17 +204,17 @@ export default function EntrarPage() {
             </button>
 
             <div className="relative py-2 text-center text-sm font-bold text-[var(--muted)]">
-              <span className="bg-[#fff4f7] px-3">ou continue com</span>
+              <span className="bg-[#fff9fb] px-3">ou continue com</span>
             </div>
 
-            <div className="grid gap-3 md:grid-cols-2">
+            <div className="grid gap-3">
               <button
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border-2 border-[var(--brand-dark)] bg-white px-5 font-black"
                 onClick={() => handleOAuth("google")}
                 type="button"
               >
                 <span className="text-lg">G</span>
-                Google
+                Entrar com Google
               </button>
               <button
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border-2 border-[var(--brand-dark)] bg-white px-5 font-black"
@@ -222,7 +222,7 @@ export default function EntrarPage() {
                 type="button"
               >
                 <Apple aria-hidden size={18} />
-                Apple
+                Entrar com Apple
               </button>
             </div>
           </div>

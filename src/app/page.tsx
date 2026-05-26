@@ -19,7 +19,7 @@ const featuredStays = [
     image: "/brand/stay-room.svg",
   },
   {
-    title: "Edicula reservada",
+    title: "Edícula reservada",
     meta: "Banheiro exclusivo",
     detail: "Entrada independente",
     image: "/brand/stay-suite.svg",
@@ -30,24 +30,24 @@ const steps = [
   {
     icon: HeartHandshake,
     title: "Pedido acolhido",
-    text: "A familia informa hospital, periodo e quem precisa de um lugar para dormir.",
+    text: "A família informa hospital, período e quem precisa de um lugar para dormir.",
   },
   {
     icon: HomeIcon,
-    title: "Espaco oferecido",
-    text: "O anfitriao cadastra um quarto, sofa ou edicula com disponibilidade e regras da casa.",
+    title: "Espaço oferecido",
+    text: "O anfitrião cadastra um quarto, sofá ou edícula com disponibilidade e regras da casa.",
   },
   {
     icon: ShieldCheck,
-    title: "Conexao verificada",
-    text: "A moderacao revisa os dois lados antes de aproximar as pessoas.",
+    title: "Conexão verificada",
+    text: "A moderação revisa os dois lados antes de aproximar as pessoas.",
   },
 ];
 
 const safeguards = [
   "Cadastro revisado antes de qualquer contato.",
-  "Endereco completo protegido ate a verificacao.",
-  "Dados medicos reduzidos ao minimo necessario.",
+  "Endereço completo protegido até a verificação.",
+  "Dados pessoais reduzidos ao mínimo necessário.",
   "Rede pensada para parceria com hospitais e ONGs.",
 ];
 
@@ -56,18 +56,18 @@ export default function Home() {
     <main className="min-h-screen quiet-pattern">
       <SiteHeader current="home" />
 
-      <section className="px-5 pb-12 pt-7 md:px-8 lg:px-10">
+      <section className="px-5 pb-0 pt-7 md:px-8 lg:px-10">
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
           <div className="lg:pr-6">
             <p className="mb-4 inline-flex rounded-full border border-[var(--line)] bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[var(--rose-dark)] shadow-sm">
-              acolhimento solidario oncologico
+              acolhimento solidário familiar
             </p>
             <h1 className="max-w-2xl text-4xl font-black leading-[1.03] text-[var(--foreground)] md:text-5xl">
               Um lugar seguro para descansar perto do hospital.
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-8 text-[var(--muted)]">
-              O Projeto Brenda conecta familiares de criancas e adolescentes em
-              tratamento contra o cancer a anfitrioes solidarios verificados.
+              O Projeto Brenda conecta familiares de pessoas em tratamento ou
+              acompanhamento hospitalar a anfitriões solidários verificados.
             </p>
 
             <div className="mt-7 rounded-[1.75rem] border border-[var(--line)] bg-white p-2 shadow-xl shadow-[#19101410]">
@@ -107,10 +107,10 @@ export default function Home() {
                   <HomeIcon aria-hidden className="shrink-0 text-[var(--rose-dark)]" />
                   <span>
                     <span className="block text-xs font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
-                      Espaco
+                      Espaço
                     </span>
                     <span className="font-bold text-[var(--foreground)] md:whitespace-nowrap">
-                      Quarto ou sofa
+                      Quarto ou sofá
                     </span>
                   </span>
                 </Link>
@@ -127,11 +127,11 @@ export default function Home() {
             <div className="mt-7 grid max-w-xl grid-cols-3 gap-3 text-sm font-bold text-[var(--muted)]">
               <span>
                 <strong className="block text-2xl text-[var(--rose-dark)]">24h</strong>
-                revisao cuidadosa
+                revisão cuidadosa
               </span>
               <span>
                 <strong className="block text-2xl text-[var(--rose-dark)]">0</strong>
-                custo para familias
+                custo para famílias
               </span>
               <span>
                 <strong className="block text-2xl text-[var(--rose-dark)]">100%</strong>
@@ -145,9 +145,9 @@ export default function Home() {
               <div className="flex items-center justify-between gap-4 px-1 pb-4">
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.14em] text-[var(--rose-dark)]">
-                    perto de voce
+                    perto de você
                   </p>
-                  <h2 className="mt-1 text-2xl font-black">Hospedagens disponiveis</h2>
+                  <h2 className="mt-1 text-2xl font-black">Hospedagens disponíveis</h2>
                 </div>
                 <Link
                   className="shrink-0 rounded-full border border-[var(--line)] px-4 py-2 text-sm font-black text-[var(--brand-dark)] transition hover:bg-[var(--surface-soft)]"
@@ -175,7 +175,7 @@ export default function Home() {
                       <div className="flex items-start justify-between gap-3">
                         <p className="font-black">{stay.title}</p>
                         <span className="rounded-full bg-[var(--surface-soft)] px-2 py-1 text-xs font-black text-[var(--rose-dark)]">
-                          Gratis
+                          Grátis
                         </span>
                       </div>
                       <p className="mt-2 text-sm font-bold text-[var(--muted)]">
@@ -191,10 +191,10 @@ export default function Home() {
             <div className="grid gap-3 rounded-[1.75rem] bg-[var(--brand-dark)] p-5 text-white shadow-xl shadow-[#19101418] sm:grid-cols-[1fr_auto] sm:items-center">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.14em] text-[#f7a7bd]">
-                  principio central
+                  princípio central
                 </p>
                 <p className="mt-2 text-xl font-black leading-7">
-                  Seguranca antes de escala. Acolhimento antes de automacao.
+                  Segurança antes de escala. Acolhimento antes de automação.
                 </p>
               </div>
               <ShieldCheck aria-hidden className="hidden text-[#f7a7bd] sm:block" size={46} />
@@ -203,11 +203,11 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-white px-6 py-16 md:px-10 lg:px-12">
+      <section className="bg-white px-6 py-8 md:px-10 lg:px-12">
         <div className="mx-auto max-w-6xl">
           <div className="max-w-2xl">
             <p className="text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
-              como funciona
+              Como funciona
             </p>
             <h2 className="mt-3 text-3xl font-black md:text-5xl">
               Uma rede simples, humana e moderada.
@@ -241,14 +241,14 @@ export default function Home() {
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div>
             <p className="text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
-              cuidado operacional
+              Cuidado operacional
             </p>
             <h2 className="mt-3 text-3xl font-black md:text-5xl">
               A rede precisa ser simples, segura e acolhedora.
             </h2>
             <p className="mt-5 leading-8 text-[var(--muted)]">
-              Cada pedido passa por revisao antes de aproximar familia e
-              anfitriao. O objetivo e facilitar o acolhimento sem abrir mao da
+              Cada pedido passa por revisão antes de aproximar família e
+              anfitrião. O objetivo é facilitar o acolhimento sem abrir mão da
               responsabilidade.
             </p>
           </div>

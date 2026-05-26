@@ -9,11 +9,11 @@ import { supabase } from "../lib/supabase";
 
 const lodgingTypeMap: Record<string, string> = {
   Quarto: "room",
-  Sofa: "sofa",
+  Sofá: "sofa",
   "Casa inteira": "entire_home",
-  Edicula: "guest_house",
-  Colchao: "mattress",
-  "Outro espaco": "other",
+  Edícula: "guest_house",
+  Colchão: "mattress",
+  "Outro espaço": "other",
 };
 
 export default function AnfitrioesPage() {
@@ -28,7 +28,7 @@ export default function AnfitrioesPage() {
     setLoading(true);
 
     if (!supabase) {
-      setError("Supabase nao esta configurado neste ambiente.");
+      setError("Supabase não está configurado neste ambiente.");
       setLoading(false);
       return;
     }
@@ -39,7 +39,7 @@ export default function AnfitrioesPage() {
     } = await supabase.auth.getUser();
 
     if (userError || !user) {
-      setError("Entre novamente para cadastrar o espaco.");
+      setError("Entre novamente para cadastrar o espaço.");
       setLoading(false);
       return;
     }
@@ -80,7 +80,7 @@ export default function AnfitrioesPage() {
       .single();
 
     if (lodgingError || !lodging) {
-      setError(lodgingError?.message ?? "Nao foi possivel cadastrar o espaco.");
+      setError(lodgingError?.message ?? "Não foi possível cadastrar o espaço.");
       setLoading(false);
       return;
     }
@@ -135,12 +135,12 @@ export default function AnfitrioesPage() {
   return (
     <FormShell
       current="anfitrioes"
-      eyebrow="Oferta solidaria"
-      title="Ofereca um espaco seguro para uma familia descansar."
-      description="Este cadastro e para pessoas que moram perto de hospitais e podem oferecer hospedagem temporaria, gratuita e verificada."
+      eyebrow="Oferta solidária"
+      title="Ofereça um espaço seguro para uma família descansar."
+      description="Este cadastro é para pessoas que moram perto de hospitais e podem oferecer hospedagem temporária, gratuita e verificada."
     >
       <AuthGate
-        message="Para cadastrar um espaco, precisamos confirmar seu acesso e proteger as informacoes do local."
+        message="Para cadastrar um espaço, precisamos confirmar seu acesso e proteger as informações do local."
       >
         <form
           className="soft-shell rounded-[2rem] p-5 md:p-7"
@@ -150,7 +150,7 @@ export default function AnfitrioesPage() {
             {submitted ? (
               <div className="rounded-2xl border border-[#f7a7bd] bg-white px-4 py-3 text-sm font-bold leading-6 text-[var(--rose-dark)]">
                 Oferta recebida. A equipe do Projeto Brenda revisara o cadastro
-                antes de disponibilizar o espaco para solicitacoes.
+                antes de disponibilizar o espaço para solicitações.
               </div>
             ) : null}
             {error ? (
@@ -175,21 +175,21 @@ export default function AnfitrioesPage() {
           </div>
 
           <TextField
-            hint="Nesta fase, use um endereco aproximado. O endereco completo so deve ser compartilhado apos verificacao."
-            label="Endereco aproximado"
+            hint="Nesta fase, use um endereço aproximado. O endereço completo só deve ser compartilhado após verificação."
+            label="Endereço aproximado"
             name="address"
             required
           />
 
           <div className="grid gap-5 md:grid-cols-3">
-            <SelectField label="Tipo de espaco" name="spaceType" required>
+            <SelectField label="Tipo de espaço" name="spaceType" required>
               <option value="">Selecione</option>
               <option>Quarto</option>
-              <option>Sofa</option>
+              <option>Sofá</option>
               <option>Casa inteira</option>
-              <option>Edicula</option>
-              <option>Colchao</option>
-              <option>Outro espaco</option>
+              <option>Edícula</option>
+              <option>Colchão</option>
+              <option>Outro espaço</option>
             </SelectField>
             <SelectField label="Capacidade" name="capacity" required>
               <option value="">Selecione</option>
@@ -205,19 +205,19 @@ export default function AnfitrioesPage() {
           </div>
 
           <div className="grid gap-5 md:grid-cols-2">
-            <TextField label="Dias disponiveis" name="availability" placeholder="Ex.: segunda a sexta" required />
-            <TextField label="Hospital mais proximo" name="nearestHospital" />
+            <TextField label="Dias disponíveis" name="availability" placeholder="Ex.: segunda a sexta" required />
+            <TextField label="Hospital mais próximo" name="nearestHospital" />
           </div>
 
           <TextAreaField
-            hint="Informe regras importantes da casa, acessibilidade, animais, horario de entrada e qualquer limite que ajude a moderacao."
-            label="Observacoes sobre o espaco"
+            hint="Informe regras importantes da casa, acessibilidade, animais, horário de entrada e qualquer limite que ajude a moderação."
+            label="Observações sobre o espaço"
             name="notes"
             required
           />
 
           <div className="rounded-2xl bg-white p-4">
-            <p className="text-sm font-black">Condicoes do local</p>
+            <p className="text-sm font-black">Condições do local</p>
             <div className="mt-3 grid gap-3 md:grid-cols-2">
               {[
                 "Pode chegar a noite",
@@ -238,8 +238,8 @@ export default function AnfitrioesPage() {
           <div className="rounded-2xl bg-white p-4">
             <p className="text-sm font-black">Fotos do local</p>
             <p className="mt-2 text-xs leading-5 text-[var(--muted)]">
-              Envie fotos claras do espaco, entrada, banheiro e local de
-              descanso. As imagens serao revisadas antes da publicacao.
+              Envie fotos claras do espaço, entrada, banheiro e local de
+              descanso. As imagens serão revisadas antes da publicação.
             </p>
             <input
               accept="image/*"
@@ -253,8 +253,8 @@ export default function AnfitrioesPage() {
           <label className="flex gap-3 rounded-2xl bg-white p-4 text-sm leading-6 text-[var(--muted)]">
             <input className="mt-1 h-4 w-4" name="consent" required type="checkbox" />
             <span>
-              Confirmo que entendo que a oferta sera revisada manualmente antes
-              de qualquer contato com uma familia.
+              Confirmo que entendo que a oferta será revisada manualmente antes
+              de qualquer contato com uma família.
             </span>
           </label>
 

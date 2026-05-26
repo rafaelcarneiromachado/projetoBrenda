@@ -160,7 +160,7 @@ export default function PerfilPage() {
         state: data.uf ?? current.state,
       }));
     } catch {
-      setError("Nao foi possivel buscar o CEP agora.");
+      setError("Não foi possível buscar o CEP agora.");
     }
 
     setCepLoading(false);
@@ -215,7 +215,7 @@ export default function PerfilPage() {
       setError(
         uploadError instanceof Error
           ? uploadError.message
-          : "Nao foi possivel enviar a foto.",
+          : "Não foi possível enviar a foto.",
       );
       setSaving(false);
       return;
@@ -233,7 +233,7 @@ export default function PerfilPage() {
       const result = await supabase.from("profiles").upsert(nextProfile);
       saveError = result.error;
     } catch {
-      setError("Nao foi possivel salvar o perfil. Verifique sua conexao.");
+      setError("Não foi possível salvar o perfil. Verifique sua conexão.");
       setSaving(false);
       return;
     }
@@ -263,8 +263,8 @@ export default function PerfilPage() {
             Seus dados de contato e acolhimento.
           </h1>
           <p className="mt-5 leading-8 text-[var(--muted)]">
-            Essas informacoes ajudam a moderacao a entender quem voce e, sua
-            familia e como entrar em contato com seguranca.
+            Essas informações ajudam a moderação a entender quem você é, sua
+            família e como entrar em contato com segurança.
           </p>
           <div className="soft-shell mt-8 rounded-[1.5rem] p-5">
             <div className="flex items-center gap-3">
@@ -368,7 +368,7 @@ export default function PerfilPage() {
                   </button>
                 </div>
                 <p className="mt-2 text-xs leading-5 text-[var(--muted)]">
-                  Digite o CEP e use a busca para preencher endereco, cidade e UF.
+                  Digite o CEP e use a busca para preencher endereço, cidade e UF.
                 </p>
               </div>
 
@@ -380,7 +380,7 @@ export default function PerfilPage() {
                   value={profile.address}
                 />
                 <TextField
-                  label="Numero"
+                  label="Número"
                   name="address_number"
                   onChange={(event) =>
                     updateProfile("address_number", event.target.value)
@@ -413,7 +413,7 @@ export default function PerfilPage() {
               </div>
 
               <TextAreaField
-                hint="Ex.: familiar em tratamento, relacao com a crianca, cidade de origem. Evite detalhes medicos sensiveis."
+                hint="Ex.: familiar em tratamento, relação com a pessoa internada, cidade de origem. Evite detalhes médicos sensíveis."
                 label="Familiares e contexto"
                 name="family_info"
                 onChange={(event) => updateProfile("family_info", event.target.value)}
@@ -421,7 +421,7 @@ export default function PerfilPage() {
               />
 
               <TextAreaField
-                hint="Uma breve apresentacao para a equipe de moderacao."
+                hint="Uma breve apresentação para a equipe de moderação."
                 label="Bio"
                 name="bio"
                 onChange={(event) => updateProfile("bio", event.target.value)}

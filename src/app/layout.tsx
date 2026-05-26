@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Projeto Brenda",
   description:
-    "Hospedagem solidaria para familiares de criancas e adolescentes em tratamento contra o cancer.",
+    "Hospedagem solidária para familiares de pessoas em tratamento ou acompanhamento hospitalar.",
 };
 
 export default function RootLayout({

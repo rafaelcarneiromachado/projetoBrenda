@@ -1,4 +1,4 @@
-export type StayType = "Quarto" | "Sofa" | "Casa inteira" | "Edicula";
+export type StayType = "Quarto" | "Sofá" | "Casa inteira" | "Edícula";
 
 export type Stay = {
   id: string;
@@ -29,13 +29,13 @@ export const stays: Stay[] = [
     accessibility: false,
     availableTonight: true,
     image: "/brand/stay-room.svg",
-    host: "Familia acolhedora",
-    notes: "Ambiente silencioso, indicado para descanso de curta duracao.",
+    host: "Família acolhedora",
+    notes: "Ambiente silencioso, indicado para descanso de curta duração.",
   },
   {
     id: "edicula-centro",
-    title: "Edicula independente com banheiro",
-    type: "Edicula",
+    title: "Edícula independente com banheiro",
+    type: "Edícula",
     neighborhood: "Centro",
     city: "Curitiba",
     distanceKm: 1.6,
@@ -44,14 +44,14 @@ export const stays: Stay[] = [
     accessibility: true,
     availableTonight: false,
     image: "/brand/stay-suite.svg",
-    host: "Anfitria verificada",
-    notes: "Entrada lateral e espaco reservado para ate duas pessoas.",
+    host: "Anfitriã verificada",
+    notes: "Entrada lateral e espaço reservado para até duas pessoas.",
   },
   {
     id: "sofa-vila",
-    title: "Sofa-cama em apartamento familiar",
-    type: "Sofa",
-    neighborhood: "Vila Esperanca",
+    title: "Sofá-cama em apartamento familiar",
+    type: "Sofá",
+    neighborhood: "Vila Esperança",
     city: "Curitiba",
     distanceKm: 2.3,
     capacity: 1,
@@ -59,7 +59,7 @@ export const stays: Stay[] = [
     accessibility: false,
     availableTonight: true,
     image: "/brand/stay-sofa.svg",
-    host: "Casal voluntario",
-    notes: "Boa opcao para chegada emergencial e uma noite de descanso.",
+    host: "Casal voluntário",
+    notes: "Boa opção para chegada emergencial e uma noite de descanso.",
   },
 ];

@@ -18,7 +18,7 @@ type SiteHeaderProps = {
 };
 
 const links = [
-  { href: "/", label: "Inicio", shortLabel: "Inicio", key: "home" },
+  { href: "/", label: "Início", shortLabel: "Início", key: "home" },
   { href: "/buscar", label: "Buscar hospedagem", shortLabel: "Buscar", key: "buscar" },
   {
     href: "/familias",
@@ -101,14 +101,14 @@ export function SiteHeader({ current = "home" }: SiteHeaderProps) {
               Projeto Brenda
             </span>
             <span className="block text-xs font-bold uppercase tracking-[0.12em] text-[var(--rose)]">
-              acolhimento solidario
+              acolhimento solidário
             </span>
           </span>
         </Link>
         <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 text-sm font-bold text-[var(--muted)] [scrollbar-width:none] lg:mx-0 lg:overflow-visible lg:pb-0">
           {links.map((link) => (
             <Link
-              className={`shrink-0 rounded-full px-4 py-2 transition hover:bg-[var(--surface-soft)] hover:text-[var(--brand-dark)] ${
+              className={`inline-flex min-h-10 shrink-0 items-center justify-center rounded-full px-4 py-2 leading-none transition hover:bg-[var(--surface-soft)] hover:text-[var(--brand-dark)] ${
                 current === link.key
                   ? "bg-[var(--brand-dark)] text-white shadow-md shadow-[#19101420] hover:bg-[var(--brand-dark)] hover:text-white"
                   : ""
@@ -162,7 +162,7 @@ export function SiteHeader({ current = "home" }: SiteHeaderProps) {
                     onClick={() => setMenuOpen(false)}
                   >
                     <ShieldCheck aria-hidden size={18} />
-                    Moderacao
+                    Moderação
                   </Link>
                   <button
                     className="flex w-full items-center gap-2 rounded-2xl px-4 py-3 text-left font-bold text-[var(--brand-dark)] hover:bg-[var(--surface-soft)]"
@@ -177,7 +177,7 @@ export function SiteHeader({ current = "home" }: SiteHeaderProps) {
             </div>
           ) : (
             <Link
-              className={`shrink-0 rounded-full px-4 py-2 transition hover:bg-[var(--surface-soft)] hover:text-[var(--brand-dark)] ${
+              className={`inline-flex min-h-10 shrink-0 items-center justify-center rounded-full px-4 py-2 leading-none transition hover:bg-[var(--surface-soft)] hover:text-[var(--brand-dark)] ${
                 current === "entrar"
                   ? "bg-[var(--brand-dark)] text-white shadow-md shadow-[#19101420] hover:bg-[var(--brand-dark)] hover:text-white"
                   : ""

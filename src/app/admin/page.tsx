@@ -31,12 +31,12 @@ type StayRequest = {
 
 const statusLabels: Record<string, string> = {
   pending: "Pendente",
-  in_review: "Em revisao",
+  in_review: "Em revisão",
   approved: "Aprovada",
   rejected: "Rejeitada",
   suspended: "Suspensa",
   matched: "Combinada",
-  completed: "Concluida",
+  completed: "Concluída",
   cancelled: "Cancelada",
 };
 
@@ -52,7 +52,7 @@ export default function AdminPage() {
     setLoading(true);
 
     if (!supabase) {
-      setError("Supabase nao esta configurado neste ambiente.");
+      setError("Supabase não está configurado neste ambiente.");
       setLoading(false);
       return;
     }
@@ -100,7 +100,7 @@ export default function AdminPage() {
     setMessage("");
 
     if (!supabase) {
-      setError("Supabase nao esta configurado neste ambiente.");
+      setError("Supabase não está configurado neste ambiente.");
       return;
     }
 
@@ -125,14 +125,14 @@ export default function AdminPage() {
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <p className="inline-flex rounded-full bg-white px-4 py-2 text-sm font-black uppercase tracking-[0.12em] text-[var(--rose-dark)] shadow-sm">
-              Moderacao
+              Moderação
             </p>
             <h1 className="mt-5 text-3xl font-black md:text-5xl">
               Revisar pedidos e ofertas.
             </h1>
             <p className="mt-5 leading-8 text-[var(--muted)]">
-              Area interna para acompanhar solicitacoes, ofertas e revisoes
-              antes de conectar uma familia a um anfitriao.
+              Área interna para acompanhar solicitações, ofertas e revisões
+              antes de conectar uma família a um anfitrião.
             </p>
           </div>
           <button
@@ -145,7 +145,7 @@ export default function AdminPage() {
           </button>
         </div>
 
-        <AuthGate message="Entre com uma conta autorizada para acessar a area de moderacao.">
+        <AuthGate message="Entre com uma conta autorizada para acessar a área de moderação.">
           <div className="mt-8 grid gap-4 md:grid-cols-3">
             <div className="rounded-[2rem] bg-white p-5 shadow-sm">
               <p className="text-3xl font-black text-[var(--rose-dark)]">
@@ -163,7 +163,7 @@ export default function AdminPage() {
               <p className="text-3xl font-black text-[var(--rose-dark)]">
                 {lodgings.filter((item) => item.status === "approved").length}
               </p>
-              <p className="mt-1 font-bold text-[var(--muted)]">hospedagens publicas</p>
+              <p className="mt-1 font-bold text-[var(--muted)]">hospedagens públicas</p>
             </div>
           </div>
 
@@ -235,7 +235,7 @@ export default function AdminPage() {
 
           <section className="soft-shell mt-8 overflow-hidden rounded-[2rem]">
             <div className="border-b border-[var(--line)] bg-white/74 px-5 py-4">
-              <h2 className="text-xl font-black">Pedidos de familias</h2>
+              <h2 className="text-xl font-black">Pedidos de famílias</h2>
             </div>
             {loading ? (
               <p className="px-5 py-5 font-bold text-[var(--muted)]">Carregando...</p>

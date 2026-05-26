@@ -31,11 +31,11 @@ export function FormShell({
             {description}
           </p>
           <div className="soft-shell mt-8 rounded-[1.5rem] p-5">
-            <h2 className="text-base font-black">Seguranca e moderacao</h2>
+            <h2 className="text-base font-black">Segurança e moderação</h2>
             <p className="mt-3 text-sm leading-7 text-[var(--muted)]">
-              Nenhum pedido ou oferta e confirmado automaticamente. A moderacao
-              do Projeto Brenda revisa as informacoes antes de aproximar familia
-              e anfitriao.
+              Nenhum pedido ou oferta é confirmado automaticamente. A moderação
+              do Projeto Brenda revisa as informações antes de aproximar família
+              e anfitrião.
             </p>
           </div>
         </aside>

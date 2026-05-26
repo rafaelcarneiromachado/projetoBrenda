@@ -11,25 +11,25 @@ import { supabase } from "../lib/supabase";
 const stayTypes: Array<StayType | "Todos"> = [
   "Todos",
   "Quarto",
-  "Sofa",
+  "Sofá",
   "Casa inteira",
-  "Edicula",
+  "Edícula",
 ];
 
 const lodgingTypeLabels: Record<string, StayType> = {
   room: "Quarto",
-  sofa: "Sofa",
+  sofa: "Sofá",
   entire_home: "Casa inteira",
-  guest_house: "Edicula",
-  mattress: "Sofa",
+  guest_house: "Edícula",
+  mattress: "Sofá",
   other: "Quarto",
 };
 
 const lodgingImages: Record<StayType, string> = {
   Quarto: "/brand/stay-room.svg",
-  Sofa: "/brand/stay-sofa.svg",
+  Sofá: "/brand/stay-sofa.svg",
   "Casa inteira": "/brand/stay-suite.svg",
-  Edicula: "/brand/stay-suite.svg",
+  Edícula: "/brand/stay-suite.svg",
 };
 
 export default function BuscarPage() {
@@ -79,10 +79,10 @@ export default function BuscarPage() {
             accessibility: Boolean(lodging.accessibility),
             availableTonight: Boolean(lodging.available_now),
             image: lodgingImages[type],
-            host: "Anfitriao verificado",
+            host: "Anfitrião verificado",
             notes:
               lodging.description ||
-              "Espaco cadastrado por anfitriao solidario e revisado pela equipe.",
+              "Espaço cadastrado por anfitrião solidário e revisado pela equipe.",
           };
         }),
       );
@@ -119,7 +119,7 @@ export default function BuscarPage() {
               buscar acolhimento
             </p>
             <h1 className="mt-4 text-3xl font-black md:text-5xl">
-              Encontre uma hospedagem solidaria perto do hospital.
+              Encontre uma hospedagem solidária perto do hospital.
             </h1>
           </div>
           <button
@@ -127,7 +127,7 @@ export default function BuscarPage() {
             type="button"
           >
             <LocateFixed aria-hidden size={18} />
-            Usar minha localizacao
+            Usar minha localização
           </button>
         </div>
 
@@ -144,7 +144,7 @@ export default function BuscarPage() {
             </label>
 
             <label className="block">
-              <span className="text-sm font-black">Tipo de espaco</span>
+              <span className="text-sm font-black">Tipo de espaço</span>
               <select
                 className="mt-2 min-h-12 w-full rounded-2xl border border-[var(--line)] bg-white px-4 outline-none focus:border-[var(--brand)] focus:ring-4 focus:ring-[#f7a7bd]/45"
                 onChange={(event) => setType(event.target.value as StayType | "Todos")}
@@ -185,7 +185,7 @@ export default function BuscarPage() {
                 onChange={(event) => setOnlyTonight(event.target.checked)}
                 type="checkbox"
               />
-              Disponivel hoje
+              Disponível hoje
             </label>
             <button
               className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-black text-[var(--brand-dark)] shadow-sm"
@@ -205,7 +205,7 @@ export default function BuscarPage() {
                 <p className="font-black">{filtered.length} hospedagens encontradas</p>
                 {source === "example" ? (
                   <p className="mt-1 text-sm font-bold text-[var(--muted)]">
-                    Exemplos visuais ate as primeiras ofertas serem aprovadas.
+                    Exemplos visuais até as primeiras ofertas serem aprovadas.
                   </p>
                 ) : null}
               </div>
@@ -252,7 +252,7 @@ export default function BuscarPage() {
                       Solicitar hospedagem
                     </Link>
                     <span className="inline-flex min-h-11 items-center rounded-full border border-[var(--line)] px-4 text-sm font-bold">
-                      {stay.availableTonight ? "Disponivel hoje" : "Sob consulta"}
+                      {stay.availableTonight ? "Disponível hoje" : "Sob consulta"}
                     </span>
                   </div>
                 </div>
@@ -270,7 +270,7 @@ export default function BuscarPage() {
                   mapa de proximidade
                 </p>
                 <h2 className="mt-2 text-2xl font-black">
-                  Hospedagens perto da sua localizacao
+                  Hospedagens perto da sua localização
                 </h2>
               </div>
               {filtered.map((stay, index) => (
