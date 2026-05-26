@@ -1,4 +1,5 @@
-import Image from "next/image";
+"use client";
+
 import Link from "next/link";
 import {
   CheckCircle2,
@@ -9,9 +10,20 @@ import {
   ShieldCheck,
   Users,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { SiteHeader } from "./components/SiteHeader";
+import { Stay } from "./data/stays";
+import { loadApprovedStays } from "./lib/publicLodgings";
+import { supabase } from "./lib/supabase";
 
-const featuredStays = [
+type FeaturedStay = {
+  title: string;
+  meta: string;
+  detail: string;
+  image: string;
+};
+
+const fallbackFeaturedStays: FeaturedStay[] = [
   {
     title: "Quarto tranquilo",
     meta: "0,8 km do hospital",
@@ -25,6 +37,15 @@ const featuredStays = [
     image: "/brand/stay-suite.svg",
   },
 ];
+
+function toFeaturedStays(stays: Stay[]): FeaturedStay[] {
+  return stays.slice(0, 2).map((stay) => ({
+    title: stay.title,
+    meta: `${stay.distanceKm.toFixed(1).replace(".", ",")} km do hospital`,
+    detail: `${stay.capacity} pessoa${stay.capacity > 1 ? "s" : ""}, banheiro ${stay.bathroom.toLowerCase()}`,
+    image: stay.image,
+  }));
+}
 
 const steps = [
   {
@@ -52,6 +73,31 @@ const safeguards = [
 ];
 
 export default function Home() {
+  const [featuredStays, setFeaturedStays] = useState(fallbackFeaturedStays);
+
+  useEffect(() => {
+    if (!supabase) {
+      return;
+    }
+
+    let mounted = true;
+    const client = supabase;
+
+    async function loadFeaturedStays() {
+      const approvedStays = await loadApprovedStays(client);
+
+      if (mounted && approvedStays.length > 0) {
+        setFeaturedStays(toFeaturedStays(approvedStays));
+      }
+    }
+
+    loadFeaturedStays();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
     <main className="min-h-screen quiet-pattern">
       <SiteHeader current="home" />
@@ -164,12 +210,11 @@ export default function Home() {
                     href="/buscar"
                     key={stay.title}
                   >
-                    <Image
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
                       alt=""
                       className="aspect-[4/3] w-full bg-[var(--surface-soft)] object-cover"
-                      height={620}
                       src={stay.image}
-                      width={900}
                     />
                     <div className="p-4">
                       <div className="flex items-start justify-between gap-3">

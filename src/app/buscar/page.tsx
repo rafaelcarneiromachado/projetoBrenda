@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Filter, List, LocateFixed, Map, SlidersHorizontal } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "../components/SiteHeader";
 import { Stay, stays, StayType } from "../data/stays";
+import { loadApprovedStays } from "../lib/publicLodgings";
 import { supabase } from "../lib/supabase";
 
 const stayTypes: Array<StayType | "Todos"> = [
@@ -15,22 +15,6 @@ const stayTypes: Array<StayType | "Todos"> = [
   "Casa inteira",
   "Edícula",
 ];
-
-const lodgingTypeLabels: Record<string, StayType> = {
-  room: "Quarto",
-  sofa: "Sofá",
-  entire_home: "Casa inteira",
-  guest_house: "Edícula",
-  mattress: "Sofá",
-  other: "Quarto",
-};
-
-const lodgingImages: Record<StayType, string> = {
-  Quarto: "/brand/stay-room.svg",
-  Sofá: "/brand/stay-sofa.svg",
-  "Casa inteira": "/brand/stay-suite.svg",
-  Edícula: "/brand/stay-suite.svg",
-};
 
 export default function BuscarPage() {
   const [query, setQuery] = useState("");
@@ -50,42 +34,13 @@ export default function BuscarPage() {
     const client = supabase;
 
     async function loadLodgings() {
-      const { data, error } = await client
-        .from("lodgings")
-        .select(
-          "id,title,type,neighborhood,city,capacity,bathroom,accessibility,available_now,description,nearest_hospital",
-        )
-        .eq("status", "approved")
-        .order("created_at", { ascending: false });
+      const approvedStays = await loadApprovedStays(client);
 
-      if (!mounted || error || !data || data.length === 0) {
+      if (!mounted || approvedStays.length === 0) {
         return;
       }
 
-      setAvailableStays(
-        data.map((lodging, index) => {
-          const type = lodgingTypeLabels[lodging.type] ?? "Quarto";
-
-          return {
-            id: lodging.id,
-            title: lodging.title,
-            type,
-            neighborhood: lodging.neighborhood,
-            city: lodging.city,
-            distanceKm: 0.8 + index * 0.7,
-            capacity: lodging.capacity,
-            bathroom:
-              lodging.bathroom === "Exclusivo" ? "Exclusivo" : "Compartilhado",
-            accessibility: Boolean(lodging.accessibility),
-            availableTonight: Boolean(lodging.available_now),
-            image: lodgingImages[type],
-            host: "Anfitrião verificado",
-            notes:
-              lodging.description ||
-              "Espaço cadastrado por anfitrião solidário e revisado pela equipe.",
-          };
-        }),
-      );
+      setAvailableStays(approvedStays);
       setSource("supabase");
     }
 
@@ -220,12 +175,11 @@ export default function BuscarPage() {
                 className="grid overflow-hidden rounded-[2rem] border border-[var(--line)] bg-white shadow-sm md:grid-cols-[220px_1fr]"
                 key={stay.id}
               >
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   alt=""
                   className="h-56 w-full object-cover md:h-full"
-                  height={620}
                   src={stay.image}
-                  width={900}
                 />
                 <div className="p-5">
                   <div className="flex flex-wrap items-start justify-between gap-3">
