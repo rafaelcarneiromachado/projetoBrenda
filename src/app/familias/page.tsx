@@ -5,6 +5,7 @@ import { Send } from "lucide-react";
 import { AuthGate } from "../components/AuthGate";
 import { FormShell } from "../components/FormShell";
 import { SelectField, TextAreaField, TextField } from "../components/Field";
+import { LodgingPhotoCarousel } from "../components/LodgingPhotoCarousel";
 import { Stay } from "../data/stays";
 import { loadApprovedStays } from "../lib/publicLodgings";
 import { supabase } from "../lib/supabase";
@@ -151,19 +152,37 @@ export default function FamiliasPage() {
           ? "Revise seus dados e informe as datas para solicitar esta hospedagem. A moderação verificará disponibilidade e segurança antes de conectar vocês."
           : "Escolha uma hospedagem em Buscar hospedagem para iniciar um pedido vinculado a um anfitrião."
       }
+      layout="single"
     >
       {selectedStay ? (
-        <div className="soft-shell mb-5 rounded-[2rem] p-5">
-          <p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
-            hospedagem selecionada
-          </p>
-          <h2 className="mt-2 text-xl font-black">{selectedStay.title}</h2>
-          <p className="mt-2 text-sm font-bold leading-6 text-[var(--muted)]">
-            {selectedStay.neighborhood}, {selectedStay.city} · {selectedStay.capacity}{" "}
-            pessoa{selectedStay.capacity > 1 ? "s" : ""} · banheiro{" "}
-            {selectedStay.bathroom.toLowerCase()}
-          </p>
-        </div>
+        <article className="mb-6 overflow-hidden rounded-[2rem] border border-[var(--line)] bg-white shadow-xl shadow-[#19101410]">
+          <LodgingPhotoCarousel
+            className="h-64 w-full md:h-80"
+            images={selectedStay.images ?? [selectedStay.image]}
+            title={selectedStay.title}
+          />
+          <div className="grid gap-5 p-5 md:grid-cols-[1fr_auto] md:items-start md:p-6">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--rose-dark)]">
+                hospedagem selecionada
+              </p>
+              <h2 className="mt-2 text-2xl font-black">{selectedStay.title}</h2>
+              <p className="mt-3 text-sm font-bold leading-6 text-[var(--muted)]">
+                {selectedStay.neighborhood}, {selectedStay.city} ·{" "}
+                {selectedStay.capacity} pessoa
+                {selectedStay.capacity > 1 ? "s" : ""} · banheiro{" "}
+                {selectedStay.bathroom.toLowerCase()}
+              </p>
+              <p className="mt-3 leading-7 text-[var(--muted)]">
+                {selectedStay.notes}
+              </p>
+            </div>
+            <div className="grid gap-2 rounded-2xl bg-[var(--surface-soft)] p-4 text-sm font-black text-[var(--brand-dark)]">
+              <span>{selectedStay.distanceKm.toFixed(1)} km do hospital</span>
+              <span>{selectedStay.availableTonight ? "Disponível hoje" : "Sob consulta"}</span>
+            </div>
+          </div>
+        </article>
       ) : null}
       <AuthGate
         message="Para solicitar uma hospedagem solidária, precisamos confirmar seu acesso e manter um histórico seguro do pedido."
