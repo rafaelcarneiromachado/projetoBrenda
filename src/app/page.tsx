@@ -25,6 +25,12 @@ type FeaturedStay = {
   images?: string[];
 };
 
+type ImpactCounts = {
+  available_lodgings: number;
+  lodging_requests: number;
+  registered_users: number;
+};
+
 const fallbackFeaturedStays: FeaturedStay[] = [
   {
     title: "Quarto tranquilo",
@@ -79,6 +85,11 @@ const safeguards = [
 
 export default function Home() {
   const [featuredStays, setFeaturedStays] = useState(fallbackFeaturedStays);
+  const [impactCounts, setImpactCounts] = useState<ImpactCounts>({
+    available_lodgings: 0,
+    lodging_requests: 0,
+    registered_users: 0,
+  });
 
   useEffect(() => {
     if (!supabase) {
@@ -89,10 +100,17 @@ export default function Home() {
     const client = supabase;
 
     async function loadFeaturedStays() {
-      const approvedStays = await loadApprovedStays(client);
+      const [approvedStays, countsResult] = await Promise.all([
+        loadApprovedStays(client),
+        client.rpc("public_impact_counts").maybeSingle(),
+      ]);
 
       if (mounted && approvedStays.length > 0) {
         setFeaturedStays(toFeaturedStays(approvedStays));
+      }
+
+      if (mounted && countsResult.data) {
+        setImpactCounts(countsResult.data as ImpactCounts);
       }
     }
 
@@ -106,6 +124,35 @@ export default function Home() {
   return (
     <main className="min-h-screen quiet-pattern">
       <SiteHeader current="home" />
+
+      <section className="border-b border-[var(--line)] bg-white px-5 py-4 md:px-8 lg:px-10">
+        <div className="mx-auto grid max-w-6xl gap-3 sm:grid-cols-3">
+          <div className="rounded-2xl bg-[var(--surface-soft)] px-5 py-4">
+            <strong className="block text-3xl font-black text-[var(--rose-dark)]">
+              {impactCounts.available_lodgings}
+            </strong>
+            <span className="text-sm font-black text-[var(--muted)]">
+              hospedagens disponíveis
+            </span>
+          </div>
+          <div className="rounded-2xl bg-[var(--surface-soft)] px-5 py-4">
+            <strong className="block text-3xl font-black text-[var(--rose-dark)]">
+              {impactCounts.lodging_requests}
+            </strong>
+            <span className="text-sm font-black text-[var(--muted)]">
+              pedidos de hospedagem
+            </span>
+          </div>
+          <div className="rounded-2xl bg-[var(--surface-soft)] px-5 py-4">
+            <strong className="block text-3xl font-black text-[var(--rose-dark)]">
+              {impactCounts.registered_users}
+            </strong>
+            <span className="text-sm font-black text-[var(--muted)]">
+              usuários cadastrados
+            </span>
+          </div>
+        </div>
+      </section>
 
       <section className="px-5 pb-0 pt-7 md:px-8 lg:px-10">
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
@@ -175,20 +222,6 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="mt-7 grid max-w-xl grid-cols-3 gap-3 text-sm font-bold text-[var(--muted)]">
-              <span>
-                <strong className="block text-2xl text-[var(--rose-dark)]">24h</strong>
-                revisão cuidadosa
-              </span>
-              <span>
-                <strong className="block text-2xl text-[var(--rose-dark)]">0</strong>
-                custo para famílias
-              </span>
-              <span>
-                <strong className="block text-2xl text-[var(--rose-dark)]">100%</strong>
-                moderado
-              </span>
-            </div>
           </div>
 
           <aside className="grid gap-4">
