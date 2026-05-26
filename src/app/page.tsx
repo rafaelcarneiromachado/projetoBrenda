@@ -167,7 +167,7 @@ export default function Home() {
                   </span>
                 </Link>
                 <Link
-                  className="inline-flex min-h-16 items-center justify-center gap-2 rounded-[1.35rem] bg-[var(--brand-dark)] px-6 font-black text-white transition hover:bg-[var(--brand)]"
+                  className="mr-1 inline-flex min-h-14 self-center items-center justify-center gap-2 rounded-[1.15rem] bg-[var(--brand-dark)] px-5 font-black text-white transition hover:bg-[var(--brand)]"
                   href="/buscar"
                 >
                   <Search aria-hidden size={18} />
