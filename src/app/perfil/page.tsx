@@ -94,6 +94,8 @@ export default function PerfilPage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     setError("");
     setMessage("");
     setSaving(true);
@@ -114,7 +116,6 @@ export default function PerfilPage() {
       return;
     }
 
-    const form = new FormData(event.currentTarget);
     const nextProfile = {
       id: user.id,
       full_name: String(form.get("full_name") ?? ""),
@@ -127,7 +128,16 @@ export default function PerfilPage() {
       avatar_url: String(form.get("avatar_url") ?? ""),
     };
 
-    const { error: saveError } = await supabase.from("profiles").upsert(nextProfile);
+    let saveError;
+
+    try {
+      const result = await supabase.from("profiles").upsert(nextProfile);
+      saveError = result.error;
+    } catch {
+      setError("Nao foi possivel salvar o perfil. Verifique sua conexao.");
+      setSaving(false);
+      return;
+    }
 
     if (saveError) {
       setError(saveError.message);
