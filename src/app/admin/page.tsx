@@ -630,7 +630,7 @@ export default function AdminPage() {
                     className={filterButtonClass(lodgingFilter === filter.value)}
                     key={filter.value}
                     onClick={() => setLodgingFilter(filter.value)}
-                    style={{ fontSize: 12.5, fontWeight: 700 }}
+                    style={{ fontSize: 12.5, fontWeight: 900 }}
                     type="button"
                   >
                     {filter.label}
@@ -837,7 +837,7 @@ export default function AdminPage() {
                     className={filterButtonClass(requestFilter === filter.value)}
                     key={filter.value}
                     onClick={() => setRequestFilter(filter.value)}
-                    style={{ fontSize: 12.5, fontWeight: 700 }}
+                    style={{ fontSize: 12.5, fontWeight: 900 }}
                     type="button"
                   >
                     {filter.label}
