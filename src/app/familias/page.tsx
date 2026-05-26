@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Send } from "lucide-react";
 import { AuthGate } from "../components/AuthGate";
 import { FormShell } from "../components/FormShell";
@@ -8,9 +8,60 @@ import { SelectField, TextAreaField, TextField } from "../components/Field";
 import { supabase } from "../lib/supabase";
 
 export default function FamiliasPage() {
+  const [profile, setProfile] = useState({
+    email: "",
+    fullName: "",
+    phone: "",
+    city: "",
+  });
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadProfile() {
+      if (!supabase) {
+        return;
+      }
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!mounted || !user) {
+        return;
+      }
+
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name,phone,city")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (!mounted) {
+        return;
+      }
+
+      setProfile({
+        email: user.email ?? "",
+        fullName: data?.full_name ?? user.user_metadata.full_name ?? "",
+        phone: data?.phone ?? user.user_metadata.phone ?? "",
+        city: data?.city ?? "",
+      });
+    }
+
+    window.setTimeout(loadProfile, 0);
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  function updateProfileField(field: keyof typeof profile, value: string) {
+    setProfile((current) => ({ ...current, [field]: value }));
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -92,22 +143,40 @@ export default function FamiliasPage() {
             ) : null}
 
           <div className="grid gap-5 md:grid-cols-2">
-            <TextField label="Nome do responsável" name="name" required />
+            <TextField
+              label="Nome do responsável"
+              name="name"
+              onChange={(event) => updateProfileField("fullName", event.target.value)}
+              required
+              value={profile.fullName}
+            />
             <TextField
               label="Telefone com WhatsApp"
               name="phone"
+              onChange={(event) => updateProfileField("phone", event.target.value)}
               placeholder="(00) 00000-0000"
               required
+              value={profile.phone}
             />
           </div>
 
           <div className="grid gap-5 md:grid-cols-2">
-            <TextField label="Cidade de origem" name="originCity" required />
-            <TextField label="Hospital" name="hospital" required />
+            <TextField label="E-mail da conta" name="email" readOnly value={profile.email} />
+            <TextField
+              label="Cidade de origem"
+              name="originCity"
+              onChange={(event) => updateProfileField("city", event.target.value)}
+              required
+              value={profile.city}
+            />
           </div>
 
-          <div className="grid gap-5 md:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-2">
+            <TextField label="Hospital" name="hospital" required />
             <TextField label="Cidade do hospital" name="hospitalCity" required />
+          </div>
+
+          <div className="grid gap-5 md:grid-cols-2">
             <TextField label="Data de chegada" name="arrival" type="date" required />
             <TextField label="Noites previstas" min="1" name="nights" type="number" required />
           </div>

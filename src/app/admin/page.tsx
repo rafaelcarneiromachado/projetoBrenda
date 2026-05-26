@@ -114,6 +114,7 @@ export default function AdminPage() {
   const [requests, setRequests] = useState<StayRequest[]>([]);
   const [users, setUsers] = useState<ProfileSummary[]>([]);
   const [userSearch, setUserSearch] = useState("");
+  const [currentUserId, setCurrentUserId] = useState("");
   const [expandedLodgingId, setExpandedLodgingId] = useState("");
   const [expandedRequestId, setExpandedRequestId] = useState("");
   const [loading, setLoading] = useState(true);
@@ -131,7 +132,8 @@ export default function AdminPage() {
     }
 
     const client = supabase;
-    const [lodgingsResult, requestsResult] = await Promise.all([
+    const [authResult, lodgingsResult, requestsResult] = await Promise.all([
+      client.auth.getUser(),
       client
         .from("lodgings")
         .select(
@@ -145,6 +147,8 @@ export default function AdminPage() {
         )
         .order("created_at", { ascending: false }),
     ]);
+
+    setCurrentUserId(authResult.data.user?.id ?? "");
 
     if (lodgingsResult.error) {
       setError(lodgingsResult.error.message);
@@ -707,9 +711,9 @@ export default function AdminPage() {
                     </span>
                   </div>
                   <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-                    {user.role === "admin" ? (
+                    {user.role === "admin" || user.id === currentUserId ? (
                       <span className="inline-flex h-9 items-center rounded-full bg-white px-3 text-sm font-black text-[var(--muted)] shadow-sm">
-                        Já é moderador
+                        {user.role === "admin" ? "Já é moderador" : "Conta atual"}
                       </span>
                     ) : (
                       <button

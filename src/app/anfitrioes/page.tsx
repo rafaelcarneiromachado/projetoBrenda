@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { HeartHandshake } from "lucide-react";
 import { AuthGate } from "../components/AuthGate";
 import { FormShell } from "../components/FormShell";
@@ -17,9 +17,64 @@ const lodgingTypeMap: Record<string, string> = {
 };
 
 export default function AnfitrioesPage() {
+  const [profile, setProfile] = useState({
+    email: "",
+    fullName: "",
+    phone: "",
+    city: "",
+    address: "",
+  });
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadProfile() {
+      if (!supabase) {
+        return;
+      }
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!mounted || !user) {
+        return;
+      }
+
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name,phone,city,address,address_number,address_complement")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (!mounted) {
+        return;
+      }
+
+      setProfile({
+        email: user.email ?? "",
+        fullName: data?.full_name ?? user.user_metadata.full_name ?? "",
+        phone: data?.phone ?? user.user_metadata.phone ?? "",
+        city: data?.city ?? "",
+        address: [data?.address, data?.address_number, data?.address_complement]
+          .filter(Boolean)
+          .join(", "),
+      });
+    }
+
+    window.setTimeout(loadProfile, 0);
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  function updateProfileField(field: keyof typeof profile, value: string) {
+    setProfile((current) => ({ ...current, [field]: value }));
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -168,26 +223,45 @@ export default function AnfitrioesPage() {
             ) : null}
 
           <div className="grid gap-5 md:grid-cols-2">
-            <TextField label="Nome completo" name="name" required />
+            <TextField
+              label="Nome completo"
+              name="name"
+              onChange={(event) => updateProfileField("fullName", event.target.value)}
+              required
+              value={profile.fullName}
+            />
             <TextField
               label="Telefone com WhatsApp"
               name="phone"
+              onChange={(event) => updateProfileField("phone", event.target.value)}
               placeholder="(00) 00000-0000"
               required
+              value={profile.phone}
             />
           </div>
 
           <div className="grid gap-5 md:grid-cols-2">
-            <TextField label="Cidade" name="city" required />
-            <TextField label="Bairro" name="neighborhood" required />
+            <TextField label="E-mail da conta" name="email" readOnly value={profile.email} />
+            <TextField
+              label="Cidade"
+              name="city"
+              onChange={(event) => updateProfileField("city", event.target.value)}
+              required
+              value={profile.city}
+            />
           </div>
 
-          <TextField
-            hint="Nesta fase, use um endereço aproximado. O endereço completo só deve ser compartilhado após verificação."
-            label="Endereço aproximado"
-            name="address"
-            required
-          />
+          <div className="grid gap-5 md:grid-cols-2">
+            <TextField label="Bairro" name="neighborhood" required />
+            <TextField
+              hint="Nesta fase, use um endereço aproximado. O endereço completo só deve ser compartilhado após verificação."
+              label="Endereço aproximado"
+              name="address"
+              onChange={(event) => updateProfileField("address", event.target.value)}
+              required
+              value={profile.address}
+            />
+          </div>
 
           <div className="grid gap-5 md:grid-cols-3">
             <SelectField label="Tipo de espaço" name="spaceType" required>
