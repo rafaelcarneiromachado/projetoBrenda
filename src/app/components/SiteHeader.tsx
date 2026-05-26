@@ -1,8 +1,20 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { LogOut, UserCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabase";
 
 type SiteHeaderProps = {
-  current?: "home" | "buscar" | "familias" | "anfitrioes" | "admin" | "entrar";
+  current?:
+    | "home"
+    | "buscar"
+    | "familias"
+    | "anfitrioes"
+    | "admin"
+    | "entrar"
+    | "perfil";
 };
 
 const links = [
@@ -10,10 +22,46 @@ const links = [
   { href: "/buscar", label: "Buscar hospedagem", key: "buscar" },
   { href: "/familias", label: "Preciso de hospedagem", key: "familias" },
   { href: "/anfitrioes", label: "Quero acolher", key: "anfitrioes" },
-  { href: "/entrar", label: "Entrar", key: "entrar" },
 ];
 
 export function SiteHeader({ current = "home" }: SiteHeaderProps) {
+  const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    if (!supabase) {
+      return;
+    }
+
+    let mounted = true;
+    const client = supabase;
+
+    window.setTimeout(() => {
+      client.auth.getUser().then(({ data }) => {
+        if (mounted) {
+          setEmail(data.user?.email ?? "");
+        }
+      });
+    }, 0);
+
+    const { data } = client.auth.onAuthStateChange((_event, session) => {
+      setEmail(session?.user.email ?? "");
+    });
+
+    return () => {
+      mounted = false;
+      data.subscription.unsubscribe();
+    };
+  }, []);
+
+  async function handleSignOut() {
+    if (!supabase) {
+      return;
+    }
+
+    await supabase.auth.signOut();
+    window.location.href = "/";
+  }
+
   return (
     <header className="sticky top-0 z-20 border-b border-[var(--line)] bg-[#fff4f7]/94 backdrop-blur">
       <nav className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-4 md:flex-row md:items-center md:justify-between md:px-10 lg:px-12">
@@ -49,6 +97,40 @@ export function SiteHeader({ current = "home" }: SiteHeaderProps) {
               {link.label}
             </Link>
           ))}
+          {email ? (
+            <>
+              <Link
+                className={`inline-flex items-center gap-2 rounded-full px-4 py-2 transition hover:bg-white hover:text-[var(--brand-dark)] ${
+                  current === "perfil"
+                    ? "bg-white text-[var(--brand-dark)] shadow-md shadow-[#19101420]"
+                    : ""
+                }`}
+                href="/perfil"
+              >
+                <UserCircle aria-hidden size={18} />
+                Minha conta
+              </Link>
+              <button
+                className="inline-flex items-center gap-2 rounded-full px-4 py-2 font-bold transition hover:bg-white hover:text-[var(--brand-dark)]"
+                onClick={handleSignOut}
+                type="button"
+              >
+                <LogOut aria-hidden size={17} />
+                Sair
+              </button>
+            </>
+          ) : (
+            <Link
+              className={`rounded-full px-4 py-2 transition hover:bg-white hover:text-[var(--brand-dark)] ${
+                current === "entrar"
+                  ? "bg-white text-[var(--brand-dark)] shadow-md shadow-[#19101420]"
+                  : ""
+              }`}
+              href="/entrar"
+            >
+              Entrar
+            </Link>
+          )}
         </div>
       </nav>
     </header>
