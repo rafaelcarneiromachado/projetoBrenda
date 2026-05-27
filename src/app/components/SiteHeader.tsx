@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronDown, LogOut, ShieldCheck, UserCircle } from "lucide-react";
+import { ChevronDown, Handshake, LogOut, ShieldCheck, UserCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 
@@ -12,6 +12,7 @@ type SiteHeaderProps = {
     | "buscar"
     | "familias"
     | "anfitrioes"
+    | "conexoes"
     | "missao"
     | "admin"
     | "entrar"
@@ -138,6 +139,14 @@ export function SiteHeader({ current = "home" }: SiteHeaderProps) {
           >
             <UserCircle aria-hidden size={18} />
             Editar Perfil
+          </Link>
+          <Link
+            className="flex items-center gap-2 rounded-2xl px-4 py-3 text-[var(--brand-dark)] hover:bg-[var(--surface-soft)]"
+            href="/conexoes"
+            onClick={() => setMenuOpen(false)}
+          >
+            <Handshake aria-hidden size={18} />
+            Minhas Conexões
           </Link>
           <Link
             className="flex items-center gap-2 rounded-2xl px-4 py-3 text-[var(--brand-dark)] hover:bg-[var(--surface-soft)]"

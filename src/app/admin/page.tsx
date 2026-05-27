@@ -440,6 +440,26 @@ export default function AdminPage() {
         ? "Conexão aprovada. Use a ficha do pedido para aproximar família e anfitrião."
         : "Pedido cancelado.",
     );
+
+    if (status === "matched") {
+      const { error: emailError } = await supabase.functions.invoke(
+        "send-connection-approved",
+        {
+          body: { request_id: request.id },
+        },
+      );
+
+      if (emailError) {
+        setMessage(
+          "Conexão aprovada. A página de conexões foi liberada, mas o alerta por e-mail ainda precisa ser configurado.",
+        );
+      } else {
+        setMessage(
+          "Conexão aprovada. Família e anfitrião receberam o alerta por e-mail.",
+        );
+      }
+    }
+
     await loadData();
   }
 
