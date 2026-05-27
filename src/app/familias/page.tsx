@@ -154,6 +154,23 @@ export default function FamiliasPage() {
       }
       layout="single"
     >
+      {!selectedStay ? (
+        <div className="soft-shell rounded-[2rem] p-6 md:p-8">
+          <h2 className="text-2xl font-black">Escolha uma hospedagem primeiro.</h2>
+          <p className="mt-3 max-w-2xl leading-7 text-[var(--muted)]">
+            O pedido precisa nascer a partir de uma hospedagem específica para que
+            a moderação consiga verificar datas, disponibilidade e o contato com o
+            anfitrião certo.
+          </p>
+          <a
+            className="mt-5 inline-flex min-h-12 items-center justify-center rounded-full bg-[var(--brand-dark)] px-6 font-black text-white shadow-lg shadow-[#19101435] transition hover:bg-[var(--brand)]"
+            href="/buscar"
+          >
+            Buscar Hospedagem
+          </a>
+        </div>
+      ) : null}
+
       {selectedStay ? (
         <article className="mb-6 overflow-hidden rounded-[2rem] border border-[var(--line)] bg-white shadow-xl shadow-[#19101410]">
           <LodgingPhotoCarousel
@@ -184,9 +201,10 @@ export default function FamiliasPage() {
           </div>
         </article>
       ) : null}
-      <AuthGate
-        message="Para solicitar uma hospedagem solidária, precisamos confirmar seu acesso e manter um histórico seguro do pedido."
-      >
+      {selectedStay ? (
+        <AuthGate
+          message="Para solicitar uma hospedagem solidária, precisamos confirmar seu acesso e manter um histórico seguro do pedido."
+        >
         <form
           className="soft-shell rounded-[2rem] p-5 md:p-7"
           onSubmit={handleSubmit}
@@ -194,8 +212,9 @@ export default function FamiliasPage() {
           <div className="grid gap-5">
             {submitted ? (
               <div className="rounded-2xl border border-[#f7a7bd] bg-white px-4 py-3 text-sm font-bold leading-6 text-[var(--rose-dark)]">
-                Pedido recebido. A equipe do Projeto Brenda revisará as
-                informações antes de qualquer combinação de hospedagem.
+                Pedido recebido para {selectedStay.title}. A equipe do Projeto
+                Brenda revisará disponibilidade, datas e segurança antes de
+                aproximar você do anfitrião.
               </div>
             ) : null}
             {error ? (
@@ -295,12 +314,13 @@ export default function FamiliasPage() {
               className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[var(--brand-dark)] px-6 font-black text-white shadow-lg shadow-[#19101435] transition hover:bg-[var(--brand)] disabled:opacity-60"
               disabled={loading}
             >
-              {loading ? "Enviando..." : "Enviar pedido"}
+              {loading ? "Enviando..." : "Enviar pedido para esta hospedagem"}
               <Send aria-hidden size={18} />
             </button>
           </div>
         </form>
       </AuthGate>
+      ) : null}
     </FormShell>
   );
 }

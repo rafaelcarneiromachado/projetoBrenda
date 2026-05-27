@@ -6,7 +6,9 @@ import {
   Check,
   ClipboardCheck,
   Eye,
+  Mail,
   MapPin,
+  MessageCircle,
   Phone,
   RefreshCw,
   ShieldAlert,
@@ -125,6 +127,42 @@ const moderationFilters: Array<{ label: string; value: ModerationFilter }> = [
   { label: "Aprovadas", value: "approved" },
   { label: "Todas", value: "all" },
 ];
+
+function getWhatsAppHref(phone?: string | null) {
+  const digits = (phone ?? "").replace(/\D/g, "");
+  if (!digits) {
+    return "";
+  }
+
+  const normalized = digits.startsWith("55") ? digits : `55${digits}`;
+  return `https://wa.me/${normalized}`;
+}
+
+function ContactLink({
+  href,
+  icon: Icon,
+  label,
+}: {
+  href: string;
+  icon: typeof MessageCircle;
+  label: string;
+}) {
+  if (!href) {
+    return null;
+  }
+
+  return (
+    <a
+      className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-[var(--brand-dark)] px-3 text-sm font-black text-white shadow-sm transition hover:bg-[var(--brand)]"
+      href={href}
+      rel="noreferrer"
+      target="_blank"
+    >
+      <Icon aria-hidden size={15} />
+      {label}
+    </a>
+  );
+}
 
 function filterButtonClass(isActive: boolean) {
   return `inline-flex h-9 items-center justify-center gap-1.5 rounded-full px-3 leading-none shadow-sm transition disabled:opacity-40 ${
@@ -370,7 +408,10 @@ export default function AdminPage() {
     await loadData();
   }
 
-  async function updateRequestStatus(id: string, status: "matched" | "cancelled") {
+  async function updateRequestStatus(
+    request: StayRequest,
+    status: "matched" | "cancelled",
+  ) {
     setError("");
     setMessage("");
 
@@ -379,10 +420,15 @@ export default function AdminPage() {
       return;
     }
 
+    if (status === "matched" && !request.lodging_id) {
+      setError("Este pedido precisa estar vinculado a uma hospedagem antes da aprovação.");
+      return;
+    }
+
     const { error: updateError } = await supabase
       .from("stay_requests")
       .update({ status })
-      .eq("id", id);
+      .eq("id", request.id);
 
     if (updateError) {
       setError(updateError.message);
@@ -391,7 +437,7 @@ export default function AdminPage() {
 
     setMessage(
       status === "matched"
-        ? "Conexão aprovada. A equipe já pode aproximar solicitante e anfitrião."
+        ? "Conexão aprovada. Use a ficha do pedido para aproximar família e anfitrião."
         : "Pedido cancelado.",
     );
     await loadData();
@@ -898,17 +944,17 @@ export default function AdminPage() {
                       </button>
                       <button
                         className={primaryActionButton}
-                        disabled={request.status === "matched"}
-                        onClick={() => updateRequestStatus(request.id, "matched")}
+                        disabled={request.status === "matched" || !linkedLodging}
+                        onClick={() => updateRequestStatus(request, "matched")}
                         type="button"
                       >
                         <Check aria-hidden size={15} />
-                        Aprovar
+                        Aprovar conexão
                       </button>
                       <button
                         className={secondaryActionButton}
                         disabled={request.status === "cancelled"}
-                        onClick={() => updateRequestStatus(request.id, "cancelled")}
+                        onClick={() => updateRequestStatus(request, "cancelled")}
                         type="button"
                       >
                         <X aria-hidden size={15} />
@@ -958,6 +1004,22 @@ export default function AdminPage() {
                             <strong className="text-[var(--foreground)]">Hospedagem para:</strong>{" "}
                             {request.guest_type}
                           </p>
+                        </div>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          <ContactLink
+                            href={getWhatsAppHref(request.phone)}
+                            icon={MessageCircle}
+                            label="WhatsApp Família"
+                          />
+                          <ContactLink
+                            href={
+                              request.requester?.email
+                                ? `mailto:${request.requester.email}`
+                                : ""
+                            }
+                            icon={Mail}
+                            label="E-Mail Família"
+                          />
                         </div>
                         <div className="mt-4">
                           <h4 className="font-black">Observações</h4>
@@ -1020,6 +1082,22 @@ export default function AdminPage() {
                                   {linkedLodging.availability || "Não informada"}
                                 </p>
                               </div>
+                              <div className="mt-4 flex flex-wrap gap-2">
+                                <ContactLink
+                                  href={getWhatsAppHref(linkedLodging.host?.phone)}
+                                  icon={MessageCircle}
+                                  label="WhatsApp Anfitrião"
+                                />
+                                <ContactLink
+                                  href={
+                                    linkedLodging.host?.email
+                                      ? `mailto:${linkedLodging.host.email}`
+                                      : ""
+                                  }
+                                  icon={Mail}
+                                  label="E-Mail Anfitrião"
+                                />
+                              </div>
                             </div>
 
                             <div>
@@ -1056,6 +1134,23 @@ export default function AdminPage() {
                           </div>
                         )}
                       </div>
+                      {linkedLodging ? (
+                        <div className="rounded-[1.5rem] bg-[var(--brand-dark)] p-5 text-white lg:col-span-2">
+                          <p className="text-xs font-black uppercase tracking-[0.12em] text-[#f7a7bd]">
+                            Ficha De Conexão
+                          </p>
+                          <h4 className="mt-2 text-xl font-black">
+                            {request.responsible_name || "Família"} →{" "}
+                            {linkedLodging.host?.full_name || "Anfitrião"}
+                          </h4>
+                          <p className="mt-3 leading-7 text-white/80">
+                            Após aprovar, a moderação deve confirmar a disponibilidade
+                            final com o anfitrião e então apresentar as duas partes,
+                            usando os contatos acima. O Projeto Brenda continua como
+                            ponto de apoio caso alguém precise remarcar ou cancelar.
+                          </p>
+                        </div>
+                      ) : null}
                     </div>
                   ) : null}
                 </article>
